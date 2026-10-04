@@ -34,7 +34,7 @@ function aRespuesta(resultado: ResultadoIngreso): IngresoResponse {
   return { requiereCambioDePin: false, nombre: sesion.usuario.nombre, sesion };
 }
 
-@ApiTags('Sesión')
+@ApiTags('Sesiones')
 @Controller('sesion')
 export class SesionController {
   constructor(

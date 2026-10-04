@@ -19,10 +19,16 @@ flutter run \
 | Variable (`--dart-define`) | Por defecto | Para qué |
 | --- | --- | --- |
 | `VECI_API` | `http://10.0.2.2:3000` | URL de la API (10.0.2.2 es el computador visto desde el emulador) |
-| `VECI_COMERCIO` | comercio demo | Negocio activo hasta que llegue el inicio de sesión (EP-02) |
-| `VECI_USUARIO_DESARROLLO` | cajero demo | Usuario de desarrollo, solo en desarrollo y staging |
 | `VECI_ENTORNO` | `desarrollo` | Entorno que se reporta a Sentry |
 | `SENTRY_DSN` | vacío (apagado) | Proyecto `veci-mobile` de Sentry |
+
+## Entrar (EP-02)
+
+Con los datos de ejemplo de la semilla, Jhon (cajero de Restaurante La Vecina) entra con el celular **310 000 0102** y el PIN **246813**; Marta (propietaria) con **310 000 0101** y el mismo PIN.
+
+- La sesión se guarda cifrada en el celular (`flutter_secure_storage`, Keystore de Android) y la caja sigue abierta aunque se cierre la app o se vaya el internet. El token de acceso dura 15 minutos y vive en memoria; se renueva solo, una vez aunque varias peticiones lo pidan (`features/sesion/domain/usecases/gestor_sesion.dart`).
+- Si la propietaria cierra la sesión del celular desde el panel, al conectarse la app vuelve a la pantalla de ingreso y avisa si hay registros guardados sin enviar (la cuenta real llega con la cola de envío de EP-07).
+- El respaldo automático de Android está apagado para que la sesión no viaje a otro celular.
 
 ## Comandos
 

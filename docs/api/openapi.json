@@ -1482,7 +1482,7 @@
         },
         "summary": "Entra al panel con correo (HU-02-02)",
         "tags": [
-          "Sesión"
+          "Sesiones"
         ]
       }
     },
@@ -1534,7 +1534,7 @@
         },
         "summary": "Entra con celular y PIN (HU-02-01)",
         "tags": [
-          "Sesión"
+          "Sesiones"
         ]
       }
     },
@@ -1586,7 +1586,7 @@
         },
         "summary": "Crea el PIN propio tras uno temporal",
         "tags": [
-          "Sesión"
+          "Sesiones"
         ]
       }
     },
@@ -1628,7 +1628,7 @@
         },
         "summary": "Cambia el token de renovación por otro",
         "tags": [
-          "Sesión"
+          "Sesiones"
         ]
       }
     },
@@ -1651,7 +1651,7 @@
         ],
         "summary": "Cierra la sesión en este dispositivo",
         "tags": [
-          "Sesión"
+          "Sesiones"
         ]
       }
     },

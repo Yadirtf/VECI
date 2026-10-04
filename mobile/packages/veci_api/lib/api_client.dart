@@ -183,14 +183,62 @@ class ApiClient {
           return valueString == 'true' || valueString == '1';
         case 'DateTime':
           return value is DateTime ? value : DateTime.tryParse(value);
+        case 'CambiarEstadoCajeroRequest':
+          return CambiarEstadoCajeroRequest.fromJson(value);
+        case 'CambiarPinRequest':
+          return CambiarPinRequest.fromJson(value);
+        case 'CierreRemotoResponse':
+          return CierreRemotoResponse.fromJson(value);
+        case 'ComercioActivoRequest':
+          return ComercioActivoRequest.fromJson(value);
+        case 'ComercioActivoResponse':
+          return ComercioActivoResponse.fromJson(value);
+        case 'CorreoResponse':
+          return CorreoResponse.fromJson(value);
+        case 'CorreoYContrasenaRequest':
+          return CorreoYContrasenaRequest.fromJson(value);
         case 'CrearHorarioRequest':
           return CrearHorarioRequest.fromJson(value);
+        case 'DispositivoRequest':
+          return DispositivoRequest.fromJson(value);
+        case 'DispositivoResponse':
+          return DispositivoResponse.fromJson(value);
+        case 'EspacioResponse':
+          return EspacioResponse.fromJson(value);
         case 'HorarioResponse':
           return HorarioResponse.fromJson(value);
+        case 'IngresoConContrasenaRequest':
+          return IngresoConContrasenaRequest.fromJson(value);
+        case 'IngresoConPinRequest':
+          return IngresoConPinRequest.fromJson(value);
+        case 'IngresoResponse':
+          return IngresoResponse.fromJson(value);
+        case 'InvitacionResponse':
+          return InvitacionResponse.fromJson(value);
+        case 'InvitarCajeroRequest':
+          return InvitarCajeroRequest.fromJson(value);
+        case 'MiembroResponse':
+          return MiembroResponse.fromJson(value);
+        case 'PinClienteResponse':
+          return PinClienteResponse.fromJson(value);
+        case 'PinNuevoRequest':
+          return PinNuevoRequest.fromJson(value);
+        case 'PinTemporalResponse':
+          return PinTemporalResponse.fromJson(value);
+        case 'RenovarSesionRequest':
+          return RenovarSesionRequest.fromJson(value);
         case 'RespuestaErrorDto':
           return RespuestaErrorDto.fromJson(value);
+        case 'RestablecerPinClienteRequest':
+          return RestablecerPinClienteRequest.fromJson(value);
         case 'SaludResponse':
           return SaludResponse.fromJson(value);
+        case 'SesionEnDispositivoResponse':
+          return SesionEnDispositivoResponse.fromJson(value);
+        case 'SesionResponse':
+          return SesionResponse.fromJson(value);
+        case 'UsuarioResponse':
+          return UsuarioResponse.fromJson(value);
         default:
           dynamic match;
           if (value is List && (match = _regList.firstMatch(targetType)?.group(1)) != null) {
