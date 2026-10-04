@@ -1,0 +1,318 @@
+{
+  "components": {
+    "schemas": {
+      "CrearHorarioRequest": {
+        "properties": {
+          "dia": {
+            "description": "Código del día (catálogo de días)",
+            "example": "MONDAY",
+            "type": "string"
+          },
+          "horaFin": {
+            "example": "15:00",
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "type": "string"
+          },
+          "horaInicio": {
+            "example": "11:30",
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "type": "string"
+          },
+          "sedeId": {
+            "description": "Sede donde aplica el horario",
+            "format": "uuid",
+            "type": "string"
+          },
+          "servicioId": {
+            "description": "Servicio (desayuno, almuerzo...)",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "servicioId",
+          "sedeId",
+          "dia",
+          "horaInicio",
+          "horaFin"
+        ],
+        "type": "object"
+      },
+      "HorarioResponse": {
+        "properties": {
+          "dia": {
+            "example": "MONDAY",
+            "type": "string"
+          },
+          "horaFin": {
+            "example": "15:00",
+            "type": "string"
+          },
+          "horaInicio": {
+            "example": "11:30",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "sedeId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "servicioId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "servicioNombre": {
+            "example": "Almuerzo",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "servicioId",
+          "sedeId",
+          "dia",
+          "horaInicio",
+          "horaFin"
+        ],
+        "type": "object"
+      },
+      "RespuestaErrorDto": {
+        "properties": {
+          "codigo": {
+            "example": "HORARIO_SE_CRUZA",
+            "type": "string"
+          },
+          "message": {
+            "example": "Ese horario se cruza con otro del mismo día en esta sede.",
+            "type": "string"
+          },
+          "statusCode": {
+            "example": 422,
+            "type": "number"
+          }
+        },
+        "required": [
+          "statusCode",
+          "codigo",
+          "message"
+        ],
+        "type": "object"
+      },
+      "SaludResponse": {
+        "properties": {
+          "baseDatos": {
+            "enum": [
+              "ok",
+              "sin-conexion"
+            ],
+            "type": "string"
+          },
+          "estado": {
+            "enum": [
+              "ok",
+              "degradado"
+            ],
+            "type": "string"
+          },
+          "version": {
+            "example": "0.1.0+abc1234",
+            "type": "string"
+          }
+        },
+        "required": [
+          "estado",
+          "baseDatos",
+          "version"
+        ],
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "contact": {},
+    "description": "El vecino aliado de los negocios del Putumayo. Contrato para la app y el panel.",
+    "title": "API de VECI",
+    "version": "0.1.0"
+  },
+  "openapi": "3.0.0",
+  "paths": {
+    "/horarios": {
+      "get": {
+        "operationId": "listarHorarios",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Solo desarrollo y staging, hasta EP-02: id del usuario",
+            "in": "header",
+            "name": "x-veci-usuario",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/HorarioResponse"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión"
+          },
+          "403": {
+            "description": "El usuario no trabaja en ese negocio"
+          }
+        },
+        "summary": "Horarios vigentes del negocio",
+        "tags": [
+          "Horarios de servicio"
+        ]
+      },
+      "post": {
+        "operationId": "crearHorario",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Solo desarrollo y staging, hasta EP-02: id del usuario",
+            "in": "header",
+            "name": "x-veci-usuario",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrearHorarioRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HorarioResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión"
+          },
+          "403": {
+            "description": "El usuario no trabaja en ese negocio"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "El servicio o la sede no son del negocio"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Se cruza con otro horario"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Horas o día inválidos"
+          }
+        },
+        "summary": "Agrega un horario de servicio",
+        "tags": [
+          "Horarios de servicio"
+        ]
+      }
+    },
+    "/salud": {
+      "get": {
+        "operationId": "consultarSalud",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaludResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaludResponse"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "summary": "Estado de la API y la base",
+        "tags": [
+          "Salud"
+        ]
+      }
+    }
+  },
+  "servers": [],
+  "tags": []
+}

@@ -1,0 +1,44 @@
+# Vigilancia de la API (HU-01-07). Respaldo del monitor de Sentry Uptime: cada hora
+# consulta /salud de staging y producción. Si no responde, abre (o comenta) un issue
+# con la etiqueta `alerta` y el workflow queda en rojo, lo que avisa por correo.
+name: Vigilancia
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  salud:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        entorno: [staging, produccion]
+    env:
+      API_URL: ${{ matrix.entorno == 'staging' && vars.API_URL_STAGING || vars.API_URL_PRODUCCION }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Consultar /salud
+        id: salud
+        run: |
+          if [ -z "$API_URL" ]; then echo "::notice::Sin API_URL para ${{ matrix.entorno }}"; exit 0; fi
+          # Reintenta para no alertar por un arranque en frío del plan gratuito.
+          curl -fsS --retry 4 --retry-delay 20 --retry-all-errors --max-time 30 "$API_URL/salud"
+      - name: Abrir o actualizar la alerta
+        if: failure()
+        run: |
+          TITULO="🚨 La API de ${{ matrix.entorno }} no responde"
+          CUERPO="El chequeo de $API_URL/salud falló: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          ABIERTO=$(gh issue list --repo "$GITHUB_REPOSITORY" --label alerta --state open \
+            --search "$TITULO in:title" --json number --jq '.[0].number')
+          if [ -n "$ABIERTO" ]; then
+            gh issue comment "$ABIERTO" --repo "$GITHUB_REPOSITORY" --body "$CUERPO"
+          else
+            gh label create alerta --repo "$GITHUB_REPOSITORY" --color B60205 2>/dev/null || true
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITULO" --label alerta --body "$CUERPO"
+          fi

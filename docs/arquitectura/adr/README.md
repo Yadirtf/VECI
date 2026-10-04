@@ -14,6 +14,9 @@ Un ADR deja escrito una decisión que cuesta cambiar: el contexto, lo que se eli
 | [0008](0008-esquemas-por-modulo-y-convenciones.md) | Un esquema de PostgreSQL por módulo, nombres en inglés y convenciones | Aceptada |
 | [0009](0009-nucleo-generico-multisector.md) | Núcleo genérico multisector (unidades, tipos de negocio y ajustes en datos) | Aceptada |
 | [0010](0010-auditoria-y-particionamiento.md) | Auditoría inmutable y particionamiento selectivo | Aceptada |
+| [0011](0011-librerias-escaneo-offline.md) | Librerías para escanear, verificar y guardar sin internet (HU-00-04) | Propuesta |
+| [0012](0012-nestjs-11-commonjs-jest.md) | NestJS 11 en CommonJS con Jest, Prisma 7 y migraciones desde el DDL | Propuesta |
+| [0013](0013-infraestructura-y-despliegue.md) | Infraestructura: Render, Vercel, Neon y GitHub Actions | Propuesta |
 
 ## Cómo proponer uno nuevo
 

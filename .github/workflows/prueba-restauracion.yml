@@ -1,0 +1,69 @@
+# Prueba de restauración (HU-01-08). Cada mes toma la última copia diaria, la restaura en
+# un PostgreSQL limpio y comprueba estructura, saldos (caché = libro) y RLS.
+# Si falla, la copia no sirve: revisar de inmediato. Ver docs/operacion/copias-de-seguridad.md.
+name: Prueba de restauración
+
+on:
+  schedule:
+    - cron: '0 12 1 * *' # día 1 de cada mes, 07:00 en Colombia
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  restaurar:
+    runs-on: ubuntu-24.04
+    environment: respaldos
+    services:
+      postgres:
+        image: postgres:${{ vars.PG_VERSION || '16' }}
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: restaurada
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s
+          --health-timeout 3s --health-retries 20
+    env:
+      RESPALDO_CLAVE: ${{ secrets.RESPALDO_CLAVE }}
+      PGPASSWORD: postgres
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Buscar la última copia exitosa
+        run: |
+          RUN_ID=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow respaldo-diario.yml \
+            --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+          if [ -z "$RUN_ID" ]; then echo "::error::No hay copias diarias para restaurar"; exit 1; fi
+          echo "RUN_ID=$RUN_ID" >> "$GITHUB_ENV"
+      - uses: actions/download-artifact@v5
+        with:
+          name: respaldo-produccion
+          run-id: ${{ env.RUN_ID }}
+          github-token: ${{ github.token }}
+          path: copia
+      - name: Descifrar
+        run: |
+          CIFRADO=$(ls copia/*.gpg | head -1)
+          gpg --batch --pinentry-mode loopback --passphrase "$RESPALDO_CLAVE" \
+            --output copia/veci.dump --decrypt "$CIFRADO"
+      - name: Restaurar en una base limpia
+        run: |
+          psql -h localhost -U postgres -d restaurada -v ON_ERROR_STOP=1 -c "
+            CREATE ROLE veci_app NOLOGIN NOBYPASSRLS;
+            CREATE ROLE veci_platform NOLOGIN BYPASSRLS;"
+          pg_restore --host localhost --username postgres --dbname restaurada \
+            --no-owner --no-acl --exit-on-error copia/veci.dump
+      - name: Comprobar la copia restaurada
+        run: psql -h localhost -U postgres -d restaurada -X -f infra/respaldos/verificar-restauracion.sql
+      - name: Dejar constancia
+        run: |
+          {
+            echo "### Prueba de restauración"
+            echo ""
+            echo "- Copia: ejecución $RUN_ID del respaldo diario"
+            echo "- Restaurada y verificada el $(date -u +%Y-%m-%d) (estructura, saldos y RLS)."
+          } >> "$GITHUB_STEP_SUMMARY"

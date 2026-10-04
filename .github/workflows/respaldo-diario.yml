@@ -1,0 +1,48 @@
+# Copia de seguridad diaria de producción (HU-01-08, RNF-DIS-02).
+# Cada noche saca un pg_dump completo, lo cifra con AES-256 y lo guarda como artefacto
+# de GitHub durante 30 días. Se suma a las copias automáticas del proveedor (Neon).
+# Secretos del entorno `respaldos`: DATABASE_URL_RESPALDO (rol con BYPASSRLS) y RESPALDO_CLAVE.
+name: Respaldo diario
+
+on:
+  schedule:
+    - cron: '0 8 * * *' # 03:00 en Colombia
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  respaldar:
+    runs-on: ubuntu-24.04
+    environment: respaldos
+    env:
+      DATABASE_URL_RESPALDO: ${{ secrets.DATABASE_URL_RESPALDO }}
+      RESPALDO_CLAVE: ${{ secrets.RESPALDO_CLAVE }}
+      PG_VERSION: ${{ vars.PG_VERSION || '16' }}
+    steps:
+      - name: Comprobar secretos
+        run: |
+          if [ -z "$DATABASE_URL_RESPALDO" ] || [ -z "$RESPALDO_CLAVE" ]; then
+            echo "::error::Configure DATABASE_URL_RESPALDO y RESPALDO_CLAVE en el entorno respaldos."
+            exit 1
+          fi
+      - name: Volcar la base (pg_dump, formato personalizado)
+        run: |
+          ARCHIVO="veci-$(date -u +%Y%m%d-%H%M).dump"
+          docker run --rm --network host "postgres:$PG_VERSION" \
+            pg_dump --format=custom --no-password "$DATABASE_URL_RESPALDO" > "$ARCHIVO"
+          test -s "$ARCHIVO"
+          echo "ARCHIVO=$ARCHIVO" >> "$GITHUB_ENV"
+      - name: Cifrar
+        run: |
+          gpg --batch --yes --pinentry-mode loopback --symmetric --cipher-algo AES256 \
+            --passphrase "$RESPALDO_CLAVE" --output "$ARCHIVO.gpg" "$ARCHIVO"
+          rm "$ARCHIVO"
+          ls -lh "$ARCHIVO.gpg"
+      - uses: actions/upload-artifact@v5
+        with:
+          name: respaldo-produccion
+          path: ${{ env.ARCHIVO }}.gpg
+          retention-days: 30
+          if-no-files-found: error

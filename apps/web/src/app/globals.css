@@ -1,0 +1,16 @@
+@import 'tailwindcss';
+@import '../shared/ui/tokens.css';
+
+/* Base del sistema de diseño VECI (HU-01-09): letra grande y fondo crema. */
+@layer base {
+  html {
+    font-size: 100%;
+  }
+  body {
+    background-color: var(--color-crema);
+    color: var(--color-tinta);
+    font-family: var(--font-nunito), system-ui, sans-serif;
+    font-size: var(--text-cuerpo);
+    line-height: 1.5;
+  }
+}
