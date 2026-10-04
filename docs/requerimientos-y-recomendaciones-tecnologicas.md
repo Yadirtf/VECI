@@ -1,6 +1,6 @@
 # VECI · Documento de Requerimientos y Recomendaciones Tecnológicas
 
-Versión 1.2 · 4 de octubre de 2026 · Ing. Yadir
+Versión 1.3 · 4 de octubre de 2026 · Ing. Yadir
 
 VECI es una plataforma SaaS web y móvil que digitaliza la tiquetera prepagada de los restaurantes con un código QR por cliente, y que se presenta como un "veci" (un vecino aliado), no como un software más. Este documento fija qué debe hacer la primera versión (MVP), con qué calidad, y qué tecnologías conviene usar para un emprendimiento de una persona en Mocoa, Putumayo.
 
@@ -439,9 +439,11 @@ Las fases siguen las etapas del plan de negocio (piloto en Mocoa, consolidación
 | Fase | Periodo | Alcance | Puerta para pasar a la siguiente |
 | --- | --- | --- | --- |
 | Fase 0 · Validar | Meses 1 a 2 | Entrevistas a 20 restaurantes, modelo de datos, prototipo en Figma | Problema validado en entrevistas |
-| **Fase 1 · Piloto** | Meses 3 a 6 | Requerimientos "Debe", app Android + panel, piloto con 5 restaurantes durante 2 meses | Satisfacción de 4/5 o más y cero errores de saldo |
-| Fase 2 · Lanzar | Meses 7 a 12 | Requerimientos "Debería", multisede, publicación en iOS, meta de 30 comercios | 15 comercios pagos (punto de equilibrio) |
-| Fase 3 · Expandir | Mes 13 en adelante | Pagos en línea, WhatsApp, cafeterías, panaderías, colegios y tiendas, Puerto Asís y Sibundoy | — |
+| **Fase 1 · Piloto** | Meses 3 a 9 | Requerimientos "Debe", app Android + panel (11 sprints de 2 semanas, meses 3 a 7) y piloto con 5 restaurantes durante 2 meses (meses 8 y 9) | Satisfacción de 4/5 o más y cero errores de saldo |
+| Fase 2 · Lanzar | Meses 10 a 15 | Requerimientos "Debería", multisede, publicación en iOS, meta de 30 comercios | 15 comercios pagos (punto de equilibrio) |
+| Fase 3 · Expandir | Mes 16 en adelante | Pagos en línea, WhatsApp, cafeterías, panaderías, colegios y tiendas, Puerto Asís y Sibundoy | — |
+
+La Fase 1 se amplió de 4 a 7 meses porque el [backlog](backlog.md) estima 226 puntos de historias "Debe", unas 22 semanas de trabajo a un ritmo realista para una sola persona, más los 2 meses del piloto.
 
 No se pasa a la siguiente fase sin cumplir su puerta: así el esfuerzo de una sola persona va primero a lo que valida el negocio.
 
@@ -472,5 +474,6 @@ No se pasa a la siguiente fase sin cumplir su puerta: así el esfuerzo de una so
 | 1.0 | 2026-10-04 | Versión inicial: requerimientos funcionales y no funcionales, arquitectura y recomendaciones tecnológicas. |
 | 1.1 | 2026-10-04 | Correcciones del autor: inicio de sesión con celular y PIN de 6 dígitos; "horario de servicio" en lugar de "franja"; auto-registro del cliente con QR personal y QR único por comercio; pagos en efectivo o transferencia (Nequi, Daviplata, Bancolombia); notificación explicada para consumos sincronizados tarde (RF-OFF-06); backend NestJS separado; OTP, WhatsApp y Wompi pasan a futuro. |
 | 1.2 | 2026-10-04 | Se agrega la sección 5.3 de arquitectura limpia para backend, web y mobile y el requerimiento RNF-MAN-03. |
+| 1.3 | 2026-10-04 | Se amplía la Fase 1 a los meses 3 a 9 (construcción en los meses 3 a 7 y piloto en los meses 8 y 9); las fases 2 y 3 se corren 3 meses. |
 
 El backlog derivado de este documento está en [backlog.md](backlog.md).

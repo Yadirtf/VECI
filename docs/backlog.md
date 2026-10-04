@@ -1,6 +1,6 @@
 # VECI · Backlog del producto
 
-Versión 1.1 · 4 de octubre de 2026 · Ing. Yadir
+Versión 1.2 · 4 de octubre de 2026 · Ing. Yadir
 
 Este backlog convierte el [Documento de Requerimientos y Recomendaciones Tecnológicas](requerimientos-y-recomendaciones-tecnologicas.md) en épicas e historias de usuario listas para implementar por fases. Tiene **16 épicas** y **81 historias**; cada historia apunta a los requerimientos (RF/RNF) que cumple.
 
@@ -37,9 +37,9 @@ Este backlog convierte el [Documento de Requerimientos y Recomendaciones Tecnol�
 | Fase | Periodo | Historias | Puntos | Puerta para avanzar |
 | --- | --- | --- | --- | --- |
 | Fase 0 · Validar | Meses 1 a 2 | 4 | — | Problema validado en entrevistas |
-| Fase 1 · MVP y piloto | Meses 3 a 6 | 57 | 226 | Satisfacción de 4/5 o más y cero errores de saldo en el piloto |
-| Fase 2 · Lanzamiento comercial | Meses 7 a 12 | 11 | 45 | 15 comercios pagos (punto de equilibrio) |
-| Fase 3 · Expansión | Mes 13 en adelante | 9 | 68 | — |
+| Fase 1 · MVP y piloto | Meses 3 a 9 | 57 | 226 | Satisfacción de 4/5 o más y cero errores de saldo en el piloto |
+| Fase 2 · Lanzamiento comercial | Meses 10 a 15 | 11 | 45 | 15 comercios pagos (punto de equilibrio) |
+| Fase 3 · Expansión | Mes 16 en adelante | 9 | 68 | — |
 
 ## 3. Épicas
 
@@ -64,7 +64,7 @@ Este backlog convierte el [Documento de Requerimientos y Recomendaciones Tecnol�
 
 ## 4. Plan de sprints de la Fase 1
 
-La Fase 1 suma **226 puntos** en 11 sprints de 2 semanas (unas 22 semanas, cerca de 5 meses) a unos 20 puntos por sprint, que es un ritmo realista para una sola persona. La hoja de ruta asigna 4 meses a la Fase 1, así que hay que elegir: subir el ritmo a unos 25 puntos por sprint, extender la fase o pasar historias a la Fase 2. Las suscripciones (EP-11) y el flujo formal de habeas data (HU-12-02) ya se movieron a la Fase 2 porque el piloto es gratuito y esas tareas pueden hacerse a mano.
+La Fase 1 suma **226 puntos** en 11 sprints de 2 semanas (unas 22 semanas, cerca de 5 meses) a unos 20 puntos por sprint, que es un ritmo realista para una sola persona. Por eso la Fase 1 se amplió de 4 a 7 meses (meses 3 a 9): los 11 sprints de construcción van de los meses 3 a 7 y el piloto con 5 restaurantes dura los meses 8 y 9. Las fases 2 y 3 se corren 3 meses (Fase 2: meses 10 a 15; Fase 3: desde el mes 16). Las suscripciones (EP-11) y el flujo formal de habeas data (HU-12-02) ya se movieron a la Fase 2 porque el piloto es gratuito y esas tareas pueden hacerse a mano.
 
 | Sprint | Objetivo | Historias | Puntos |
 | --- | --- | --- | --- |
@@ -1410,7 +1410,8 @@ Cada requerimiento del documento y las historias que lo cumplen. Un requerimient
 
 - Este archivo es la fuente versionada del backlog; cada cambio se hace por PR para que quede la historia en Git.
 - Si cambia un requerimiento, se actualiza primero el documento de requerimientos y luego las historias que lo trazan.
-- Al empezar un sprint, cada historia puede convertirse en un issue de GitHub con su ID en el título (por ejemplo `HU-06-01 Escanear y descontar`) y agruparse por épica con etiquetas `EP-06`.
+- Cada épica y cada historia ya es un [issue de GitHub](https://github.com/Yadirtf/VECI/issues) con su ID en el título; las épicas son los issues #3 a #18 y las historias son sub-issues de su épica (#19 a #99), con etiquetas `EP-xx`, `fase-N`, `prioridad: …` y `sprint: Sx`.
+- Si cambia una historia en este archivo, se actualiza también su issue. Al terminarla se marcan sus criterios y se cierra el issue (o se cierra con `Closes #NN` en el PR).
 - Las historias nuevas toman el siguiente número libre de su épica; los IDs no se reutilizan.
 
 ## 8. Historial de versiones
@@ -1419,3 +1420,4 @@ Cada requerimiento del documento y las historias que lo cumplen. Un requerimient
 | --- | --- | --- |
 | 1.0 | 2026-10-04 | Backlog inicial: 16 épicas, 80 historias, plan de sprints de la Fase 1 y trazabilidad. |
 | 1.1 | 2026-10-04 | Se agrega HU-01-10 (estructura de arquitectura limpia) y el criterio de arquitectura limpia en la definición de terminado. |
+| 1.2 | 2026-10-04 | Se amplía la Fase 1 a los meses 3 a 9 (11 sprints de construcción más 2 meses de piloto); las fases 2 y 3 se corren 3 meses. El backlog queda cargado en GitHub Issues. |
