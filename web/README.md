@@ -14,7 +14,13 @@ pnpm install
 pnpm dev     # http://localhost:3001
 ```
 
-Por defecto apunta a `http://localhost:3000` y al comercio demo de la semilla. Para cambiarlo, copie `.env.example` a `.env.local`.
+Por defecto apunta a `http://localhost:3000`. Para cambiarlo, copie `.env.example` a `.env.local`.
+
+Para entrar con los datos de ejemplo de la semilla: celular **310 000 0101** y PIN **246813** (Marta, propietaria de Restaurante La Vecina), o el correo **marta@lavecina.co** con la contraseña **almuerzo2026**.
+
+## Sesión (EP-02)
+
+El panel nunca guarda tokens en `localStorage`. Las rutas `src/app/api/sesion/[accion]` son un pequeño servidor entre el navegador y la API (patrón BFF): guardan el token de renovación en una cookie `httpOnly` (`veci_renovacion`, solo para `/api/sesion`) y al navegador le entregan solo el token de acceso, que vive en memoria 15 minutos. Al recargar la página, el panel pide uno nuevo con esa cookie. Si dos peticiones encuentran el token vencido, se renueva una sola vez (`features/sesion/application/almacen-sesion.ts`). El negocio elegido sí se recuerda en `localStorage`, porque no es secreto.
 
 ## Comandos
 
@@ -32,7 +38,7 @@ Por defecto apunta a `http://localhost:3000` y al comercio demo de la semilla. P
 ```
 web/
 ├── src/
-│   ├── app/                    rutas de Next.js (solo componen pantallas)
+│   ├── app/                    rutas de Next.js (solo componen pantallas) y api/sesion (BFF de la sesión)
 │   ├── features/<funcionalidad>/{domain,application,infrastructure,presentation}   horarios es la plantilla
 │   └── shared/                 api/ (cliente generado), ui/ (sistema de diseño), config/, lib/
 ├── scripts/                    generador de tokens de diseño

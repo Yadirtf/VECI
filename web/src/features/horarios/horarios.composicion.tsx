@@ -1,8 +1,7 @@
 'use client';
 
-import { crearClienteVeci } from '@/shared/api/cliente';
 import { useMemo } from 'react';
-import { entorno } from '@/shared/config/entorno';
+import { useClienteVeci, useComercioActivo } from '@/features/sesion';
 import { RepositorioHorariosApi } from './infrastructure/repositorio-horarios-api';
 import { HorariosSemana } from './presentation/horarios-semana';
 
@@ -11,13 +10,11 @@ import { HorariosSemana } from './presentation/horarios-semana';
  * solo usa este componente. Módulo de ejemplo de la arquitectura limpia (HU-01-10).
  */
 export function PantallaHorarios() {
+  const cliente = useClienteVeci();
+  const comercioId = useComercioActivo();
   const repositorio = useMemo(
-    () =>
-      new RepositorioHorariosApi(
-        crearClienteVeci({ urlBase: entorno.urlApi, usuarioDesarrolloId: entorno.usuarioDemoId }),
-        entorno.comercioDemoId,
-      ),
-    [],
+    () => new RepositorioHorariosApi(cliente, comercioId),
+    [cliente, comercioId],
   );
   return <HorariosSemana repositorio={repositorio} />;
 }

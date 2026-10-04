@@ -4,6 +4,176 @@
  */
 
 export interface paths {
+    "/cuenta/comercio-activo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Elige el negocio con el que trabajo */
+        post: operations["elegirComercio"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cuenta/correo-y-contrasena": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Correo y contraseña para entrar al panel (HU-02-02) */
+        put: operations["definirCorreoYContrasena"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cuenta/espacios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Comercios donde trabajo o soy cliente */
+        get: operations["listarMisEspacios"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cuenta/pin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Cambia mi PIN */
+        put: operations["cambiarMiPin"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/dispositivos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Celulares de la caja y sus sesiones */
+        get: operations["listarDispositivos"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/dispositivos/{dispositivoId}/cerrar-sesion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cierre remoto (HU-02-06) */
+        post: operations["cerrarSesionDispositivo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/equipo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Propietarios y cajeros del negocio */
+        get: operations["listarEquipo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/equipo/{membresiaId}/estado": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Suspende, reactiva o retira */
+        patch: operations["cambiarEstadoCajero"];
+        trace?: never;
+    };
+    "/equipo/{membresiaId}/restablecer-pin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** PIN temporal para un cajero (HU-02-05) */
+        post: operations["restablecerPinCajero"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/equipo/cajeros": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Invita un cajero por su celular (HU-02-04) */
+        post: operations["invitarCajero"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/horarios": {
         parameters: {
             query?: never;
@@ -39,10 +209,149 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/sesion/con-contrasena": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Entra al panel con correo (HU-02-02) */
+        post: operations["entrarConContrasena"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sesion/con-pin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Entra con celular y PIN (HU-02-01) */
+        post: operations["entrarConPin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sesion/pin-nuevo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Crea el PIN propio tras uno temporal */
+        post: operations["crearPinNuevo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sesion/renovar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cambia el token de renovación por otro */
+        post: operations["renovarSesion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sesion/salir": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cierra la sesión en este dispositivo */
+        post: operations["salir"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/soporte/clientes/restablecer-pin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Restablece el PIN de un cliente tras verificar su documento (HU-02-05) */
+        post: operations["restablecerPinCliente"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        CambiarEstadoCajeroRequest: {
+            /** @enum {string} */
+            accion: "SUSPENDER" | "REACTIVAR" | "RETIRAR";
+        };
+        CambiarPinRequest: {
+            pinActual: string;
+            pinNuevo: string;
+        };
+        CierreRemotoResponse: {
+            /** @example 1 */
+            sesionesCerradas: number;
+        };
+        ComercioActivoRequest: {
+            /** Format: uuid */
+            comercioId: string;
+        };
+        ComercioActivoResponse: {
+            comercio: components["schemas"]["EspacioResponse"];
+            /**
+             * @example [
+             *       "consumptions.register"
+             *     ]
+             */
+            permisos: string[];
+        };
+        CorreoResponse: {
+            /** @example marta@lavecina.co */
+            correo: string;
+        };
+        CorreoYContrasenaRequest: {
+            /** @example almuerzo2026 */
+            contrasena: string;
+            /** @example marta@lavecina.co */
+            correo: string;
+            /** @description PIN actual, para confirmar que eres tú */
+            pinActual: string;
+        };
         CrearHorarioRequest: {
             /**
              * @description Código del día (catálogo de días)
@@ -64,6 +373,54 @@ export interface components {
              */
             servicioId: string;
         };
+        DispositivoRequest: {
+            /**
+             * Format: uuid
+             * @description Id que el dispositivo generó para sí
+             */
+            id: string;
+            /** @example Moto E13 */
+            modelo?: string;
+            /** @enum {string} */
+            plataforma: "ANDROID" | "IOS" | "WEB";
+            /** @example 0.2.0 */
+            versionApp?: string;
+            /** @example Android 13 */
+            versionSo?: string;
+        };
+        DispositivoResponse: {
+            /** Format: uuid */
+            dispositivoId: string;
+            /** @example Moto E13 */
+            nombre?: string | null;
+            /** @example ANDROID */
+            plataforma: string;
+            /** Format: date-time */
+            registradoEn: string;
+            sesiones: components["schemas"]["SesionEnDispositivoResponse"][];
+            /** Format: date-time */
+            ultimaVez: string;
+        };
+        EspacioResponse: {
+            /** Format: uuid */
+            comercioId: string;
+            /** @description Lo invitaron como cajero y aún no ha entrado a este negocio */
+            invitacionPendiente: boolean;
+            /** @example Restaurante La Vecina */
+            nombre: string;
+            /**
+             * @description OWNER, CASHIER o CUSTOMER
+             * @example [
+             *       "CASHIER"
+             *     ]
+             */
+            roles: string[];
+            /**
+             * @description Código del tipo de negocio
+             * @example RESTAURANT
+             */
+            tipoNegocio: string;
+        };
         HorarioResponse: {
             /** @example MONDAY */
             dia: string;
@@ -80,6 +437,103 @@ export interface components {
             /** @example Almuerzo */
             servicioNombre?: string;
         };
+        IngresoConContrasenaRequest: {
+            /** @example almuerzo2026 */
+            contrasena: string;
+            /** @example marta@lavecina.co */
+            correo: string;
+            dispositivo: components["schemas"]["DispositivoRequest"];
+        };
+        IngresoConPinRequest: {
+            /**
+             * @description Celular como lo escribe la persona
+             * @example 310 000 0102
+             */
+            celular: string;
+            dispositivo: components["schemas"]["DispositivoRequest"];
+            /** @example 482915 */
+            pin: string;
+        };
+        IngresoResponse: {
+            /** @example Jhon */
+            nombre: string;
+            /** @description Entró con un PIN temporal: debe crear el suyo antes de seguir */
+            requiereCambioDePin: boolean;
+            sesion?: components["schemas"]["SesionResponse"];
+            /** @description Solo si requiereCambioDePin. Dura 10 minutos. */
+            tokenCambio?: string;
+        };
+        InvitacionResponse: {
+            /** Format: uuid */
+            membresiaId: string;
+            /**
+             * @description Se muestra una sola vez. null si la persona ya tenía PIN propio.
+             * @example 482915
+             */
+            pinTemporal?: string | null;
+        };
+        InvitarCajeroRequest: {
+            /** @example Jacanamejoy */
+            apellidos?: string;
+            /** @example 312 456 7890 */
+            celular: string;
+            /** @example Ana Lucía */
+            nombres: string;
+            /** @example 1124500777 */
+            numeroDocumento: string;
+            /**
+             * @description Código del tipo de documento (catálogo)
+             * @example CC
+             */
+            tipoDocumento: string;
+        };
+        MiembroResponse: {
+            /** @example +573100000102 */
+            celular?: string | null;
+            /** @enum {string} */
+            estado: "INVITED" | "ACTIVE" | "SUSPENDED" | "REMOVED";
+            /** Format: uuid */
+            membresiaId: string;
+            /** @example Jhon Mutumbajoy */
+            nombre: string;
+            /**
+             * @example [
+             *       "CASHIER"
+             *     ]
+             */
+            roles: string[];
+            /** Format: uuid */
+            usuarioId: string;
+        };
+        PinClienteResponse: {
+            /**
+             * @description Nombre enmascarado para confirmar
+             * @example Luz Marina C.
+             */
+            nombre: string;
+            /**
+             * @description Se dicta una sola vez a la persona
+             * @example 730284
+             */
+            pinTemporal: string;
+        };
+        PinNuevoRequest: {
+            dispositivo: components["schemas"]["DispositivoRequest"];
+            /** @example 730284 */
+            pinNuevo: string;
+            /** @description Token que entregó el ingreso con PIN temporal */
+            tokenCambio: string;
+        };
+        PinTemporalResponse: {
+            /**
+             * @description Se muestra una sola vez
+             * @example 482915
+             */
+            pinTemporal: string;
+        };
+        RenovarSesionRequest: {
+            tokenRenovacion: string;
+        };
         RespuestaErrorDto: {
             /** @example HORARIO_SE_CRUZA */
             codigo: string;
@@ -88,6 +542,17 @@ export interface components {
             /** @example 422 */
             statusCode: number;
         };
+        RestablecerPinClienteRequest: {
+            /** @example 310 000 0103 */
+            celular: string;
+            /**
+             * @description El que dice la persona por teléfono
+             * @example 1124500003
+             */
+            numeroDocumento: string;
+            /** @example CC */
+            tipoDocumento: string;
+        };
         SaludResponse: {
             /** @enum {string} */
             baseDatos: "ok" | "sin-conexion";
@@ -95,6 +560,34 @@ export interface components {
             estado: "ok" | "degradado";
             /** @example 0.1.0+abc1234 */
             version: string;
+        };
+        SesionEnDispositivoResponse: {
+            /** Format: date-time */
+            abiertaDesde: string;
+            /** @example Jhon */
+            nombre: string;
+            /** Format: uuid */
+            sesionId: string;
+            /** Format: date-time */
+            ultimoUso: string;
+            /** Format: uuid */
+            usuarioId: string;
+        };
+        SesionResponse: {
+            espacios: components["schemas"]["EspacioResponse"][];
+            /** @example 900 */
+            segundosAcceso: number;
+            /** @description Va en Authorization: Bearer. Dura 15 minutos. */
+            tokenAcceso: string;
+            /** @description Se cambia por uno nuevo en cada renovación; guárdelo seguro. */
+            tokenRenovacion: string;
+            usuario: components["schemas"]["UsuarioResponse"];
+        };
+        UsuarioResponse: {
+            /** Format: uuid */
+            id: string;
+            /** @example Jhon */
+            nombre: string;
         };
     };
     responses: never;
@@ -105,14 +598,505 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    elegirComercio: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ComercioActivoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ComercioActivoResponse"];
+                };
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No es uno de mis negocios */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    definirCorreoYContrasena: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CorreoYContrasenaRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CorreoResponse"];
+                };
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El correo es de otra cuenta */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description Contraseña débil */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    listarMisEspacios: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EspacioResponse"][];
+                };
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    cambiarMiPin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CambiarPinRequest"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description PIN débil */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    listarDispositivos: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispositivoResponse"][];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /**
+             * @description Requiere el permiso tenancy.revoke_devices
+             *
+             *     El usuario no trabaja en ese negocio o su rol no alcanza
+             */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    cerrarSesionDispositivo: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path: {
+                dispositivoId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CierreRemotoResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /**
+             * @description Requiere el permiso tenancy.revoke_devices
+             *
+             *     El usuario no trabaja en ese negocio o su rol no alcanza
+             */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    listarEquipo: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MiembroResponse"][];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /**
+             * @description Requiere el permiso tenancy.manage_staff
+             *
+             *     El usuario no trabaja en ese negocio o su rol no alcanza
+             */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    cambiarEstadoCajero: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path: {
+                membresiaId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CambiarEstadoCajeroRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MiembroResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /**
+             * @description Requiere el permiso tenancy.manage_staff
+             *
+             *     El usuario no trabaja en ese negocio o su rol no alcanza
+             */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description Cambio no permitido */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    restablecerPinCajero: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path: {
+                membresiaId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PinTemporalResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso tenancy.reset_staff_pin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    invitarCajero: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvitarCajeroRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvitacionResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /**
+             * @description Requiere el permiso tenancy.manage_staff
+             *
+             *     El usuario no trabaja en ese negocio o su rol no alcanza
+             */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin cupo, ya está o otro celular */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description Datos inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
     listarHorarios: {
         parameters: {
             query?: never;
             header: {
                 /** @description Id del negocio activo */
                 "x-veci-comercio": string;
-                /** @description Solo desarrollo y staging, hasta EP-02: id del usuario */
-                "x-veci-usuario"?: string;
             };
             path?: never;
             cookie?: never;
@@ -134,14 +1118,14 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Sin sesión */
+            /** @description Sin sesión o sesión cerrada */
             401: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description El usuario no trabaja en ese negocio */
+            /** @description Requiere el permiso tenancy.view_tenant */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -156,8 +1140,6 @@ export interface operations {
             header: {
                 /** @description Id del negocio activo */
                 "x-veci-comercio": string;
-                /** @description Solo desarrollo y staging, hasta EP-02: id del usuario */
-                "x-veci-usuario"?: string;
             };
             path?: never;
             cookie?: never;
@@ -183,14 +1165,14 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Sin sesión */
+            /** @description Sin sesión o sesión cerrada */
             401: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description El usuario no trabaja en ese negocio */
+            /** @description Requiere el permiso tenancy.manage_schedules */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -249,6 +1231,231 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SaludResponse"];
+                };
+            };
+        };
+    };
+    entrarConContrasena: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IngresoConContrasenaRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IngresoResponse"];
+                };
+            };
+            /** @description No coinciden o bloqueada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    entrarConPin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IngresoConPinRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IngresoResponse"];
+                };
+            };
+            /** @description No coinciden o bloqueada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description Cuenta pausada por VECI */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    crearPinNuevo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PinNuevoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SesionResponse"];
+                };
+            };
+            /** @description El paso se venció */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description PIN débil */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    renovarSesion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RenovarSesionRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SesionResponse"];
+                };
+            };
+            /** @description Sesión cerrada o vencida */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    salir: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    restablecerPinCliente: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RestablecerPinClienteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PinClienteResponse"];
+                };
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso platform.reset_customer_pin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Celular sin cuenta */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description Documento distinto */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
                 };
             };
         };
