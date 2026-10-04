@@ -16,8 +16,11 @@ abstract final class SentryVeci {
   }
 
   /// Etiqueta los errores con el comercio activo (un id, no un dato personal).
-  static Future<void> etiquetarComercio(String comercioId) async {
-    await Sentry.configureScope((scope) => scope.setTag('comercio', comercioId));
+  static Future<void> etiquetarComercio(String? comercioId) async {
+    await Sentry.configureScope(
+      (scope) =>
+          comercioId == null ? scope.removeTag('comercio') : scope.setTag('comercio', comercioId),
+    );
   }
 
   /// Evento con etiqueta fija para la regla de alerta "sincronización falla" en Sentry.

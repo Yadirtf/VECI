@@ -28,6 +28,9 @@ services:
       # Clave del usuario veci_api; la API arma su conexión con ella (sin BYPASSRLS).
       - key: VECI_API_DB_PASSWORD
         generateValue: true
+      # Firma de los tokens de sesión (EP-02). Mínimo 32 caracteres; Render la genera.
+      - key: VECI_TOKENS_SECRETO
+        generateValue: true
       - key: VECI_SEMBRAR_DEMO
         value: 'true'
       # URL del panel (CORS). Si Render le asigna otra, cámbiela aquí.

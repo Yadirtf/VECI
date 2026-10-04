@@ -17,8 +17,14 @@ final class ServidorNoDisponible extends Fallo {
 
 /// El servidor rechazó la petición: sin sesión, sin acceso o datos inválidos (4xx).
 final class PeticionRechazada extends Fallo {
-  const PeticionRechazada(this.codigo, this.mensaje);
+  const PeticionRechazada(this.codigo, this.mensaje, {this.motivo});
 
+  /// Código HTTP (401, 403, 409...).
   final int codigo;
+
+  /// Mensaje en tono VECI que manda la API; se puede mostrar tal cual.
   final String mensaje;
+
+  /// Código de la API para el programa (CREDENCIALES_INCORRECTAS, SESION_CERRADA...).
+  final String? motivo;
 }

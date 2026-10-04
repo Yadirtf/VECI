@@ -100,8 +100,9 @@ INSERT INTO tenancy.branch_status_transitions VALUES (1,2),(2,1),(1,3),(2,3);
 
 INSERT INTO tenancy.membership_statuses (id, code, name, allows_login, is_initial, is_terminal) VALUES
   (1,'INVITED','Invitado',false,true,false), (2,'ACTIVE','Activo',true,false,false),
-  (3,'SUSPENDED','Suspendido',false,false,false), (4,'REMOVED','Retirado',false,false,true);
-INSERT INTO tenancy.membership_status_transitions VALUES (1,2),(1,4),(2,3),(3,2),(2,4),(3,4);
+  (3,'SUSPENDED','Suspendido',false,false,false), (4,'REMOVED','Retirado',false,false,false);
+-- Retirado → Invitado: un cajero recontratado se vuelve a invitar (HU-02-04).
+INSERT INTO tenancy.membership_status_transitions VALUES (1,2),(1,4),(2,3),(3,2),(2,4),(3,4),(4,1);
 
 -- ---------------------------------------------------------------- customers
 INSERT INTO customers.affiliation_statuses (id, code, name, allows_operations, is_initial, is_terminal) VALUES

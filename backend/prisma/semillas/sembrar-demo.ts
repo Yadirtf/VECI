@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { Client } from 'pg';
 
-const ARCHIVOS = ['demo.sql', 'demo-comercios.sql', 'demo-movimientos.sql'];
+const ARCHIVOS = ['demo.sql', 'demo-comercios.sql', 'demo-movimientos.sql', 'demo-acceso.sql'];
 
 /** Carga la semilla en una sola transacción con un cliente ya conectado. */
 export async function sembrarDemo(cliente: Client): Promise<void> {

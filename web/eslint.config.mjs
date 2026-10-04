@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint';
 import { dominioSinFrameworks, reglasDeTamano } from './eslint/reglas-arquitectura.mjs';
 
 export default tseslint.config(
-  { ignores: ['.next', 'coverage', 'next-env.d.ts'] },
+  { ignores: ['.next', 'coverage', 'next-env.d.ts', 'src/shared/api/esquema.ts'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

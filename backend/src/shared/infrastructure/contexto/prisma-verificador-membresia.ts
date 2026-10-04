@@ -25,4 +25,20 @@ export class PrismaVerificadorMembresia implements VerificadorMembresia {
       return membresia !== null;
     });
   }
+
+  /** Permisos de los roles vigentes de la membresía activa (HU-02-03). */
+  permisosEn(usuarioId: string, comercioId: string): Promise<ReadonlySet<string>> {
+    return this.transaccion.ejecutarComo({ comercioId, usuarioId }, async (tx) => {
+      const filas = await tx.$queryRaw<{ code: string }[]>`
+        SELECT DISTINCT p.code
+          FROM tenancy.memberships m
+          JOIN tenancy.membership_statuses ms ON ms.id = m.membership_status_id AND ms.allows_login
+          JOIN tenancy.membership_roles mr ON mr.membership_id = m.id AND mr.revoked_at IS NULL
+          JOIN identity.roles r ON r.id = mr.role_id AND r.is_active
+          JOIN identity.role_permissions rp ON rp.role_id = r.id
+          JOIN identity.permissions p ON p.id = rp.permission_id
+         WHERE m.user_id = ${usuarioId}::uuid`;
+      return new Set(filas.map((fila) => fila.code));
+    });
+  }
 }

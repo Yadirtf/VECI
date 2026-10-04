@@ -11,8 +11,14 @@ export interface Configuracion {
   readonly databaseAppUrl: string;
   /** Publica el contrato OpenAPI en /docs (dev y staging, HU-01-06). */
   readonly documentacionActiva: boolean;
-  /** Acepta la cabecera de usuario de desarrollo mientras llega EP-02. Nunca en producción. */
+  /** Acepta la cabecera x-veci-usuario sin token. Solo en desarrollo y pruebas. */
   readonly identidadDesarrollo: boolean;
+  /** Secreto HS256 de los tokens de acceso (VECI_TOKENS_SECRETO, 32+ caracteres). */
+  readonly secretoTokens: string;
+  /** Vida del token de acceso: 15 minutos (HU-02-01). */
+  readonly segundosAcceso: number;
+  /** Días que dura una sesión sin usarse; cada renovación la extiende (HU-02-06). */
+  readonly diasSesion: number;
   readonly origenesPermitidos: readonly string[];
   readonly version: string;
 }
@@ -58,15 +64,30 @@ function leerUrlBaseDatos(variables: Variables, entorno: Entorno): string {
   return 'postgresql://veci_api:veci_api@localhost:5432/veci';
 }
 
+const SECRETO_DESARROLLO = 'secreto-de-desarrollo-solo-para-local-0123456789';
+
+function leerSecretoTokens(variables: Variables, entorno: Entorno): string {
+  const secreto = variables.VECI_TOKENS_SECRETO;
+  if (secreto && secreto.length >= 32) return secreto;
+  if (entorno === 'staging' || entorno === 'produccion') {
+    throw new Error('Falta VECI_TOKENS_SECRETO (32 caracteres o más) para firmar las sesiones.');
+  }
+  return SECRETO_DESARROLLO;
+}
+
 export function leerConfiguracion(variables: Variables = process.env): Configuracion {
   const entorno = leerEntorno(variables.VECI_ENTORNO);
   const esProduccion = entorno === 'produccion';
+  const esLocal = entorno === 'desarrollo' || entorno === 'pruebas';
   return {
     entorno,
     puerto: Number(variables.PORT ?? 3000),
     databaseAppUrl: leerUrlBaseDatos(variables, entorno),
     documentacionActiva: !esProduccion && leerBooleano(variables.VECI_DOCS, true),
-    identidadDesarrollo: !esProduccion && leerBooleano(variables.VECI_IDENTIDAD_DESARROLLO, true),
+    identidadDesarrollo: esLocal && leerBooleano(variables.VECI_IDENTIDAD_DESARROLLO, true),
+    secretoTokens: leerSecretoTokens(variables, entorno),
+    segundosAcceso: Number(variables.VECI_SEGUNDOS_ACCESO ?? 900),
+    diasSesion: Number(variables.VECI_DIAS_SESION ?? 30),
     origenesPermitidos: (variables.VECI_ORIGENES ?? 'http://localhost:3001').split(','),
     version: variables.VECI_VERSION ?? variables.RENDER_GIT_COMMIT ?? 'local',
   };

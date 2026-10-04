@@ -17,7 +17,15 @@ pnpm db:semilla                 # comercio demo, cajero, clientes y tiqueteras
 pnpm dev                        # http://localhost:3000 (contrato en /docs)
 ```
 
-Los valores por defecto apuntan a la base local; para cambiarlos copie `.env.example` a `.env`. La semilla crea **Restaurante La Vecina** (dueña Marta, cajero Jhon y la clienta Luz Marina con 19 almuerzos) y **Panadería El Trigal**, un segundo comercio para probar el aislamiento. Mientras llega el inicio de sesión (EP-02), en desarrollo y staging la API acepta la cabecera `x-veci-usuario` con el id de un usuario demo.
+Los valores por defecto apuntan a la base local; para cambiarlos copie `.env.example` a `.env`. La semilla crea **Restaurante La Vecina** (dueña Marta, cajero Jhon y la clienta Luz Marina con 19 almuerzos) y **Panadería El Trigal**, un segundo comercio para probar el aislamiento. Todas las personas demo entran con el PIN **246813**: Marta `310 000 0101` (también `marta@lavecina.co` / `almuerzo2026`), Jhon `310 000 0102`, Luz Marina `310 000 0103` y Soporte VECI `310 000 0105`.
+
+### Sesión (EP-02, [ADR-0015](../docs/arquitectura/adr/0015-sesion-pin-temporal-y-acceso-propio.md))
+
+- `POST /sesion/con-pin` o `/sesion/con-contrasena` devuelve un token de acceso de 15 minutos (va en `Authorization: Bearer`) y uno de renovación que rota en cada `POST /sesion/renovar`. Cada petición revisa que la sesión siga abierta, así el cierre remoto surte efecto de inmediato.
+- Con un PIN temporal (invitación o restablecimiento) la respuesta trae `requiereCambioDePin` y un `tokenCambio`; la sesión se abre en `POST /sesion/pin-nuevo`.
+- Las rutas de un negocio exigen además `x-veci-comercio` y el permiso del rol (`@RequierePermiso`, desde `identity.role_permissions`).
+- En desarrollo y pruebas, la cabecera `x-veci-usuario` con el id de un usuario demo sigue sirviendo para probar sin entrar; en staging y producción se ignora.
+- `VECI_TOKENS_SECRETO` firma los tokens y es obligatorio fuera de local.
 
 ## Comandos
 

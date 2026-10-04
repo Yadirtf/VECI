@@ -9,6 +9,7 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { RequiereComercio } from '../../../../shared/presentation/http/decoradores/requiere-comercio.decorator';
+import { RequierePermiso } from '../../../../shared/presentation/http/decoradores/requiere-permiso.decorator';
 import { RespuestaErrorDto } from '../../../../shared/presentation/http/respuesta-error.dto';
 import { CrearHorario } from '../../application/use-cases/crear-horario.use-case';
 import { ListarHorarios } from '../../application/use-cases/listar-horarios.use-case';
@@ -25,6 +26,7 @@ export class HorariosController {
   ) {}
 
   @Get()
+  @RequierePermiso('tenancy.view_tenant')
   @ApiOperation({ operationId: 'listarHorarios', summary: 'Horarios vigentes del negocio' })
   @ApiOkResponse({ type: HorarioResponse, isArray: true })
   listar(): Promise<HorarioResponse[]> {
@@ -32,6 +34,7 @@ export class HorariosController {
   }
 
   @Post()
+  @RequierePermiso('tenancy.manage_schedules')
   @ApiOperation({ operationId: 'crearHorario', summary: 'Agrega un horario de servicio' })
   @ApiCreatedResponse({ type: HorarioResponse })
   @ApiConflictResponse({ type: RespuestaErrorDto, description: 'Se cruza con otro horario' })

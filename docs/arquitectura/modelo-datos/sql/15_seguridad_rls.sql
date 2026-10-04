@@ -3,6 +3,7 @@
 -- La API se conecta con un usuario miembro de veci_app y, en cada transacción:
 --   SET LOCAL app.tenant_id = '<comercio activo>';   -- cajero / propietario
 --   SET LOCAL app.person_id = '<persona del token>'; -- cliente en su app
+--   SET LOCAL app.user_id = '<usuario del token>';   -- elegir comercio (solo lectura)
 -- Sin contexto, las políticas no devuelven filas (denegar por defecto).
 -- =============================================================================
 
@@ -90,6 +91,18 @@ CREATE POLICY tenant_self ON tenancy.tenants FOR ALL TO veci_app
 CREATE POLICY customer_reads_my_tenants ON tenancy.tenants FOR SELECT TO veci_app
   USING (id IN (SELECT a.tenant_id FROM customers.affiliations a
                  WHERE a.person_id = core.current_person_id()));
+
+-- ------------------------------------------- el personal ve sus propios lugares de trabajo
+-- Para elegir el comercio activo (HU-02-03), el usuario lee solo sus membresías,
+-- sus roles y el nombre de esos comercios. Nunca escribe con este contexto.
+CREATE POLICY staff_self ON tenancy.memberships FOR SELECT TO veci_app
+  USING (user_id = core.current_user_id());
+CREATE POLICY staff_self ON tenancy.membership_roles FOR SELECT TO veci_app
+  USING (membership_id IN (SELECT m.id FROM tenancy.memberships m
+                            WHERE m.user_id = core.current_user_id()));
+CREATE POLICY staff_reads_my_tenants ON tenancy.tenants FOR SELECT TO veci_app
+  USING (id IN (SELECT m.tenant_id FROM tenancy.memberships m
+                 WHERE m.user_id = core.current_user_id()));
 
 -- ------------------------------------------- el cliente ve lo suyo en todos sus comercios
 CREATE POLICY customer_self ON customers.affiliations FOR SELECT TO veci_app

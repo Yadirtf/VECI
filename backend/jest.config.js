@@ -34,5 +34,8 @@ module.exports = {
   coverageThreshold: {
     global: { lines: 70, statements: 70, functions: 70, branches: 60 },
     './src/modules/horarios/': { lines: 70, statements: 70, functions: 70, branches: 60 },
+    './src/modules/autenticacion/': { lines: 80, statements: 80, functions: 80, branches: 70 },
+    './src/modules/personal/': { lines: 80, statements: 80, functions: 80, branches: 70 },
+    './src/modules/soporte/': { lines: 80, statements: 80, functions: 80, branches: 70 },
   },
 };

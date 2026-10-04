@@ -1,5 +1,5 @@
 -- =============================================================================
--- VECI · Datos de ejemplo (2 de 3): comercios, personal, oferta, venta y consumo.
+-- VECI · Datos de ejemplo (2 de 4): comercios, personal, oferta, venta y consumo.
 -- Cada comercio se inserta con su contexto fijado, igual que lo haría la API,
 -- para que las políticas RLS se cumplan aunque el usuario no sea superusuario.
 -- =============================================================================

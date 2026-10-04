@@ -26,10 +26,7 @@ class HorariosDeServicioApi {
   ///   Id del negocio activo
   ///
   /// * [CrearHorarioRequest] crearHorarioRequest (required):
-  ///
-  /// * [String] xVeciUsuario:
-  ///   Solo desarrollo y staging, hasta EP-02: id del usuario
-  Future<Response> crearHorarioWithHttpInfo(String xVeciComercio, CrearHorarioRequest crearHorarioRequest, { String? xVeciUsuario, Future<void>? abortTrigger, }) async {
+  Future<Response> crearHorarioWithHttpInfo(String xVeciComercio, CrearHorarioRequest crearHorarioRequest, { Future<void>? abortTrigger, }) async {
     // ignore: prefer_const_declarations
     final path = r'/horarios';
 
@@ -41,9 +38,6 @@ class HorariosDeServicioApi {
     final formParams = <String, String>{};
 
     headerParams[r'x-veci-comercio'] = parameterToString(xVeciComercio);
-    if (xVeciUsuario != null) {
-      headerParams[r'x-veci-usuario'] = parameterToString(xVeciUsuario);
-    }
 
     const contentTypes = <String>['application/json'];
 
@@ -68,11 +62,8 @@ class HorariosDeServicioApi {
   ///   Id del negocio activo
   ///
   /// * [CrearHorarioRequest] crearHorarioRequest (required):
-  ///
-  /// * [String] xVeciUsuario:
-  ///   Solo desarrollo y staging, hasta EP-02: id del usuario
-  Future<HorarioResponse?> crearHorario(String xVeciComercio, CrearHorarioRequest crearHorarioRequest, { String? xVeciUsuario, Future<void>? abortTrigger, }) async {
-    final response = await crearHorarioWithHttpInfo(xVeciComercio, crearHorarioRequest, xVeciUsuario: xVeciUsuario, abortTrigger: abortTrigger,);
+  Future<HorarioResponse?> crearHorario(String xVeciComercio, CrearHorarioRequest crearHorarioRequest, { Future<void>? abortTrigger, }) async {
+    final response = await crearHorarioWithHttpInfo(xVeciComercio, crearHorarioRequest, abortTrigger: abortTrigger,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }
@@ -94,10 +85,7 @@ class HorariosDeServicioApi {
   ///
   /// * [String] xVeciComercio (required):
   ///   Id del negocio activo
-  ///
-  /// * [String] xVeciUsuario:
-  ///   Solo desarrollo y staging, hasta EP-02: id del usuario
-  Future<Response> listarHorariosWithHttpInfo(String xVeciComercio, { String? xVeciUsuario, Future<void>? abortTrigger, }) async {
+  Future<Response> listarHorariosWithHttpInfo(String xVeciComercio, { Future<void>? abortTrigger, }) async {
     // ignore: prefer_const_declarations
     final path = r'/horarios';
 
@@ -109,9 +97,6 @@ class HorariosDeServicioApi {
     final formParams = <String, String>{};
 
     headerParams[r'x-veci-comercio'] = parameterToString(xVeciComercio);
-    if (xVeciUsuario != null) {
-      headerParams[r'x-veci-usuario'] = parameterToString(xVeciUsuario);
-    }
 
     const contentTypes = <String>[];
 
@@ -134,11 +119,8 @@ class HorariosDeServicioApi {
   ///
   /// * [String] xVeciComercio (required):
   ///   Id del negocio activo
-  ///
-  /// * [String] xVeciUsuario:
-  ///   Solo desarrollo y staging, hasta EP-02: id del usuario
-  Future<List<HorarioResponse>?> listarHorarios(String xVeciComercio, { String? xVeciUsuario, Future<void>? abortTrigger, }) async {
-    final response = await listarHorariosWithHttpInfo(xVeciComercio, xVeciUsuario: xVeciUsuario, abortTrigger: abortTrigger,);
+  Future<List<HorarioResponse>?> listarHorarios(String xVeciComercio, { Future<void>? abortTrigger, }) async {
+    final response = await listarHorariosWithHttpInfo(xVeciComercio, abortTrigger: abortTrigger,);
     if (response.statusCode >= HttpStatus.badRequest) {
       throw ApiException(response.statusCode, await _decodeBodyBytes(response));
     }

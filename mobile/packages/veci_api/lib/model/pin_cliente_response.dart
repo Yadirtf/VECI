@@ -1,0 +1,119 @@
+//
+// AUTO-GENERATED FILE, DO NOT MODIFY!
+//
+// @dart=2.18
+
+// ignore_for_file: unused_element, unused_import
+// ignore_for_file: always_put_required_named_parameters_first
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: lines_longer_than_80_chars
+
+part of veci_api;
+
+class PinClienteResponse {
+  /// Returns a new [PinClienteResponse] instance.
+  PinClienteResponse({
+    required this.nombre,
+    required this.pinTemporal,
+  });
+
+  /// Nombre enmascarado para confirmar
+  String nombre;
+
+  /// Se dicta una sola vez a la persona
+  String pinTemporal;
+
+  @override
+  bool operator ==(Object other) => identical(this, other) || other is PinClienteResponse &&
+    other.nombre == nombre &&
+    other.pinTemporal == pinTemporal;
+
+  @override
+  int get hashCode =>
+    // ignore: unnecessary_parenthesis
+    (nombre.hashCode) +
+    (pinTemporal.hashCode);
+
+  @override
+  String toString() => 'PinClienteResponse[nombre=$nombre, pinTemporal=$pinTemporal]';
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+      json[r'nombre'] = this.nombre;
+      json[r'pinTemporal'] = this.pinTemporal;
+    return json;
+  }
+
+  /// Returns a new [PinClienteResponse] instance and imports its values from
+  /// [value] if it's a [Map], null otherwise.
+  // ignore: prefer_constructors_over_static_methods
+  static PinClienteResponse? fromJson(dynamic value) {
+    if (value is Map) {
+      final json = value.cast<String, dynamic>();
+
+      // Ensure that the map contains the required keys.
+      // Note 1: the values aren't checked for validity beyond being non-null.
+      // Note 2: this code is stripped in release mode!
+      assert(() {
+        assert(json.containsKey(r'nombre'), 'Required key "PinClienteResponse[nombre]" is missing from JSON.');
+        assert(json[r'nombre'] != null, 'Required key "PinClienteResponse[nombre]" has a null value in JSON.');
+        assert(json.containsKey(r'pinTemporal'), 'Required key "PinClienteResponse[pinTemporal]" is missing from JSON.');
+        assert(json[r'pinTemporal'] != null, 'Required key "PinClienteResponse[pinTemporal]" has a null value in JSON.');
+        return true;
+      }());
+
+      return PinClienteResponse(
+        nombre: mapValueOfType<String>(json, r'nombre')!,
+        pinTemporal: mapValueOfType<String>(json, r'pinTemporal')!,
+      );
+    }
+    return null;
+  }
+
+  static List<PinClienteResponse> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <PinClienteResponse>[];
+    if (json is List && json.isNotEmpty) {
+      for (final row in json) {
+        final value = PinClienteResponse.fromJson(row);
+        if (value != null) {
+          result.add(value);
+        }
+      }
+    }
+    return result.toList(growable: growable);
+  }
+
+  static Map<String, PinClienteResponse> mapFromJson(dynamic json) {
+    final map = <String, PinClienteResponse>{};
+    if (json is Map && json.isNotEmpty) {
+      json = json.cast<String, dynamic>(); // ignore: parameter_assignments
+      for (final entry in json.entries) {
+        final value = PinClienteResponse.fromJson(entry.value);
+        if (value != null) {
+          map[entry.key] = value;
+        }
+      }
+    }
+    return map;
+  }
+
+  // maps a json object with a list of PinClienteResponse-objects as value to a dart map
+  static Map<String, List<PinClienteResponse>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<PinClienteResponse>>{};
+    if (json is Map && json.isNotEmpty) {
+      // ignore: parameter_assignments
+      json = json.cast<String, dynamic>();
+      for (final entry in json.entries) {
+        map[entry.key] = PinClienteResponse.listFromJson(entry.value, growable: growable,);
+      }
+    }
+    return map;
+  }
+
+  /// The list of required keys that must be present in a JSON.
+  static const requiredKeys = <String>{
+    'nombre',
+    'pinTemporal',
+  };
+}
+

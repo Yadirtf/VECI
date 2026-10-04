@@ -119,3 +119,9 @@ CREATE FUNCTION core.current_person_id() RETURNS uuid
 LANGUAGE sql STABLE AS $$
   SELECT NULLIF(current_setting('app.person_id', true), '')::uuid;
 $$;
+
+-- Usuario de la sesión (EP-02): se fija al iniciar sesión, antes de elegir comercio.
+CREATE FUNCTION core.current_user_id() RETURNS uuid
+LANGUAGE sql STABLE AS $$
+  SELECT NULLIF(current_setting('app.user_id', true), '')::uuid;
+$$;

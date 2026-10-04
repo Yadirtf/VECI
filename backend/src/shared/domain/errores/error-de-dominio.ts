@@ -13,4 +13,5 @@ export abstract class ErrorDeDominio extends Error {
 }
 
 /** Clasificación que la presentación usa para elegir el código HTTP. */
-export type TipoDeError = 'no-encontrado' | 'conflicto' | 'regla-incumplida';
+export type TipoDeError =
+  'no-encontrado' | 'conflicto' | 'regla-incumplida' | 'no-autenticado' | 'prohibido';

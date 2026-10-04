@@ -1,5 +1,5 @@
 -- =============================================================================
--- VECI · Datos de ejemplo (3 de 3): la clienta compra una tiquetera y almuerza.
+-- VECI · Datos de ejemplo (3 de 4): la clienta compra una tiquetera y almuerza.
 -- El saldo no se escribe: lo calcula el trigger desde los movimientos (ADR-0003).
 -- =============================================================================
 

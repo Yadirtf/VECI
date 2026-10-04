@@ -9,6 +9,7 @@ export function crearDocumentoOpenApi(app: INestApplication): OpenAPIObject {
       'El vecino aliado de los negocios del Putumayo. Contrato para la app y el panel.',
     )
     .setVersion('0.1.0')
+    .addBearerAuth()
     .build();
   return SwaggerModule.createDocument(app, configuracion);
 }

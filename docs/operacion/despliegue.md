@@ -19,6 +19,8 @@ El blueprint [`render.yaml`](../../render.yaml) de la raíz crea los dos servici
 3. Carga los datos de ejemplo si `VECI_SEMBRAR_DEMO=true` (nunca en producción).
 4. Arranca la API conectada como `veci_api`, sujeta a RLS. La URL se arma con `DATABASE_URL` y esa clave, o se toma de `DATABASE_APP_URL` si existe.
 
+Con los datos de ejemplo se entra al panel con el celular **310 000 0101** y el PIN **246813** (Marta, propietaria), o con `marta@lavecina.co` y `almuerzo2026`; a la app, como cajero, con **310 000 0102** y el mismo PIN.
+
 El plan gratuito de Render se duerme tras 15 minutos sin tráfico: la primera petición después tarda cerca de un minuto.
 
 ### Producción
@@ -35,7 +37,7 @@ El plan gratuito de Render se duerme tras 15 minutos sin tráfico: la primera pe
 ### 2. API y panel en Render
 
 1. En [render.com](https://render.com), *New → Blueprint*, elegir este repositorio y la rama `develop`. Render encuentra `render.yaml` en la raíz y muestra los dos servicios: `veci-api-staging` y `veci-web-staging`.
-2. Pegar la cadena de Neon en `DATABASE_URL`. `SENTRY_DSN` y `NEXT_PUBLIC_SENTRY_DSN` son opcionales. Aplicar.
+2. Pegar la cadena de Neon en `DATABASE_URL`. Render genera solo `VECI_API_DB_PASSWORD` y `VECI_TOKENS_SECRETO` (firma de las sesiones, EP-02). `SENTRY_DSN` y `NEXT_PUBLIC_SENTRY_DSN` son opcionales. Aplicar.
 3. Cuando termine, abrir `https://<api>.onrender.com/salud` (debe decir `"estado":"ok"`), `/docs` para ver el contrato y la URL del panel.
 4. Si Render dio URLs distintas de `https://veci-api-staging.onrender.com` o `https://veci-web-staging.onrender.com`, corregir `NEXT_PUBLIC_VECI_API_URL` (y redesplegar el panel, porque esa variable se usa al construir) o `VECI_ORIGENES` en la API.
 
@@ -54,7 +56,7 @@ Variables del repositorio: `API_URL_STAGING` (la usan el APK y la vigilancia) y,
 ## Producción (cuando llegue el momento)
 
 1. En Neon, crear el proyecto `veci` (PostgreSQL 16) para producción.
-2. En Render, crear `veci-api-produccion` (Docker, *Root Directory* `backend`, plan Starter) y `veci-web-produccion` (Node, *Root Directory* `web`) con los mismos comandos y variables de los blueprints, pero con `VECI_ENTORNO=produccion`, sin `VECI_SEMBRAR_DEMO`, rama `main` y *Auto-Deploy* apagado. Copiar el **Deploy Hook** de cada uno.
+2. En Render, crear `veci-api-produccion` (Docker, *Root Directory* `backend`, plan Starter) y `veci-web-produccion` (Node, *Root Directory* `web`) con los mismos comandos y variables de los blueprints, pero con `VECI_ENTORNO=produccion`, un `VECI_TOKENS_SECRETO` propio (32+ caracteres, distinto al de staging), sin `VECI_SEMBRAR_DEMO`, rama `main` y *Auto-Deploy* apagado. Copiar el **Deploy Hook** de cada uno.
 3. En GitHub, *Settings → Environments*:
 
 | Entorno | Protección | Secretos | Variables |

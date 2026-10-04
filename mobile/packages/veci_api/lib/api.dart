@@ -28,13 +28,41 @@ part 'auth/oauth.dart';
 part 'auth/http_basic_auth.dart';
 part 'auth/http_bearer_auth.dart';
 
+part 'api/equipo_del_negocio_api.dart';
 part 'api/horarios_de_servicio_api.dart';
+part 'api/mi_cuenta_api.dart';
 part 'api/salud_api.dart';
+part 'api/sesiones_api.dart';
+part 'api/soporte_veci_api.dart';
 
+part 'model/cambiar_estado_cajero_request.dart';
+part 'model/cambiar_pin_request.dart';
+part 'model/cierre_remoto_response.dart';
+part 'model/comercio_activo_request.dart';
+part 'model/comercio_activo_response.dart';
+part 'model/correo_response.dart';
+part 'model/correo_y_contrasena_request.dart';
 part 'model/crear_horario_request.dart';
+part 'model/dispositivo_request.dart';
+part 'model/dispositivo_response.dart';
+part 'model/espacio_response.dart';
 part 'model/horario_response.dart';
+part 'model/ingreso_con_contrasena_request.dart';
+part 'model/ingreso_con_pin_request.dart';
+part 'model/ingreso_response.dart';
+part 'model/invitacion_response.dart';
+part 'model/invitar_cajero_request.dart';
+part 'model/miembro_response.dart';
+part 'model/pin_cliente_response.dart';
+part 'model/pin_nuevo_request.dart';
+part 'model/pin_temporal_response.dart';
+part 'model/renovar_sesion_request.dart';
 part 'model/respuesta_error_dto.dart';
+part 'model/restablecer_pin_cliente_request.dart';
 part 'model/salud_response.dart';
+part 'model/sesion_en_dispositivo_response.dart';
+part 'model/sesion_response.dart';
+part 'model/usuario_response.dart';
 
 
 /// An [ApiClient] instance that uses the default values obtained from
