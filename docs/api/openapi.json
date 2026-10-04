@@ -1,6 +1,120 @@
 {
   "components": {
     "schemas": {
+      "CambiarEstadoCajeroRequest": {
+        "properties": {
+          "accion": {
+            "enum": [
+              "SUSPENDER",
+              "REACTIVAR",
+              "RETIRAR"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "accion"
+        ],
+        "type": "object"
+      },
+      "CambiarPinRequest": {
+        "properties": {
+          "pinActual": {
+            "pattern": "^\\d{6}$",
+            "type": "string"
+          },
+          "pinNuevo": {
+            "pattern": "^\\d{6}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pinActual",
+          "pinNuevo"
+        ],
+        "type": "object"
+      },
+      "CierreRemotoResponse": {
+        "properties": {
+          "sesionesCerradas": {
+            "example": 1,
+            "type": "number"
+          }
+        },
+        "required": [
+          "sesionesCerradas"
+        ],
+        "type": "object"
+      },
+      "ComercioActivoRequest": {
+        "properties": {
+          "comercioId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "comercioId"
+        ],
+        "type": "object"
+      },
+      "ComercioActivoResponse": {
+        "properties": {
+          "comercio": {
+            "$ref": "#/components/schemas/EspacioResponse"
+          },
+          "permisos": {
+            "example": [
+              "consumptions.register"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "comercio",
+          "permisos"
+        ],
+        "type": "object"
+      },
+      "CorreoResponse": {
+        "properties": {
+          "correo": {
+            "example": "marta@lavecina.co",
+            "type": "string"
+          }
+        },
+        "required": [
+          "correo"
+        ],
+        "type": "object"
+      },
+      "CorreoYContrasenaRequest": {
+        "properties": {
+          "contrasena": {
+            "example": "almuerzo2026",
+            "minLength": 8,
+            "type": "string"
+          },
+          "correo": {
+            "example": "marta@lavecina.co",
+            "type": "string"
+          },
+          "pinActual": {
+            "description": "PIN actual, para confirmar que eres tú",
+            "pattern": "^\\d{6}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "correo",
+          "contrasena",
+          "pinActual"
+        ],
+        "type": "object"
+      },
       "CrearHorarioRequest": {
         "properties": {
           "dia": {
@@ -35,6 +149,118 @@
           "dia",
           "horaInicio",
           "horaFin"
+        ],
+        "type": "object"
+      },
+      "DispositivoRequest": {
+        "properties": {
+          "id": {
+            "description": "Id que el dispositivo generó para sí",
+            "format": "uuid",
+            "type": "string"
+          },
+          "modelo": {
+            "example": "Moto E13",
+            "type": "string"
+          },
+          "plataforma": {
+            "enum": [
+              "ANDROID",
+              "IOS",
+              "WEB"
+            ],
+            "type": "string"
+          },
+          "versionApp": {
+            "example": "0.2.0",
+            "type": "string"
+          },
+          "versionSo": {
+            "example": "Android 13",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "plataforma"
+        ],
+        "type": "object"
+      },
+      "DispositivoResponse": {
+        "properties": {
+          "dispositivoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "nombre": {
+            "example": "Moto E13",
+            "nullable": true,
+            "type": "string"
+          },
+          "plataforma": {
+            "example": "ANDROID",
+            "type": "string"
+          },
+          "registradoEn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "sesiones": {
+            "items": {
+              "$ref": "#/components/schemas/SesionEnDispositivoResponse"
+            },
+            "type": "array"
+          },
+          "ultimaVez": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "dispositivoId",
+          "plataforma",
+          "registradoEn",
+          "ultimaVez",
+          "sesiones"
+        ],
+        "type": "object"
+      },
+      "EspacioResponse": {
+        "properties": {
+          "comercioId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "invitacionPendiente": {
+            "description": "Lo invitaron como cajero y aún no ha entrado a este negocio",
+            "type": "boolean"
+          },
+          "nombre": {
+            "example": "Restaurante La Vecina",
+            "type": "string"
+          },
+          "roles": {
+            "description": "OWNER, CASHIER o CUSTOMER",
+            "example": [
+              "CASHIER"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "tipoNegocio": {
+            "description": "Código del tipo de negocio",
+            "example": "RESTAURANT",
+            "type": "string"
+          }
+        },
+        "required": [
+          "comercioId",
+          "nombre",
+          "tipoNegocio",
+          "roles",
+          "invitacionPendiente"
         ],
         "type": "object"
       },
@@ -79,6 +305,236 @@
         ],
         "type": "object"
       },
+      "IngresoConContrasenaRequest": {
+        "properties": {
+          "contrasena": {
+            "example": "almuerzo2026",
+            "type": "string"
+          },
+          "correo": {
+            "example": "marta@lavecina.co",
+            "type": "string"
+          },
+          "dispositivo": {
+            "$ref": "#/components/schemas/DispositivoRequest"
+          }
+        },
+        "required": [
+          "correo",
+          "contrasena",
+          "dispositivo"
+        ],
+        "type": "object"
+      },
+      "IngresoConPinRequest": {
+        "properties": {
+          "celular": {
+            "description": "Celular como lo escribe la persona",
+            "example": "310 000 0102",
+            "type": "string"
+          },
+          "dispositivo": {
+            "$ref": "#/components/schemas/DispositivoRequest"
+          },
+          "pin": {
+            "example": "482915",
+            "pattern": "^\\d{6}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "celular",
+          "pin",
+          "dispositivo"
+        ],
+        "type": "object"
+      },
+      "IngresoResponse": {
+        "properties": {
+          "nombre": {
+            "example": "Jhon",
+            "type": "string"
+          },
+          "requiereCambioDePin": {
+            "description": "Entró con un PIN temporal: debe crear el suyo antes de seguir",
+            "type": "boolean"
+          },
+          "sesion": {
+            "$ref": "#/components/schemas/SesionResponse"
+          },
+          "tokenCambio": {
+            "description": "Solo si requiereCambioDePin. Dura 10 minutos.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "requiereCambioDePin",
+          "nombre"
+        ],
+        "type": "object"
+      },
+      "InvitacionResponse": {
+        "properties": {
+          "membresiaId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "pinTemporal": {
+            "description": "Se muestra una sola vez. null si la persona ya tenía PIN propio.",
+            "example": "482915",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "membresiaId"
+        ],
+        "type": "object"
+      },
+      "InvitarCajeroRequest": {
+        "properties": {
+          "apellidos": {
+            "example": "Jacanamejoy",
+            "type": "string"
+          },
+          "celular": {
+            "example": "312 456 7890",
+            "type": "string"
+          },
+          "nombres": {
+            "example": "Ana Lucía",
+            "type": "string"
+          },
+          "numeroDocumento": {
+            "example": "1124500777",
+            "type": "string"
+          },
+          "tipoDocumento": {
+            "description": "Código del tipo de documento (catálogo)",
+            "example": "CC",
+            "type": "string"
+          }
+        },
+        "required": [
+          "celular",
+          "nombres",
+          "tipoDocumento",
+          "numeroDocumento"
+        ],
+        "type": "object"
+      },
+      "MiembroResponse": {
+        "properties": {
+          "celular": {
+            "example": "+573100000102",
+            "nullable": true,
+            "type": "string"
+          },
+          "estado": {
+            "enum": [
+              "INVITED",
+              "ACTIVE",
+              "SUSPENDED",
+              "REMOVED"
+            ],
+            "type": "string"
+          },
+          "membresiaId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "nombre": {
+            "example": "Jhon Mutumbajoy",
+            "type": "string"
+          },
+          "roles": {
+            "example": [
+              "CASHIER"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "usuarioId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "membresiaId",
+          "usuarioId",
+          "nombre",
+          "estado",
+          "roles"
+        ],
+        "type": "object"
+      },
+      "PinClienteResponse": {
+        "properties": {
+          "nombre": {
+            "description": "Nombre enmascarado para confirmar",
+            "example": "Luz Marina C.",
+            "type": "string"
+          },
+          "pinTemporal": {
+            "description": "Se dicta una sola vez a la persona",
+            "example": "730284",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pinTemporal",
+          "nombre"
+        ],
+        "type": "object"
+      },
+      "PinNuevoRequest": {
+        "properties": {
+          "dispositivo": {
+            "$ref": "#/components/schemas/DispositivoRequest"
+          },
+          "pinNuevo": {
+            "example": "730284",
+            "pattern": "^\\d{6}$",
+            "type": "string"
+          },
+          "tokenCambio": {
+            "description": "Token que entregó el ingreso con PIN temporal",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tokenCambio",
+          "pinNuevo",
+          "dispositivo"
+        ],
+        "type": "object"
+      },
+      "PinTemporalResponse": {
+        "properties": {
+          "pinTemporal": {
+            "description": "Se muestra una sola vez",
+            "example": "482915",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pinTemporal"
+        ],
+        "type": "object"
+      },
+      "RenovarSesionRequest": {
+        "properties": {
+          "tokenRenovacion": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "tokenRenovacion"
+        ],
+        "type": "object"
+      },
       "RespuestaErrorDto": {
         "properties": {
           "codigo": {
@@ -98,6 +554,29 @@
           "statusCode",
           "codigo",
           "message"
+        ],
+        "type": "object"
+      },
+      "RestablecerPinClienteRequest": {
+        "properties": {
+          "celular": {
+            "example": "310 000 0103",
+            "type": "string"
+          },
+          "numeroDocumento": {
+            "description": "El que dice la persona por teléfono",
+            "example": "1124500003",
+            "type": "string"
+          },
+          "tipoDocumento": {
+            "example": "CC",
+            "type": "string"
+          }
+        },
+        "required": [
+          "celular",
+          "tipoDocumento",
+          "numeroDocumento"
         ],
         "type": "object"
       },
@@ -128,6 +607,95 @@
           "version"
         ],
         "type": "object"
+      },
+      "SesionEnDispositivoResponse": {
+        "properties": {
+          "abiertaDesde": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "nombre": {
+            "example": "Jhon",
+            "type": "string"
+          },
+          "sesionId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "ultimoUso": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "usuarioId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sesionId",
+          "usuarioId",
+          "nombre",
+          "abiertaDesde",
+          "ultimoUso"
+        ],
+        "type": "object"
+      },
+      "SesionResponse": {
+        "properties": {
+          "espacios": {
+            "items": {
+              "$ref": "#/components/schemas/EspacioResponse"
+            },
+            "type": "array"
+          },
+          "segundosAcceso": {
+            "example": 900,
+            "type": "number"
+          },
+          "tokenAcceso": {
+            "description": "Va en Authorization: Bearer. Dura 15 minutos.",
+            "type": "string"
+          },
+          "tokenRenovacion": {
+            "description": "Se cambia por uno nuevo en cada renovación; guárdelo seguro.",
+            "type": "string"
+          },
+          "usuario": {
+            "$ref": "#/components/schemas/UsuarioResponse"
+          }
+        },
+        "required": [
+          "tokenAcceso",
+          "tokenRenovacion",
+          "segundosAcceso",
+          "usuario",
+          "espacios"
+        ],
+        "type": "object"
+      },
+      "UsuarioResponse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "nombre": {
+            "example": "Jhon",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nombre"
+        ],
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "bearer": {
+        "bearerFormat": "JWT",
+        "scheme": "bearer",
+        "type": "http"
       }
     }
   },
@@ -139,9 +707,244 @@
   },
   "openapi": "3.0.0",
   "paths": {
-    "/horarios": {
+    "/cuenta/comercio-activo": {
+      "post": {
+        "operationId": "elegirComercio",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComercioActivoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComercioActivoResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "No es uno de mis negocios"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Elige el negocio con el que trabajo",
+        "tags": [
+          "Mi cuenta"
+        ]
+      }
+    },
+    "/cuenta/correo-y-contrasena": {
+      "put": {
+        "operationId": "definirCorreoYContrasena",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CorreoYContrasenaRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorreoResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "El correo es de otra cuenta"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Contraseña débil"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Correo y contraseña para entrar al panel (HU-02-02)",
+        "tags": [
+          "Mi cuenta"
+        ]
+      }
+    },
+    "/cuenta/espacios": {
       "get": {
-        "operationId": "listarHorarios",
+        "operationId": "listarMisEspacios",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EspacioResponse"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Comercios donde trabajo o soy cliente",
+        "tags": [
+          "Mi cuenta"
+        ]
+      }
+    },
+    "/cuenta/pin": {
+      "put": {
+        "operationId": "cambiarMiPin",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CambiarPinRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "PIN débil"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cambia mi PIN",
+        "tags": [
+          "Mi cuenta"
+        ]
+      }
+    },
+    "/dispositivos": {
+      "get": {
+        "operationId": "listarDispositivos",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DispositivoResponse"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso tenancy.revoke_devices\n\nEl usuario no trabaja en ese negocio o su rol no alcanza"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Celulares de la caja y sus sesiones",
+        "tags": [
+          "Equipo del negocio"
+        ]
+      }
+    },
+    "/dispositivos/{dispositivoId}/cerrar-sesion": {
+      "post": {
+        "operationId": "cerrarSesionDispositivo",
         "parameters": [
           {
             "description": "Id del negocio activo",
@@ -153,10 +956,338 @@
             }
           },
           {
-            "description": "Solo desarrollo y staging, hasta EP-02: id del usuario",
+            "in": "path",
+            "name": "dispositivoId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CierreRemotoResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso tenancy.revoke_devices\n\nEl usuario no trabaja en ese negocio o su rol no alcanza"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cierre remoto (HU-02-06)",
+        "tags": [
+          "Equipo del negocio"
+        ]
+      }
+    },
+    "/equipo": {
+      "get": {
+        "operationId": "listarEquipo",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
             "in": "header",
-            "name": "x-veci-usuario",
-            "required": false,
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MiembroResponse"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso tenancy.manage_staff\n\nEl usuario no trabaja en ese negocio o su rol no alcanza"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Propietarios y cajeros del negocio",
+        "tags": [
+          "Equipo del negocio"
+        ]
+      }
+    },
+    "/equipo/{membresiaId}/estado": {
+      "patch": {
+        "operationId": "cambiarEstadoCajero",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "membresiaId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CambiarEstadoCajeroRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MiembroResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso tenancy.manage_staff\n\nEl usuario no trabaja en ese negocio o su rol no alcanza"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Cambio no permitido"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Suspende, reactiva o retira",
+        "tags": [
+          "Equipo del negocio"
+        ]
+      }
+    },
+    "/equipo/{membresiaId}/restablecer-pin": {
+      "post": {
+        "operationId": "restablecerPinCajero",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "membresiaId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinTemporalResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso tenancy.reset_staff_pin"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "PIN temporal para un cajero (HU-02-05)",
+        "tags": [
+          "Equipo del negocio"
+        ]
+      }
+    },
+    "/equipo/cajeros": {
+      "post": {
+        "operationId": "invitarCajero",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvitarCajeroRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvitacionResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso tenancy.manage_staff\n\nEl usuario no trabaja en ese negocio o su rol no alcanza"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Sin cupo, ya está o otro celular"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Datos inválidos"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Invita un cajero por su celular (HU-02-04)",
+        "tags": [
+          "Equipo del negocio"
+        ]
+      }
+    },
+    "/horarios": {
+      "get": {
+        "operationId": "listarHorarios",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
             "schema": {
               "type": "string"
             }
@@ -180,12 +1311,17 @@
             "description": "Falta el negocio activo"
           },
           "401": {
-            "description": "Sin sesión"
+            "description": "Sin sesión o sesión cerrada"
           },
           "403": {
-            "description": "El usuario no trabaja en ese negocio"
+            "description": "Requiere el permiso tenancy.view_tenant"
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "Horarios vigentes del negocio",
         "tags": [
           "Horarios de servicio"
@@ -199,15 +1335,6 @@
             "in": "header",
             "name": "x-veci-comercio",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Solo desarrollo y staging, hasta EP-02: id del usuario",
-            "in": "header",
-            "name": "x-veci-usuario",
-            "required": false,
             "schema": {
               "type": "string"
             }
@@ -238,10 +1365,10 @@
             "description": "Falta el negocio activo"
           },
           "401": {
-            "description": "Sin sesión"
+            "description": "Sin sesión o sesión cerrada"
           },
           "403": {
-            "description": "El usuario no trabaja en ese negocio"
+            "description": "Requiere el permiso tenancy.manage_schedules"
           },
           "404": {
             "content": {
@@ -274,6 +1401,11 @@
             "description": "Horas o día inválidos"
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "Agrega un horario de servicio",
         "tags": [
           "Horarios de servicio"
@@ -309,6 +1441,280 @@
         "summary": "Estado de la API y la base",
         "tags": [
           "Salud"
+        ]
+      }
+    },
+    "/sesion/con-contrasena": {
+      "post": {
+        "operationId": "entrarConContrasena",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IngresoConContrasenaRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IngresoResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "No coinciden o bloqueada"
+          }
+        },
+        "summary": "Entra al panel con correo (HU-02-02)",
+        "tags": [
+          "Sesión"
+        ]
+      }
+    },
+    "/sesion/con-pin": {
+      "post": {
+        "operationId": "entrarConPin",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IngresoConPinRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IngresoResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "No coinciden o bloqueada"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Cuenta pausada por VECI"
+          }
+        },
+        "summary": "Entra con celular y PIN (HU-02-01)",
+        "tags": [
+          "Sesión"
+        ]
+      }
+    },
+    "/sesion/pin-nuevo": {
+      "post": {
+        "operationId": "crearPinNuevo",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PinNuevoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SesionResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "El paso se venció"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "PIN débil"
+          }
+        },
+        "summary": "Crea el PIN propio tras uno temporal",
+        "tags": [
+          "Sesión"
+        ]
+      }
+    },
+    "/sesion/renovar": {
+      "post": {
+        "operationId": "renovarSesion",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RenovarSesionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SesionResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Sesión cerrada o vencida"
+          }
+        },
+        "summary": "Cambia el token de renovación por otro",
+        "tags": [
+          "Sesión"
+        ]
+      }
+    },
+    "/sesion/salir": {
+      "post": {
+        "operationId": "salir",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cierra la sesión en este dispositivo",
+        "tags": [
+          "Sesión"
+        ]
+      }
+    },
+    "/soporte/clientes/restablecer-pin": {
+      "post": {
+        "operationId": "restablecerPinCliente",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RestablecerPinClienteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinClienteResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso platform.reset_customer_pin"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Celular sin cuenta"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Documento distinto"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Restablece el PIN de un cliente tras verificar su documento (HU-02-05)",
+        "tags": [
+          "Soporte VECI"
         ]
       }
     }

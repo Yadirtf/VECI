@@ -6,7 +6,7 @@
 export const CABECERA_COMERCIO = 'x-veci-comercio';
 
 /**
- * Solo en desarrollo y staging, mientras llega el inicio de sesión (EP-02):
- * identifica al usuario sin token. En producción la API la ignora.
+ * Solo en desarrollo local y pruebas automáticas: identifica al usuario sin token.
+ * Desde EP-02 staging y producción la ignoran; ahí se entra con celular y PIN.
  */
 export const CABECERA_USUARIO_DESARROLLO = 'x-veci-usuario';

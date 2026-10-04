@@ -6,6 +6,8 @@ const ESTADO_HTTP: Record<TipoDeError, HttpStatus> = {
   'no-encontrado': HttpStatus.NOT_FOUND,
   conflicto: HttpStatus.CONFLICT,
   'regla-incumplida': HttpStatus.UNPROCESSABLE_ENTITY,
+  'no-autenticado': HttpStatus.UNAUTHORIZED,
+  prohibido: HttpStatus.FORBIDDEN,
 };
 
 /** Traduce los errores del negocio a HTTP con un código estable y un mensaje cercano. */

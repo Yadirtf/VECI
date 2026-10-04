@@ -13,6 +13,7 @@ describe('leerConfiguracion', () => {
     const config = leerConfiguracion({
       VECI_ENTORNO: 'produccion',
       DATABASE_APP_URL: 'postgresql://x',
+      VECI_TOKENS_SECRETO: 'x'.repeat(32),
       VECI_DOCS: 'true',
       VECI_IDENTIDAD_DESARROLLO: 'true',
     });
@@ -29,6 +30,7 @@ describe('leerConfiguracion', () => {
       VECI_ENTORNO: 'staging',
       DATABASE_URL: 'postgresql://dueno:secreta@db.neon.tech/veci?sslmode=require',
       VECI_API_DB_PASSWORD: 'clave-api',
+      VECI_TOKENS_SECRETO: 'x'.repeat(32),
     });
     expect(config.databaseAppUrl).toBe(
       'postgresql://veci_api:clave-api@db.neon.tech/veci?sslmode=require',
@@ -42,6 +44,31 @@ describe('leerConfiguracion', () => {
       VECI_API_DB_PASSWORD: 'y',
     });
     expect(config.databaseAppUrl).toBe('postgresql://propia');
+  });
+
+  it('desde EP-02 staging tampoco acepta la identidad de desarrollo', () => {
+    const config = leerConfiguracion({
+      VECI_ENTORNO: 'staging',
+      DATABASE_APP_URL: 'postgresql://x',
+      VECI_TOKENS_SECRETO: 'x'.repeat(32),
+    });
+    expect(config.identidadDesarrollo).toBe(false);
+    expect(config.documentacionActiva).toBe(true);
+  });
+
+  it('exige un secreto de tokens fuerte fuera de desarrollo', () => {
+    const base = { VECI_ENTORNO: 'staging', DATABASE_APP_URL: 'postgresql://x' };
+    expect(() => leerConfiguracion(base)).toThrow('VECI_TOKENS_SECRETO');
+    expect(() => leerConfiguracion({ ...base, VECI_TOKENS_SECRETO: 'corto' })).toThrow(
+      'VECI_TOKENS_SECRETO',
+    );
+    expect(leerConfiguracion({}).secretoTokens.length).toBeGreaterThanOrEqual(32);
+  });
+
+  it('el acceso dura 15 minutos y la sesión 30 días por defecto', () => {
+    const config = leerConfiguracion({});
+    expect(config.segundosAcceso).toBe(900);
+    expect(config.diasSesion).toBe(30);
   });
 
   it('rechaza un entorno desconocido', () => {

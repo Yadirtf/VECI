@@ -1,5 +1,5 @@
 -- =============================================================================
--- VECI · Datos de ejemplo (1 de 3) para desarrollo y staging (HU-01-03). Nunca en producción.
+-- VECI · Datos de ejemplo (1 de 4) para desarrollo y staging (HU-01-03). Nunca en producción.
 -- Dos comercios (restaurante y panadería) para probar el aislamiento, un cajero,
 -- una clienta con su tiquetera vendida y un consumo. Se ejecuta una sola vez:
 -- si el comercio demo ya existe, no hace nada.
