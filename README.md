@@ -2,65 +2,42 @@
 
 El vecino aliado de los negocios del Putumayo: tiqueteras prepagadas (almuerzos, panes, lavadas…) que se venden y se consumen con un QR, aunque no haya internet.
 
-Este repositorio es un monorepo con todo el producto:
+El repositorio tiene tres proyectos independientes y su documentación. Cada proyecto tiene sus propias dependencias, configuración, pruebas y CI, y se abre, se corre y se despliega por separado:
 
-| Carpeta | Qué es | Tecnología |
-| --- | --- | --- |
-| [`apps/api`](apps/api) | API central, monolito modular | NestJS 11, Prisma 7, PostgreSQL 16 |
-| [`apps/web`](apps/web) | Panel web de propietarios y administración | Next.js 16, Tailwind 4 |
-| [`apps/mobile`](apps/mobile) | App única (modos Cajero y Cliente), offline primero | Flutter 3.47, Riverpod, Drift |
-| [`packages/shared`](packages/shared) | Constantes y utilidades de TypeScript compartidas | TypeScript |
-| [`packages/api-client`](packages/api-client) | Contrato OpenAPI y cliente TypeScript generado | openapi-typescript |
-| [`apps/mobile/packages/veci_api`](apps/mobile/packages/veci_api) | Cliente Dart generado del mismo contrato | openapi-generator |
-| [`tools`](tools) | Reglas de arquitectura, tokens de diseño y scripts de CI | Node, Python |
-| [`infra`](infra) | Roles de PostgreSQL y comprobaciones de copias | SQL |
-| [`docs`](docs) | Requerimientos, backlog, arquitectura, operación y diseño | Markdown |
+| Carpeta | Qué es | Tecnología | Cómo empezar |
+| --- | --- | --- | --- |
+| [`backend/`](backend) | API central, monolito modular con arquitectura limpia | NestJS 11, Prisma 7, PostgreSQL 16 | [backend/README.md](backend/README.md) |
+| [`web/`](web) | Panel administrativo en el navegador | Next.js 16, Tailwind 4 | [web/README.md](web/README.md) |
+| [`mobile/`](mobile) | App única (modos Cajero y Cliente), offline primero | Flutter 3.47, Riverpod, Drift | [mobile/README.md](mobile/README.md) |
+| [`docs/`](docs) | Requerimientos, backlog, arquitectura, operación, diseño y el contrato de la API | Markdown, JSON | [docs/](docs) |
 
-## Requisitos
+`.github/` solo guarda los workflows de CI y despliegue, que GitHub exige en la raíz.
 
-- Node 22 (`.nvmrc`) y pnpm 10 (`corepack enable`).
-- Docker, para la base de datos local.
-- Flutter 3.47 (solo para la app móvil).
-- Java 17+ (solo para regenerar el cliente Dart con `pnpm generar`).
+## Cómo se conectan
 
-## Arrancar en local
+Ningún proyecto importa código de otro. Se unen por dos archivos publicados en `docs/`:
+
+- [`docs/api/openapi.json`](docs/api/README.md): el contrato HTTP. El backend lo genera; el panel y la app generan su cliente desde él.
+- [`docs/diseno/tokens.json`](docs/diseno/sistema-de-diseno.md): colores y medidas del sistema de diseño. El panel genera su CSS y la app su Dart.
+
+Los CI fallan si el contrato no coincide con el backend o si un cliente o los tokens quedaron desactualizados. Las decisiones están en el [ADR 0014](docs/arquitectura/adr/0014-proyectos-independientes-backend-web-mobile.md).
+
+## Arrancar todo en local
 
 ```bash
-pnpm install
-pnpm db:levantar          # PostgreSQL 16 en localhost:5432 (docker compose)
-pnpm db:migrar            # aplica apps/api/prisma/migrations
-pnpm db:semilla           # comercio demo, cajero, clientes y tiqueteras
-pnpm --filter @veci/shared build
+# 1. API y base de datos
+cd backend && pnpm install && docker compose up -d postgres && pnpm db:migrar && pnpm db:semilla && pnpm dev
 
-pnpm --filter @veci/api dev   # API en http://localhost:3000 (contrato en /docs)
-pnpm --filter @veci/web dev   # panel en http://localhost:3001
-cd apps/mobile && flutter run --dart-define=VECI_API=http://10.0.2.2:3000
+# 2. Panel (otra terminal)
+cd web && pnpm install && pnpm dev            # http://localhost:3001
+
+# 3. App (otra terminal, con un emulador abierto)
+cd mobile && flutter pub get && flutter run
 ```
-
-Los valores por defecto ya apuntan a la base local y al comercio demo; para cambiarlos copie `apps/api/.env.example` y `apps/web/.env.example`. La semilla crea **Restaurante La Vecina** (dueña Marta, cajero Jhon y la clienta Luz Marina con 19 almuerzos) y **Panadería El Trigal**, un segundo comercio para probar el aislamiento.
-
-Mientras llega el inicio de sesión (EP-02), la API acepta en desarrollo y staging la cabecera `x-veci-usuario` con el id de un usuario demo; en producción esa puerta está cerrada.
-
-## Comandos del día a día
-
-| Comando | Qué hace |
-| --- | --- |
-| `pnpm lint` | ESLint en todo el monorepo (incluye tamaño de archivos y funciones). |
-| `pnpm typecheck` | Tipos de TypeScript. |
-| `pnpm arquitectura` | Reglas de capas e importaciones entre módulos (dependency-cruiser y el chequeo de Flutter). |
-| `pnpm test` | Pruebas unitarias. |
-| `pnpm --filter @veci/api test:cov` | Pruebas de la API con integración contra PostgreSQL y cobertura. |
-| `pnpm build` | Compila API, panel y paquetes. |
-| `pnpm format` | Prettier. En Flutter, ver [apps/mobile/README.md](apps/mobile/README.md). |
-| `pnpm generar` | Regenera contrato OpenAPI, clientes TS/Dart y tokens de diseño. |
-| `pnpm --filter @veci/api db:esquema` | Regenera `schema.prisma` desde la base migrada. |
-| `pnpm --filter @veci/api db:verificar` | Comprueba que las migraciones reproducen el modelo de referencia. |
-
-En la app móvil: `flutter analyze`, `flutter test` y `dart run build_runner build` (Drift).
 
 ## Arquitectura limpia
 
-Todo el código sigue la sección 5.3 de los [requerimientos](docs/requerimientos-y-recomendaciones-tecnologicas.md): carpetas por funcionalidad y, dentro de cada una, cuatro capas. Las dependencias apuntan siempre hacia el dominio.
+Los tres proyectos siguen la sección 5.3 de los [requerimientos](docs/requerimientos-y-recomendaciones-tecnologicas.md): carpetas por funcionalidad y, dentro de cada una, cuatro capas. Las dependencias apuntan siempre hacia el dominio.
 
 ```
 presentación ──► aplicación ──► dominio ◄── infraestructura
@@ -73,14 +50,14 @@ presentación ──► aplicación ──► dominio ◄── infraestructura
 | `infrastructure` (`data` en Flutter) | Implementaciones de los puertos: Prisma, HTTP, Drift, Sentry. | Presentación. |
 | `presentation` | Controladores HTTP, páginas, componentes y widgets. | Infraestructura (la recibe ya conectada). |
 
-Lo que comparten varios módulos vive en `shared` (API y web) o `core` (Flutter), y un módulo solo usa a otro por su `index.ts` público. El módulo **horarios** existe en las tres apps como plantilla: para crear uno nuevo, copie su estructura.
+Lo que comparten varios módulos de un mismo proyecto vive en su `shared/` (backend y web) o `core/` (mobile), y un módulo solo usa a otro por su interfaz pública. El módulo **horarios** existe en los tres proyectos como plantilla.
 
 El CI falla si un archivo pasa de 300 líneas o una función de 50 (y, en TypeScript, si una función recibe más de 5 parámetros), si el dominio importa un framework, o si un módulo entra a las carpetas internas de otro. La guía completa, con dónde va cada tipo de archivo, está en [docs/arquitectura/arquitectura-limpia.md](docs/arquitectura/arquitectura-limpia.md).
 
 ## Flujo de trabajo
 
 1. Se trabaja en una rama desde `develop` y se abre el PR contra `develop`.
-2. El CI (lint, tipos, arquitectura, pruebas con cobertura, migraciones, contrato y app Flutter) debe quedar en verde.
+2. Corren los tres CI (`CI backend`, `CI web`, `CI mobile`) y deben quedar en verde.
 3. Al fusionar en `develop` se despliega solo a **staging**.
 4. Cuando `develop` está listo, un PR de `develop` a `main` lleva el cambio a **producción**, que espera la aprobación del entorno `produccion`.
 

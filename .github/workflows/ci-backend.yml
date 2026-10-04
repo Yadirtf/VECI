@@ -1,0 +1,114 @@
+# CI del backend (HU-01-02, HU-01-05, HU-01-06, HU-01-10). Todo corre dentro de backend/.
+# Si un paso falla, el PR queda en rojo. despliegue.yml lo llama antes de desplegar.
+name: CI backend
+
+on:
+  pull_request:
+  workflow_call:
+
+concurrency:
+  group: ci-backend-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  calidad:
+    name: Backend · lint, tipos, arquitectura, pruebas y build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: backend/package.json
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: backend/.nvmrc
+          cache: pnpm
+          cache-dependency-path: backend/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm db:cliente
+      - name: Formato
+        run: pnpm format:check
+      - name: Lint (archivos de 300 líneas y funciones de 50)
+        run: pnpm lint
+      - name: Tipos
+        run: pnpm typecheck
+      - name: Arquitectura limpia (capas e importaciones entre módulos)
+        run: pnpm arquitectura
+      - name: Pruebas unitarias
+        run: pnpm test
+      - name: Build
+        run: pnpm build
+
+  base-de-datos:
+    name: Backend · migraciones, RLS y pruebas de integración
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: veci
+          POSTGRES_PASSWORD: veci
+          POSTGRES_DB: veci
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U veci -d veci" --health-interval 5s
+          --health-timeout 3s --health-retries 20
+    env:
+      DATABASE_URL: postgresql://veci:veci@localhost:5432/veci
+      DATABASE_APP_URL: postgresql://veci_api:veci_api@localhost:5432/veci
+      PGPASSWORD: veci
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: backend/package.json
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: backend/.nvmrc
+          cache: pnpm
+          cache-dependency-path: backend/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm db:cliente
+      - name: Modelo de referencia (validar.sh)
+        run: bash ../docs/arquitectura/modelo-datos/sql/validar.sh
+      - name: Las migraciones reproducen el modelo de referencia
+        run: pnpm db:verificar
+      - name: Aplicar migraciones y crear roles
+        run: |
+          pnpm db:migrar
+          psql -h localhost -U veci -d veci -v ON_ERROR_STOP=1 -v clave_api=veci_api -f infra/postgres/crear-roles.sql
+      - name: schema.prisma al día con las migraciones
+        run: pnpm db:esquema --verificar
+      - name: Semilla demo
+        run: pnpm db:semilla
+      - name: Pruebas con cobertura (unitarias + integración)
+        run: pnpm test:cov
+      - name: Reporte de cobertura
+        if: always()
+        run: node ../.github/scripts/resumen-cobertura.mjs "API (núcleo)=coverage/coverage-summary.json"
+
+  contrato:
+    name: Backend · contrato OpenAPI al día
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: backend/package.json
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: backend/.nvmrc
+          cache: pnpm
+          cache-dependency-path: backend/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - name: Exportar el contrato y fallar si docs/api/openapi.json cambió
+        run: |
+          pnpm generar
+          node ../.github/scripts/verificar-sin-cambios.mjs ../docs/api/openapi.json

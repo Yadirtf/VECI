@@ -10,7 +10,7 @@ La HU-01-08 pide API, panel y PostgreSQL administrado con copias diarias de 30 d
 
 ## Decisión
 
-- **API en Render** a partir de `apps/api/Dockerfile` (blueprint en `render.yaml`): staging en el plan gratuito y producción en Starter (US$7). El contenedor aplica `prisma migrate deploy` al arrancar, con el usuario dueño, y luego sirve con `veci_api`, sujeto a RLS. Render revisa `/salud` antes de pasar tráfico.
+- **API en Render** a partir de `backend/Dockerfile` (blueprint en `backend/render.yaml`): staging en el plan gratuito y producción en Starter (US$7). El contenedor aplica `prisma migrate deploy` al arrancar, con el usuario dueño, y luego sirve con `veci_api`, sujeto a RLS. Render revisa `/salud` antes de pasar tráfico.
 - **Panel en Vercel** (plan Hobby mientras el uso lo permita).
 - **PostgreSQL 16 en Neon**, un proyecto con una rama para staging y otra para producción, en EE. UU. Este junto a la API.
 - **GitHub Actions orquesta todo** (`despliegue.yml`): corre el CI completo y luego llama el deploy hook de Render con el commit exacto y despliega el panel con la CLI de Vercel. `develop` va a staging; `main` espera la aprobación del entorno `produccion`.
@@ -28,4 +28,4 @@ La HU-01-08 pide API, panel y PostgreSQL administrado con copias diarias de 30 d
 
 - Costo estimado en el piloto: US$7 (Render producción) + US$0 a 19 (Neon) + US$0 (Vercel, Sentry, GitHub) ≈ US$7 a 26 al mes, es decir entre $30.000 y $110.000 COP a $4.200 por dólar. El detalle está en `docs/operacion/costos.md`.
 - El staging gratuito de Render se duerme sin tráfico: la primera petición tarda unos segundos.
-- Si Render o Vercel cambian de precios, cambiar de proveedor solo toca `render.yaml` y `despliegue.yml`: la imagen Docker es portable.
+- Si Render o Vercel cambian de precios, cambiar de proveedor solo toca `backend/render.yaml` y `despliegue.yml`: la imagen Docker es portable.

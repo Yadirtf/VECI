@@ -4,7 +4,7 @@
 
 | Entorno | Rama | API | Panel | Base de datos | Cómo se despliega |
 | --- | --- | --- | --- | --- | --- |
-| Local | cualquiera | `pnpm --filter @veci/api dev` | `pnpm --filter @veci/web dev` | Docker Compose | a mano |
+| Local | cualquiera | `pnpm dev` en `backend/` | `pnpm dev` en `web/` | Docker Compose | a mano |
 | Staging | `develop` | Render `veci-api-staging` (gratuito) | Vercel, vista previa | Neon, rama `staging` | automático al fusionar en `develop` |
 | Producción | `main` | Render `veci-api-produccion` (Starter) | Vercel, producción | Neon, rama `main` | al fusionar en `main`, después de aprobar el entorno `produccion` |
 
@@ -25,7 +25,7 @@ Si faltan secretos, el despliegue se salta con un aviso; el CI sigue protegiendo
 3. En cada rama, con la cadena de conexión del dueño (`neondb_owner`), crear el usuario de la API:
 
    ```bash
-   psql "$URL_DUENO" -v clave_api='una-clave-larga' -f infra/postgres/crear-roles.sql
+   psql "$URL_DUENO" -v clave_api='una-clave-larga' -f backend/infra/postgres/crear-roles.sql
    ```
 
    Las migraciones crean `veci_app` y `veci_platform`; si se corre antes, el script crea `veci_app`.
@@ -33,13 +33,13 @@ Si faltan secretos, el despliegue se salta con un aviso; el CI sigue protegiendo
 
 ### 2. API en Render
 
-1. *New → Blueprint* y elegir este repositorio: Render lee [`render.yaml`](../../render.yaml) y crea los dos servicios.
+1. *New → Blueprint* y elegir este repositorio: indique la ruta `backend/render.yaml`; Render lo lee ([`render.yaml`](../../backend/render.yaml)) y crea los dos servicios con *Root Directory* `backend`.
 2. En cada servicio, llenar `DATABASE_URL`, `DATABASE_APP_URL`, `VECI_ORIGENES` (URL del panel) y `SENTRY_DSN`.
 3. En *Settings → Build & Deploy*, ramas: `develop` para staging y `main` para producción. Copiar el **Deploy Hook** de cada servicio.
 
 ### 3. Panel en Vercel
 
-1. Importar el repositorio con *Root Directory* `apps/web` y desactivar los despliegues automáticos de Git (*Settings → Git → Ignored Build Step*: `exit 0`), porque los hace GitHub Actions.
+1. Importar el repositorio con *Root Directory* `web` y desactivar los despliegues automáticos de Git (*Settings → Git → Ignored Build Step*: `exit 0`), porque los hace GitHub Actions.
 2. Variables: `NEXT_PUBLIC_VECI_API_URL`, `NEXT_PUBLIC_VECI_ENTORNO`, `NEXT_PUBLIC_SENTRY_DSN` (por entorno *Preview* y *Production*); `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` y `SENTRY_PROJECT_WEB` para subir mapas de fuente.
 3. Crear un token en *Account Settings → Tokens* y anotar `orgId` y `projectId` (`vercel link` los deja en `.vercel/project.json`).
 
@@ -60,8 +60,9 @@ En *Settings → Branches* (o *Rules*), proteger `main` y `develop`: exigir PR, 
 ## Imagen de la API en local
 
 ```bash
-docker build -f apps/api/Dockerfile -t veci-api .
-docker compose --profile api up
+cd backend
+docker build -t veci-api .
+docker compose --profile api up   # desde backend/
 ```
 
 ## Volver a una versión anterior

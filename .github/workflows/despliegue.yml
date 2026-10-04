@@ -1,9 +1,10 @@
 # Despliegue continuo (HU-01-08).
 #   develop → staging, automático cuando el CI pasa.
 #   main    → producción, después de que alguien apruebe el entorno `produccion`.
-# La API corre en Render (las migraciones se aplican al arrancar el contenedor) y el panel
-# en Vercel. Cada entorno de GitHub guarda sus propios secretos y variables; si faltan, el
-# despliegue se salta con un aviso en lugar de fallar. Ver docs/operacion/despliegue.md.
+# La API (backend/) corre en Render, que aplica las migraciones al arrancar el contenedor, y
+# el panel (web/) en Vercel, con Root Directory `web`. La app (mobile/) se publica aparte.
+# Cada entorno de GitHub guarda sus propios secretos y variables; si faltan, el despliegue
+# se salta con un aviso en lugar de fallar. Ver docs/operacion/despliegue.md.
 name: Despliegue
 
 on:
@@ -19,12 +20,15 @@ permissions:
   contents: read
 
 jobs:
-  ci:
-    uses: ./.github/workflows/ci.yml
+  ci-backend:
+    uses: ./.github/workflows/ci-backend.yml
+
+  ci-web:
+    uses: ./.github/workflows/ci-web.yml
 
   desplegar:
     name: Desplegar en ${{ github.ref_name == 'main' && 'producción' || 'staging' }}
-    needs: ci
+    needs: [ci-backend, ci-web]
     runs-on: ubuntu-24.04
     environment:
       name: ${{ github.ref_name == 'main' && 'produccion' || 'staging' }}
@@ -44,15 +48,18 @@ jobs:
         run: curl -fsS -X POST "$RENDER_DEPLOY_HOOK&ref=$GITHUB_SHA" > /dev/null
       - name: Esperar a que la API responda con esta versión
         if: env.RENDER_DEPLOY_HOOK != '' && env.API_URL != ''
-        run: bash tools/ci/esperar-version.sh "$API_URL/salud" "$GITHUB_SHA"
+        run: bash .github/scripts/esperar-version.sh "$API_URL/salud" "$GITHUB_SHA"
 
       - uses: pnpm/action-setup@v4
         if: env.VERCEL_TOKEN != ''
+        with:
+          package_json_file: web/package.json
       - uses: actions/setup-node@v5
         if: env.VERCEL_TOKEN != ''
         with:
-          node-version-file: .nvmrc
+          node-version-file: web/.nvmrc
           cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
       - name: Panel en Vercel
         if: env.VERCEL_TOKEN != ''
         env:

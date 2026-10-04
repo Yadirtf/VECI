@@ -162,11 +162,11 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 #### HU-01-01 · Monorepo y estructura base
 
-> **Como** desarrollador, **quiero** un monorepo con apps/mobile (Flutter), apps/web (Next.js), apps/api (NestJS) y packages/shared, **para** tener todo el código, issues y CI en un solo lugar.
+> **Como** desarrollador, **quiero** un repositorio con backend (NestJS), web (Next.js) y mobile (Flutter) como proyectos independientes, **para** tener todo el código, issues y CI en un solo lugar.
 
 **Criterios de aceptación**
 
-- [x] Workspaces con pnpm (y Turborepo) para web, api y shared.
+- [x] Proyectos independientes backend/, web/ y mobile/, cada uno con sus dependencias (ADR 0014).
 - [x] Lint y formato configurados en las tres apps (ESLint, Prettier, flutter analyze).
 - [x] README con cómo correr cada app en local.
 
@@ -1427,3 +1427,4 @@ Cada requerimiento del documento y las historias que lo cumplen. Un requerimient
 | 1.2 | 2026-10-04 | Se amplía la Fase 1 a los meses 3 a 9 (11 sprints de construcción más 2 meses de piloto); las fases 2 y 3 se corren 3 meses. El backlog queda cargado en GitHub Issues. |
 | 1.3 | 2026-10-04 | HU-00-03 terminada: modelo de datos y ADR en docs/arquitectura. |
 | 1.4 | 2026-10-04 | HU-00-04: prueba de concepto de escaneo offline en poc/escaneo-offline, resultados en docs/arquitectura/poc y ADR-0011. Falta la medición en el Android de 2 GB. |
+| 1.5 | 2026-10-04 | EP-01 implementada (PR #102). El repositorio se reorganiza en tres proyectos independientes, backend/, web/ y mobile/, más docs/ (ADR-0014); la prueba de concepto pasa a docs/arquitectura/poc/escaneo-offline. |
