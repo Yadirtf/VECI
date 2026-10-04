@@ -14,7 +14,7 @@ COPY packages/shared/package.json packages/shared/
 RUN pnpm install --frozen-lockfile --filter @veci/api...
 COPY packages/shared packages/shared
 COPY apps/api apps/api
-RUN pnpm --filter @veci/shared build && pnpm --filter @veci/api build
+RUN pnpm --filter @veci/shared build && pnpm --filter @veci/api db:cliente && pnpm --filter @veci/api build
 
 FROM base AS ejecucion
 ENV NODE_ENV=production

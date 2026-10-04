@@ -51,7 +51,7 @@ Mientras llega el inicio de sesión (EP-02), la API acepta en desarrollo y stagi
 | `pnpm test` | Pruebas unitarias. |
 | `pnpm --filter @veci/api test:cov` | Pruebas de la API con integración contra PostgreSQL y cobertura. |
 | `pnpm build` | Compila API, panel y paquetes. |
-| `pnpm format` | Prettier. En Flutter: `dart format lib test`. |
+| `pnpm format` | Prettier. En Flutter, ver [apps/mobile/README.md](apps/mobile/README.md). |
 | `pnpm generar` | Regenera contrato OpenAPI, clientes TS/Dart y tokens de diseño. |
 | `pnpm --filter @veci/api db:esquema` | Regenera `schema.prisma` desde la base migrada. |
 | `pnpm --filter @veci/api db:verificar` | Comprueba que las migraciones reproducen el modelo de referencia. |

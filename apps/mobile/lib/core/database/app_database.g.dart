@@ -18,7 +18,9 @@ class $HorariosLocalesTable extends HorariosLocales
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _servicioNombreMeta = const VerificationMeta('servicioNombre');
+  static const VerificationMeta _servicioNombreMeta = const VerificationMeta(
+    'servicioNombre',
+  );
   @override
   late final GeneratedColumn<String> servicioNombre = GeneratedColumn<String>(
     'servicio_nombre',
@@ -45,7 +47,9 @@ class $HorariosLocalesTable extends HorariosLocales
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _horaInicioMeta = const VerificationMeta('horaInicio');
+  static const VerificationMeta _horaInicioMeta = const VerificationMeta(
+    'horaInicio',
+  );
   @override
   late final GeneratedColumn<String> horaInicio = GeneratedColumn<String>(
     'hora_inicio',
@@ -54,7 +58,9 @@ class $HorariosLocalesTable extends HorariosLocales
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _horaFinMeta = const VerificationMeta('horaFin');
+  static const VerificationMeta _horaFinMeta = const VerificationMeta(
+    'horaFin',
+  );
   @override
   late final GeneratedColumn<String> horaFin = GeneratedColumn<String>(
     'hora_fin',
@@ -63,7 +69,9 @@ class $HorariosLocalesTable extends HorariosLocales
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _guardadoEnMeta = const VerificationMeta('guardadoEn');
+  static const VerificationMeta _guardadoEnMeta = const VerificationMeta(
+    'guardadoEn',
+  );
   @override
   late final GeneratedColumn<DateTime> guardadoEn = GeneratedColumn<DateTime>(
     'guardado_en',
@@ -102,18 +110,27 @@ class $HorariosLocalesTable extends HorariosLocales
     if (data.containsKey('servicio_nombre')) {
       context.handle(
         _servicioNombreMeta,
-        servicioNombre.isAcceptableOrUnknown(data['servicio_nombre']!, _servicioNombreMeta),
+        servicioNombre.isAcceptableOrUnknown(
+          data['servicio_nombre']!,
+          _servicioNombreMeta,
+        ),
       );
     } else if (isInserting) {
       context.missing(_servicioNombreMeta);
     }
     if (data.containsKey('sede_id')) {
-      context.handle(_sedeIdMeta, sedeId.isAcceptableOrUnknown(data['sede_id']!, _sedeIdMeta));
+      context.handle(
+        _sedeIdMeta,
+        sedeId.isAcceptableOrUnknown(data['sede_id']!, _sedeIdMeta),
+      );
     } else if (isInserting) {
       context.missing(_sedeIdMeta);
     }
     if (data.containsKey('dia')) {
-      context.handle(_diaMeta, dia.isAcceptableOrUnknown(data['dia']!, _diaMeta));
+      context.handle(
+        _diaMeta,
+        dia.isAcceptableOrUnknown(data['dia']!, _diaMeta),
+      );
     } else if (isInserting) {
       context.missing(_diaMeta);
     }
@@ -126,7 +143,10 @@ class $HorariosLocalesTable extends HorariosLocales
       context.missing(_horaInicioMeta);
     }
     if (data.containsKey('hora_fin')) {
-      context.handle(_horaFinMeta, horaFin.isAcceptableOrUnknown(data['hora_fin']!, _horaFinMeta));
+      context.handle(
+        _horaFinMeta,
+        horaFin.isAcceptableOrUnknown(data['hora_fin']!, _horaFinMeta),
+      );
     } else if (isInserting) {
       context.missing(_horaFinMeta);
     }
@@ -147,7 +167,10 @@ class $HorariosLocalesTable extends HorariosLocales
   HorarioLocal map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return HorarioLocal(
-      id: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
       servicioNombre: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}servicio_nombre'],
@@ -156,7 +179,10 @@ class $HorariosLocalesTable extends HorariosLocales
         DriftSqlType.string,
         data['${effectivePrefix}sede_id'],
       )!,
-      dia: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}dia'])!,
+      dia: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}dia'],
+      )!,
       horaInicio: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}hora_inicio'],
@@ -220,7 +246,10 @@ class HorarioLocal extends DataClass implements Insertable<HorarioLocal> {
     );
   }
 
-  factory HorarioLocal.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+  factory HorarioLocal.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return HorarioLocal(
       id: serializer.fromJson<String>(json['id']),
@@ -266,12 +295,18 @@ class HorarioLocal extends DataClass implements Insertable<HorarioLocal> {
   HorarioLocal copyWithCompanion(HorariosLocalesCompanion data) {
     return HorarioLocal(
       id: data.id.present ? data.id.value : this.id,
-      servicioNombre: data.servicioNombre.present ? data.servicioNombre.value : this.servicioNombre,
+      servicioNombre: data.servicioNombre.present
+          ? data.servicioNombre.value
+          : this.servicioNombre,
       sedeId: data.sedeId.present ? data.sedeId.value : this.sedeId,
       dia: data.dia.present ? data.dia.value : this.dia,
-      horaInicio: data.horaInicio.present ? data.horaInicio.value : this.horaInicio,
+      horaInicio: data.horaInicio.present
+          ? data.horaInicio.value
+          : this.horaInicio,
       horaFin: data.horaFin.present ? data.horaFin.value : this.horaFin,
-      guardadoEn: data.guardadoEn.present ? data.guardadoEn.value : this.guardadoEn,
+      guardadoEn: data.guardadoEn.present
+          ? data.guardadoEn.value
+          : this.guardadoEn,
     );
   }
 
@@ -290,7 +325,15 @@ class HorarioLocal extends DataClass implements Insertable<HorarioLocal> {
   }
 
   @override
-  int get hashCode => Object.hash(id, servicioNombre, sedeId, dia, horaInicio, horaFin, guardadoEn);
+  int get hashCode => Object.hash(
+    id,
+    servicioNombre,
+    sedeId,
+    dia,
+    horaInicio,
+    horaFin,
+    guardadoEn,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -432,38 +475,44 @@ class HorariosLocalesCompanion extends UpdateCompanion<HorarioLocal> {
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
-  late final $HorariosLocalesTable horariosLocales = $HorariosLocalesTable(this);
+  late final $HorariosLocalesTable horariosLocales = $HorariosLocalesTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [horariosLocales];
   @override
-  DriftDatabaseOptions get options => const DriftDatabaseOptions(storeDateTimeAsText: true);
+  DriftDatabaseOptions get options =>
+      const DriftDatabaseOptions(storeDateTimeAsText: true);
 }
 
-typedef $$HorariosLocalesTableCreateCompanionBuilder = HorariosLocalesCompanion Function({
-  required String id,
-  required String servicioNombre,
-  required String sedeId,
-  required String dia,
-  required String horaInicio,
-  required String horaFin,
-  required DateTime guardadoEn,
-  Value<int> rowid,
-});
-typedef $$HorariosLocalesTableUpdateCompanionBuilder = HorariosLocalesCompanion Function({
-  Value<String> id,
-  Value<String> servicioNombre,
-  Value<String> sedeId,
-  Value<String> dia,
-  Value<String> horaInicio,
-  Value<String> horaFin,
-  Value<DateTime> guardadoEn,
-  Value<int> rowid,
-});
+typedef $$HorariosLocalesTableCreateCompanionBuilder =
+    HorariosLocalesCompanion Function({
+      required String id,
+      required String servicioNombre,
+      required String sedeId,
+      required String dia,
+      required String horaInicio,
+      required String horaFin,
+      required DateTime guardadoEn,
+      Value<int> rowid,
+    });
+typedef $$HorariosLocalesTableUpdateCompanionBuilder =
+    HorariosLocalesCompanion Function({
+      Value<String> id,
+      Value<String> servicioNombre,
+      Value<String> sedeId,
+      Value<String> dia,
+      Value<String> horaInicio,
+      Value<String> horaFin,
+      Value<DateTime> guardadoEn,
+      Value<int> rowid,
+    });
 
-class $$HorariosLocalesTableFilterComposer extends Composer<_$AppDatabase, $HorariosLocalesTable> {
+class $$HorariosLocalesTableFilterComposer
+    extends Composer<_$AppDatabase, $HorariosLocalesTable> {
   $$HorariosLocalesTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -471,26 +520,40 @@ class $$HorariosLocalesTableFilterComposer extends Composer<_$AppDatabase, $Hora
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
 
-  ColumnFilters<String> get servicioNombre =>
-      $composableBuilder(column: $table.servicioNombre, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get servicioNombre => $composableBuilder(
+    column: $table.servicioNombre,
+    builder: (column) => ColumnFilters(column),
+  );
 
-  ColumnFilters<String> get sedeId =>
-      $composableBuilder(column: $table.sedeId, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get sedeId => $composableBuilder(
+    column: $table.sedeId,
+    builder: (column) => ColumnFilters(column),
+  );
 
-  ColumnFilters<String> get dia =>
-      $composableBuilder(column: $table.dia, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get dia => $composableBuilder(
+    column: $table.dia,
+    builder: (column) => ColumnFilters(column),
+  );
 
-  ColumnFilters<String> get horaInicio =>
-      $composableBuilder(column: $table.horaInicio, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get horaInicio => $composableBuilder(
+    column: $table.horaInicio,
+    builder: (column) => ColumnFilters(column),
+  );
 
-  ColumnFilters<String> get horaFin =>
-      $composableBuilder(column: $table.horaFin, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get horaFin => $composableBuilder(
+    column: $table.horaFin,
+    builder: (column) => ColumnFilters(column),
+  );
 
-  ColumnFilters<DateTime> get guardadoEn =>
-      $composableBuilder(column: $table.guardadoEn, builder: (column) => ColumnFilters(column));
+  ColumnFilters<DateTime> get guardadoEn => $composableBuilder(
+    column: $table.guardadoEn,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$HorariosLocalesTableOrderingComposer
@@ -502,28 +565,40 @@ class $$HorariosLocalesTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get servicioNombre => $composableBuilder(
     column: $table.servicioNombre,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get sedeId =>
-      $composableBuilder(column: $table.sedeId, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get sedeId => $composableBuilder(
+    column: $table.sedeId,
+    builder: (column) => ColumnOrderings(column),
+  );
 
-  ColumnOrderings<String> get dia =>
-      $composableBuilder(column: $table.dia, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get dia => $composableBuilder(
+    column: $table.dia,
+    builder: (column) => ColumnOrderings(column),
+  );
 
-  ColumnOrderings<String> get horaInicio =>
-      $composableBuilder(column: $table.horaInicio, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get horaInicio => $composableBuilder(
+    column: $table.horaInicio,
+    builder: (column) => ColumnOrderings(column),
+  );
 
-  ColumnOrderings<String> get horaFin =>
-      $composableBuilder(column: $table.horaFin, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get horaFin => $composableBuilder(
+    column: $table.horaFin,
+    builder: (column) => ColumnOrderings(column),
+  );
 
-  ColumnOrderings<DateTime> get guardadoEn =>
-      $composableBuilder(column: $table.guardadoEn, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<DateTime> get guardadoEn => $composableBuilder(
+    column: $table.guardadoEn,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$HorariosLocalesTableAnnotationComposer
@@ -538,8 +613,10 @@ class $$HorariosLocalesTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<String> get servicioNombre =>
-      $composableBuilder(column: $table.servicioNombre, builder: (column) => column);
+  GeneratedColumn<String> get servicioNombre => $composableBuilder(
+    column: $table.servicioNombre,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get sedeId =>
       $composableBuilder(column: $table.sedeId, builder: (column) => column);
@@ -547,14 +624,18 @@ class $$HorariosLocalesTableAnnotationComposer
   GeneratedColumn<String> get dia =>
       $composableBuilder(column: $table.dia, builder: (column) => column);
 
-  GeneratedColumn<String> get horaInicio =>
-      $composableBuilder(column: $table.horaInicio, builder: (column) => column);
+  GeneratedColumn<String> get horaInicio => $composableBuilder(
+    column: $table.horaInicio,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get horaFin =>
       $composableBuilder(column: $table.horaFin, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get guardadoEn =>
-      $composableBuilder(column: $table.guardadoEn, builder: (column) => column);
+  GeneratedColumn<DateTime> get guardadoEn => $composableBuilder(
+    column: $table.guardadoEn,
+    builder: (column) => column,
+  );
 }
 
 class $$HorariosLocalesTableTableManager
@@ -568,12 +649,17 @@ class $$HorariosLocalesTableTableManager
           $$HorariosLocalesTableAnnotationComposer,
           $$HorariosLocalesTableCreateCompanionBuilder,
           $$HorariosLocalesTableUpdateCompanionBuilder,
-          (HorarioLocal, BaseReferences<_$AppDatabase, $HorariosLocalesTable, HorarioLocal>),
+          (
+            HorarioLocal,
+            BaseReferences<_$AppDatabase, $HorariosLocalesTable, HorarioLocal>,
+          ),
           HorarioLocal,
           PrefetchHooks Function()
         > {
-  $$HorariosLocalesTableTableManager(_$AppDatabase db, $HorariosLocalesTable table)
-    : super(
+  $$HorariosLocalesTableTableManager(
+    _$AppDatabase db,
+    $HorariosLocalesTable table,
+  ) : super(
         TableManagerState(
           db: db,
           table: table,
@@ -627,7 +713,11 @@ class $$HorariosLocalesTableTableManager
               .map(
                 (e) => (
                   e.readTable<$HorariosLocalesTable, HorarioLocal>(table),
-                  BaseReferences<_$AppDatabase, $HorariosLocalesTable, HorarioLocal>(db, table, e),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $HorariosLocalesTable,
+                    HorarioLocal
+                  >(db, table, e),
                 ),
               )
               .toList(),
@@ -646,7 +736,10 @@ typedef $$HorariosLocalesTableProcessedTableManager =
       $$HorariosLocalesTableAnnotationComposer,
       $$HorariosLocalesTableCreateCompanionBuilder,
       $$HorariosLocalesTableUpdateCompanionBuilder,
-      (HorarioLocal, BaseReferences<_$AppDatabase, $HorariosLocalesTable, HorarioLocal>),
+      (
+        HorarioLocal,
+        BaseReferences<_$AppDatabase, $HorariosLocalesTable, HorarioLocal>,
+      ),
       HorarioLocal,
       PrefetchHooks Function()
     >;

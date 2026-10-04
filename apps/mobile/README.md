@@ -24,7 +24,7 @@ flutter run \
 ```bash
 flutter analyze                                   # análisis estático estricto
 flutter test                                      # pruebas
-dart format lib test                              # formato (ancho 100)
+dart format $(find lib test -name "*.dart" ! -name "*.g.dart")   # formato (ancho 100)
 dart run build_runner build --delete-conflicting-outputs   # código de Drift
 python3 ../../tools/arquitectura/verificar-flutter.py .    # reglas de capas y tamaños
 ```
