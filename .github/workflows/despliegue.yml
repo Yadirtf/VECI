@@ -1,6 +1,6 @@
 # Despliegue a producción (HU-01-08).
 #   develop → staging: lo hace Render solo, cuando el commit pasa el CI (blueprints
-#             backend/render.yaml y web/render.yaml con autoDeployTrigger: checksPass).
+#             render.yaml de la raíz, con autoDeployTrigger: checksPass).
 #   main    → producción: este workflow, después de que alguien apruebe el entorno `produccion`.
 # La API (backend/) y el panel (web/) corren en Render. Los servicios de producción tienen el
 # despliegue automático apagado y se disparan aquí con sus deploy hooks. La app (mobile/) se

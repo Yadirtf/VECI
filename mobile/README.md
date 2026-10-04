@@ -52,7 +52,7 @@ mobile/
 
 ## Probar en el celular
 
-El workflow `APK staging` construye un APK que apunta a la API de staging en Render. Descárguelo en *Actions → APK staging → Artifacts* e instálelo; los pasos están en [docs/operacion/despliegue.md](../docs/operacion/despliegue.md#4-app-en-el-celular). Para compilarlo en local contra otra URL:
+El workflow `APK staging` construye un APK que apunta a la API de staging en Render. Descárguelo en *Actions → APK staging → Artifacts* e instálelo; los pasos están en [docs/operacion/despliegue.md](../docs/operacion/despliegue.md#3-app-en-el-celular). Para compilarlo en local contra otra URL:
 
 ```bash
 flutter build apk --release --dart-define=VECI_API=https://veci-api-staging.onrender.com --dart-define=VECI_ENTORNO=staging
