@@ -1,0 +1,71 @@
+# Despliegue continuo (HU-01-08).
+#   develop → staging, automático cuando el CI pasa.
+#   main    → producción, después de que alguien apruebe el entorno `produccion`.
+# La API corre en Render (las migraciones se aplican al arrancar el contenedor) y el panel
+# en Vercel. Cada entorno de GitHub guarda sus propios secretos y variables; si faltan, el
+# despliegue se salta con un aviso en lugar de fallar. Ver docs/operacion/despliegue.md.
+name: Despliegue
+
+on:
+  push:
+    branches: [develop, main]
+  workflow_dispatch:
+
+concurrency:
+  group: despliegue-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  desplegar:
+    name: Desplegar en ${{ github.ref_name == 'main' && 'producción' || 'staging' }}
+    needs: ci
+    runs-on: ubuntu-24.04
+    environment:
+      name: ${{ github.ref_name == 'main' && 'produccion' || 'staging' }}
+      url: ${{ vars.PANEL_URL }}
+    env:
+      RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+      API_URL: ${{ vars.API_URL }}
+      ES_PRODUCCION: ${{ github.ref_name == 'main' }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: API en Render
+        if: env.RENDER_DEPLOY_HOOK != ''
+        run: curl -fsS -X POST "$RENDER_DEPLOY_HOOK&ref=$GITHUB_SHA" > /dev/null
+      - name: Esperar a que la API responda con esta versión
+        if: env.RENDER_DEPLOY_HOOK != '' && env.API_URL != ''
+        run: bash tools/ci/esperar-version.sh "$API_URL/salud" "$GITHUB_SHA"
+
+      - uses: pnpm/action-setup@v4
+        if: env.VERCEL_TOKEN != ''
+      - uses: actions/setup-node@v5
+        if: env.VERCEL_TOKEN != ''
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Panel en Vercel
+        if: env.VERCEL_TOKEN != ''
+        env:
+          NEXT_PUBLIC_VECI_VERSION: ${{ github.sha }}
+        run: |
+          ENTORNO=$([ "$ES_PRODUCCION" = "true" ] && echo production || echo preview)
+          PROD=$([ "$ES_PRODUCCION" = "true" ] && echo --prod || true)
+          npx vercel@latest pull --yes --environment="$ENTORNO" --token="$VERCEL_TOKEN"
+          npx vercel@latest build $PROD --token="$VERCEL_TOKEN"
+          npx vercel@latest deploy --prebuilt $PROD --token="$VERCEL_TOKEN"
+
+      - name: Avisar si faltan secretos
+        if: env.RENDER_DEPLOY_HOOK == '' || env.VERCEL_TOKEN == ''
+        run: >
+          echo "::warning::Faltan secretos del entorno (RENDER_DEPLOY_HOOK o VERCEL_TOKEN);
+          se omitió parte del despliegue. Ver docs/operacion/despliegue.md."

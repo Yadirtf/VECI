@@ -1,0 +1,140 @@
+# Integración continua de VECI (HU-01-02, HU-01-06, HU-01-10).
+# Corre en cada PR; si un paso falla, el PR queda en rojo. En develop y main lo llama
+# despliegue.yml antes de desplegar.
+name: CI
+
+on:
+  pull_request:
+  workflow_call:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  FLUTTER_VERSION: 3.47.6
+
+jobs:
+  calidad:
+    name: Lint, tipos, arquitectura, pruebas y build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Formato
+        run: pnpm format:check
+      - name: Lint (incluye archivos de 300 líneas y funciones de 50)
+        run: pnpm turbo run lint
+      - name: Tipos
+        run: pnpm turbo run typecheck
+      - name: Arquitectura limpia (capas e importaciones entre módulos)
+        run: pnpm arquitectura
+      - name: Pruebas unitarias
+        run: pnpm turbo run test
+      - name: Build
+        run: pnpm turbo run build
+
+  base-de-datos:
+    name: Migraciones, RLS y pruebas de integración
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: veci
+          POSTGRES_PASSWORD: veci
+          POSTGRES_DB: veci
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U veci -d veci" --health-interval 5s
+          --health-timeout 3s --health-retries 20
+    env:
+      DATABASE_URL: postgresql://veci:veci@localhost:5432/veci
+      DATABASE_APP_URL: postgresql://veci_api:veci_api@localhost:5432/veci
+      PGPASSWORD: veci
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Modelo de referencia (validar.sh)
+        run: bash docs/arquitectura/modelo-datos/sql/validar.sh
+      - name: Las migraciones reproducen el modelo de referencia
+        run: pnpm --filter @veci/api db:verificar
+      - name: Aplicar migraciones y crear roles
+        run: |
+          pnpm --filter @veci/api db:migrar
+          psql -h localhost -U veci -d veci -v ON_ERROR_STOP=1 -v clave_api=veci_api -f infra/postgres/crear-roles.sql
+      - name: schema.prisma al día con las migraciones
+        run: pnpm --filter @veci/api db:esquema --verificar
+      - name: Semilla demo
+        run: pnpm --filter @veci/api db:semilla
+      - name: Pruebas de la API con cobertura (unitarias + integración)
+        run: pnpm turbo run test:cov --filter @veci/api --filter @veci/web --filter @veci/shared
+      - name: Reporte de cobertura
+        if: always()
+        run: >
+          node tools/ci/resumen-cobertura.mjs
+          "API (núcleo)=apps/api/coverage/coverage-summary.json"
+          "Panel web=apps/web/coverage/coverage-summary.json"
+          "Compartido=packages/shared/coverage/coverage-summary.json"
+
+  contrato:
+    name: Contrato OpenAPI y clientes generados al día
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: pnpm install --frozen-lockfile
+      - name: Regenerar contrato, clientes Dart/TS y tokens; fallar si cambian
+        run: pnpm generar:verificar
+
+  movil:
+    name: App Flutter
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v5
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Formato
+        # El código generado (*.g.dart) lo formatea build_runner con su propio ancho.
+        run: dart format --output=none --set-exit-if-changed $(find lib test -name '*.dart' ! -name '*.g.dart')
+      - name: Análisis estático
+        run: flutter analyze
+      - name: Código de Drift al día
+        run: |
+          dart run build_runner build --delete-conflicting-outputs
+          git diff --exit-code -- lib
+      - name: Arquitectura limpia
+        run: python3 ../../tools/arquitectura/verificar-flutter.py .
+      - name: Pruebas con cobertura
+        run: flutter test --coverage
+      - name: Reporte de cobertura
+        if: always()
+        run: node ../../tools/ci/resumen-cobertura.mjs "App móvil=coverage/lcov.info"
