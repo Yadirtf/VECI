@@ -56,6 +56,7 @@ El CI falla si un archivo pasa de 300 líneas o una función de 50 (y, en TypeSc
 
 ## Flujo de trabajo
 
+0. Antes de implementar una épica o historia se aplica la [guía de mejor solución (SSoT)](docs/guias/ssot-mejor-solucion-no-generica.md): comparar alternativas distintas en cada decisión abierta y dejar constancia en el PR.
 1. Se trabaja en una rama desde `develop` y se abre el PR contra `develop`.
 2. Corren los tres CI (`CI backend`, `CI web`, `CI mobile`) y deben quedar en verde.
 3. Al fusionar en `develop` se despliega solo a **staging**.

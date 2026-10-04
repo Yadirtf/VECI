@@ -22,6 +22,7 @@ Este backlog convierte el [Documento de Requerimientos y Recomendaciones Tecnol�
 - Tiene criterios de aceptación claros y sus dependencias están terminadas.
 - Si tiene pantalla, existe su diseño en Figma.
 - Está estimada y cabe en un sprint (si pesa 13, se divide).
+- Se aplicó la [guía de mejor solución (SSoT)](guias/ssot-mejor-solucion-no-generica.md): se compararon alternativas distintas en las decisiones abiertas antes de elegir.
 
 ### Definición de terminado
 
