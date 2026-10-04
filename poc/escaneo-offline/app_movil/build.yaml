@@ -1,0 +1,8 @@
+targets:
+  $default:
+    builders:
+      drift_dev:
+        options:
+          # Guarda fechas como texto ISO-8601 para no perder los milisegundos
+          # de la hora real del consumo (ADR-0004).
+          store_date_time_values_as_text: true
