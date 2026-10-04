@@ -17,7 +17,7 @@ Un proyecto de Sentry por app: `veci-api` (NestJS), `veci-web` (Next.js) y `veci
 | App | Variable | Dónde |
 | --- | --- | --- |
 | API | `SENTRY_DSN`, `SENTRY_TRACES_SAMPLE_RATE` | Render |
-| Panel | `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_DSN_WEB` (servidor), `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT_WEB` | Vercel |
+| Panel | `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_DSN_WEB` (servidor), `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT_WEB` | Render (servicio del panel) |
 | App | `--dart-define=SENTRY_DSN=...` al compilar | CI de la app / máquina de publicación |
 
 Sin DSN, Sentry queda apagado: en local no se envía nada.

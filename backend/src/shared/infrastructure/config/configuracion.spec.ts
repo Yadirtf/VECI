@@ -24,6 +24,26 @@ describe('leerConfiguracion', () => {
     expect(() => leerConfiguracion({ VECI_ENTORNO: 'staging' })).toThrow('DATABASE_APP_URL');
   });
 
+  it('arma la URL de veci_api con la base del dueño y la clave de la API', () => {
+    const config = leerConfiguracion({
+      VECI_ENTORNO: 'staging',
+      DATABASE_URL: 'postgresql://dueno:secreta@db.neon.tech/veci?sslmode=require',
+      VECI_API_DB_PASSWORD: 'clave-api',
+    });
+    expect(config.databaseAppUrl).toBe(
+      'postgresql://veci_api:clave-api@db.neon.tech/veci?sslmode=require',
+    );
+  });
+
+  it('prefiere DATABASE_APP_URL cuando está definida', () => {
+    const config = leerConfiguracion({
+      DATABASE_APP_URL: 'postgresql://propia',
+      DATABASE_URL: 'postgresql://dueno:x@h/veci',
+      VECI_API_DB_PASSWORD: 'y',
+    });
+    expect(config.databaseAppUrl).toBe('postgresql://propia');
+  });
+
   it('rechaza un entorno desconocido', () => {
     expect(() => leerConfiguracion({ VECI_ENTORNO: 'prod' })).toThrow('VECI_ENTORNO');
   });

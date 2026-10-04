@@ -33,11 +33,27 @@ function leerBooleano(valor: string | undefined, porDefecto: boolean): boolean {
   return valor === undefined ? porDefecto : valor === 'true';
 }
 
+/** Usuario de la API: miembro de veci_app y sujeto a RLS (HU-01-05). */
+export const USUARIO_API = 'veci_api';
+
+/**
+ * Sin DATABASE_APP_URL, la arma con la base de DATABASE_URL y la clave de veci_api
+ * (VECI_API_DB_PASSWORD), que es como la entrega el blueprint de Render.
+ */
+function urlDesdeDueno(variables: Variables): string | undefined {
+  const { DATABASE_URL: dueno, VECI_API_DB_PASSWORD: clave } = variables;
+  if (!dueno || !clave) return undefined;
+  const url = new URL(dueno);
+  url.username = USUARIO_API;
+  url.password = clave;
+  return url.toString();
+}
+
 function leerUrlBaseDatos(variables: Variables, entorno: Entorno): string {
-  const url = variables.DATABASE_APP_URL;
+  const url = variables.DATABASE_APP_URL ?? urlDesdeDueno(variables);
   if (url) return url;
   if (entorno === 'staging' || entorno === 'produccion') {
-    throw new Error('Falta DATABASE_APP_URL (usuario veci_api de PostgreSQL).');
+    throw new Error('Falta DATABASE_APP_URL o VECI_API_DB_PASSWORD (usuario veci_api).');
   }
   return 'postgresql://veci_api:veci_api@localhost:5432/veci';
 }

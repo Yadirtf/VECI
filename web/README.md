@@ -37,7 +37,10 @@ web/
 │   └── shared/                 api/ (cliente generado), ui/ (sistema de diseño), config/, lib/
 ├── scripts/                    generador de tokens de diseño
 ├── eslint/                     reglas de arquitectura
+├── render.yaml                 blueprint del panel de staging en Render
 └── package.json
 ```
+
+Staging se despliega en Render cuando un commit de `develop` pasa el CI ([docs/operacion/despliegue.md](../docs/operacion/despliegue.md)).
 
 La guía de capas está en [docs/arquitectura/arquitectura-limpia.md](../docs/arquitectura/arquitectura-limpia.md) y el sistema de diseño en [docs/diseno](../docs/diseno/README.md).

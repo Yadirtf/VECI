@@ -1,0 +1,29 @@
+# Blueprint de Render para el panel web (HU-01-08). En Render: New → Blueprint, este
+# repositorio y la ruta web/render.yaml. Crea el panel de staging, que se despliega solo
+# cuando un commit en develop pasa el CI (autoDeployTrigger: checksPass).
+# Las variables NEXT_PUBLIC_* se usan al construir: si cambian, hay que redesplegar.
+services:
+  - type: web
+    name: veci-web-staging
+    runtime: node
+    rootDir: web
+    region: ohio
+    plan: free
+    branch: develop
+    autoDeployTrigger: checksPass
+    # pnpm por npx con la versión de package.json; la versión del panel es el commit.
+    buildCommand: >-
+      npx --yes pnpm@10.28.0 install --frozen-lockfile &&
+      NEXT_PUBLIC_VECI_VERSION=$RENDER_GIT_COMMIT npx --yes pnpm@10.28.0 build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: '22'
+      # URL de la API. Si Render le asigna otra a veci-api-staging, cámbiela aquí.
+      - key: NEXT_PUBLIC_VECI_API_URL
+        value: https://veci-api-staging.onrender.com
+      - key: NEXT_PUBLIC_VECI_ENTORNO
+        value: staging
+      - key: NEXT_PUBLIC_SENTRY_DSN
+        sync: false

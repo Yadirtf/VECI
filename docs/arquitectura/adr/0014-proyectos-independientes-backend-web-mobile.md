@@ -29,5 +29,5 @@ La primera versión de la EP-01 armó un monorepo con pnpm y Turborepo: `apps/ap
 
 - Hay una pequeña duplicación intencional (cabeceras HTTP, filtro de Sentry, reglas de ESLint en backend y web). Si crece, se publica como contrato en `docs/` en lugar de volver a un paquete compartido.
 - Cambiar un endpoint exige regenerar el contrato en `backend/` y los clientes en `web/` y `mobile/`; los CI lo exigen.
-- Vercel usa *Root Directory* `web` y Render *Root Directory* `backend`.
+- Render despliega cada proyecto con su propio blueprint: `backend/render.yaml` (*Root Directory* `backend`) y `web/render.yaml` (*Root Directory* `web`).
 - Reemplaza la parte de “Monorepo” de la sección 6 de los requerimientos y de la HU-01-01.

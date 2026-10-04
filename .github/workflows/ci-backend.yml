@@ -4,6 +4,9 @@ name: CI backend
 
 on:
   pull_request:
+  # En develop, Render espera a que estos checks pasen antes de desplegar staging.
+  push:
+    branches: [develop]
   workflow_call:
 
 concurrency:

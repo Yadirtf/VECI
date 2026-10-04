@@ -262,7 +262,7 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] API en Railway, Render o Fly.io; panel en Vercel; PostgreSQL administrado.
+- [ ] API y panel en Render; PostgreSQL administrado en Neon.
 - [x] Copia diaria retenida 30 días y una prueba de restauración documentada.
 - [ ] Despliegue automático a staging al fusionar y a producción con aprobación.
 - [ ] El costo mensual queda por debajo de $150.000 COP.
