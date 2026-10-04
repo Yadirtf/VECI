@@ -1,6 +1,6 @@
 # VECI · Backlog del producto
 
-Versión 1.3 · 4 de octubre de 2026 · Ing. Yadir
+Versión 1.4 · 4 de octubre de 2026 · Ing. Yadir
 
 Este backlog convierte el [Documento de Requerimientos y Recomendaciones Tecnológicas](requerimientos-y-recomendaciones-tecnologicas.md) en épicas e historias de usuario listas para implementar por fases. Tiene **16 épicas** y **81 historias**; cada historia apunta a los requerimientos (RF/RNF) que cumple.
 
@@ -143,8 +143,10 @@ La Fase 1 suma **226 puntos** en 11 sprints de 2 semanas (unas 22 semanas, cerca
 **Criterios de aceptación**
 
 - [ ] Escanea y valida un QR firmado en 3 segundos o menos en un Android de 2 GB de RAM.
-- [ ] Guarda 1.000 eventos offline y los envía a un endpoint de prueba sin duplicados.
-- [ ] Se documentan resultados y librerías elegidas.
+- [x] Guarda 1.000 eventos offline y los envía a un endpoint de prueba sin duplicados.
+- [x] Se documentan resultados y librerías elegidas.
+
+Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc/hu-00-04-escaneo-offline.md). Validar y guardar toma 6 ms (p95); falta medir cámara→resultado en el Android de 2 GB.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -1424,3 +1426,4 @@ Cada requerimiento del documento y las historias que lo cumplen. Un requerimient
 | 1.1 | 2026-10-04 | Se agrega HU-01-10 (estructura de arquitectura limpia) y el criterio de arquitectura limpia en la definición de terminado. |
 | 1.2 | 2026-10-04 | Se amplía la Fase 1 a los meses 3 a 9 (11 sprints de construcción más 2 meses de piloto); las fases 2 y 3 se corren 3 meses. El backlog queda cargado en GitHub Issues. |
 | 1.3 | 2026-10-04 | HU-00-03 terminada: modelo de datos y ADR en docs/arquitectura. |
+| 1.4 | 2026-10-04 | HU-00-04: prueba de concepto de escaneo offline en poc/escaneo-offline, resultados en docs/arquitectura/poc y ADR-0011. Falta la medición en el Android de 2 GB. |
