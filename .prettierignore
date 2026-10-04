@@ -11,3 +11,4 @@ packages/api-client/openapi.json
 apps/api/prisma/migrations
 apps/api/prisma/schema.prisma
 *.md
+apps/web/src/shared/ui/tokens.css
