@@ -1,8 +1,8 @@
 # VECI · Backlog del producto
 
-Versión 1.0 · 4 de octubre de 2026 · Ing. Yadir
+Versión 1.2 · 4 de octubre de 2026 · Ing. Yadir
 
-Este backlog convierte el [Documento de Requerimientos y Recomendaciones Tecnológicas](requerimientos-y-recomendaciones-tecnologicas.md) en épicas e historias de usuario listas para implementar por fases. Tiene **16 épicas** y **80 historias**; cada historia apunta a los requerimientos (RF/RNF) que cumple.
+Este backlog convierte el [Documento de Requerimientos y Recomendaciones Tecnológicas](requerimientos-y-recomendaciones-tecnologicas.md) en épicas e historias de usuario listas para implementar por fases. Tiene **16 épicas** y **81 historias**; cada historia apunta a los requerimientos (RF/RNF) que cumple.
 
 ## 1. Cómo leer este backlog
 
@@ -27,6 +27,7 @@ Este backlog convierte el [Documento de Requerimientos y Recomendaciones Tecnol�
 
 - Todos los criterios de aceptación se cumplen y se probaron en staging.
 - Hay pruebas automáticas de la lógica de negocio y CI está en verde.
+- Respeta la arquitectura limpia (sección 5.3 del documento de requerimientos): cada archivo en su funcionalidad y capa, sin pasar los límites de líneas.
 - Respeta el aislamiento multi-comercio y registra en auditoría lo que corresponda.
 - Funciona en un Android de gama baja si toca la app.
 - Los textos usan el tono VECI y la documentación (README, OpenAPI) quedó al día.
@@ -36,16 +37,16 @@ Este backlog convierte el [Documento de Requerimientos y Recomendaciones Tecnol�
 | Fase | Periodo | Historias | Puntos | Puerta para avanzar |
 | --- | --- | --- | --- | --- |
 | Fase 0 · Validar | Meses 1 a 2 | 4 | — | Problema validado en entrevistas |
-| Fase 1 · MVP y piloto | Meses 3 a 6 | 56 | 223 | Satisfacción de 4/5 o más y cero errores de saldo en el piloto |
-| Fase 2 · Lanzamiento comercial | Meses 7 a 12 | 11 | 45 | 15 comercios pagos (punto de equilibrio) |
-| Fase 3 · Expansión | Mes 13 en adelante | 9 | 68 | — |
+| Fase 1 · MVP y piloto | Meses 3 a 9 | 57 | 226 | Satisfacción de 4/5 o más y cero errores de saldo en el piloto |
+| Fase 2 · Lanzamiento comercial | Meses 10 a 15 | 11 | 45 | 15 comercios pagos (punto de equilibrio) |
+| Fase 3 · Expansión | Mes 16 en adelante | 9 | 68 | — |
 
 ## 3. Épicas
 
 | Épica | Nombre | Fase principal | Objetivo | Historias | Puntos |
 | --- | --- | --- | --- | --- | --- |
 | [EP-00](#ep-00--validación-y-diseño) | Validación y diseño | Fase 0 | Confirmar el problema con restaurantes reales y dejar listo el diseño antes de escribir código de producto. | 4 | — |
-| [EP-01](#ep-01--fundamentos-técnicos) | Fundamentos técnicos | Fase 1 | Dejar la base sobre la que se construye todo: repositorio, CI, base de datos multi-comercio, despliegue y diseño visual. | 9 | 43 |
+| [EP-01](#ep-01--fundamentos-técnicos) | Fundamentos técnicos | Fase 1 | Dejar la base sobre la que se construye todo: repositorio, CI, base de datos multi-comercio, despliegue y diseño visual. | 10 | 46 |
 | [EP-02](#ep-02--autenticación-y-roles) | Autenticación y roles | Fase 1 | Que cada persona entre con su celular y PIN y solo vea y haga lo que su rol permite en cada comercio. | 6 | 24 |
 | [EP-03](#ep-03--comercios-sedes-y-horarios) | Comercios, sedes y horarios | Fase 1 | Dar de alta un negocio con su tipo y sus horarios de servicio. | 3 | 13 |
 | [EP-04](#ep-04--clientes-y-afiliación-por-qr) | Clientes y afiliación por QR | Fase 1 | Que el cliente se registre solo, tenga su QR personal y quede afiliado a un negocio con un escaneo. | 5 | 21 |
@@ -63,11 +64,11 @@ Este backlog convierte el [Documento de Requerimientos y Recomendaciones Tecnol�
 
 ## 4. Plan de sprints de la Fase 1
 
-La Fase 1 suma **223 puntos** en 11 sprints de 2 semanas (unas 22 semanas, cerca de 5 meses) a unos 20 puntos por sprint, que es un ritmo realista para una sola persona. La hoja de ruta asigna 4 meses a la Fase 1, así que hay que elegir: subir el ritmo a unos 25 puntos por sprint, extender la fase o pasar historias a la Fase 2. Las suscripciones (EP-11) y el flujo formal de habeas data (HU-12-02) ya se movieron a la Fase 2 porque el piloto es gratuito y esas tareas pueden hacerse a mano.
+La Fase 1 suma **226 puntos** en 11 sprints de 2 semanas (unas 22 semanas, cerca de 5 meses) a unos 20 puntos por sprint, que es un ritmo realista para una sola persona. Por eso la Fase 1 se amplió de 4 a 7 meses (meses 3 a 9): los 11 sprints de construcción van de los meses 3 a 7 y el piloto con 5 restaurantes dura los meses 8 y 9. Las fases 2 y 3 se corren 3 meses (Fase 2: meses 10 a 15; Fase 3: desde el mes 16). Las suscripciones (EP-11) y el flujo formal de habeas data (HU-12-02) ya se movieron a la Fase 2 porque el piloto es gratuito y esas tareas pueden hacerse a mano.
 
 | Sprint | Objetivo | Historias | Puntos |
 | --- | --- | --- | --- |
-| S1 | Repositorio, CI, base de datos y diseño visual | HU-01-01, HU-01-02, HU-01-03, HU-01-06, HU-01-09 | 19 |
+| S1 | Repositorio, arquitectura limpia, CI, base de datos y diseño visual | HU-01-01, HU-01-02, HU-01-03, HU-01-06, HU-01-09, HU-01-10 | 22 |
 | S2 | Modelo de datos, aislamiento multi-comercio e inicio de sesión | HU-01-04, HU-01-05, HU-02-01 | 21 |
 | S3 | Roles, cajeros y alta de comercios | HU-02-02, HU-02-03, HU-02-04, HU-02-05, HU-03-01 | 21 |
 | S4 | Horarios, política de datos, registro de clientes y QR personal | HU-03-02, HU-04-01, HU-04-02, HU-04-03, HU-12-01 | 19 |
@@ -153,7 +154,7 @@ La Fase 1 suma **223 puntos** en 11 sprints de 2 semanas (unas 22 semanas, cerca
 
 **Resultado esperado:** Un cambio en cualquier app pasa por CI y llega a staging sin pasos manuales; ningún comercio puede leer datos de otro.
 
-**Fase principal:** Fase 1 · MVP y piloto · **Historias:** 9 · **Puntos:** 43
+**Fase principal:** Fase 1 · MVP y piloto · **Historias:** 10 · **Puntos:** 46
 
 #### HU-01-01 · Monorepo y estructura base
 
@@ -279,6 +280,22 @@ La Fase 1 suma **223 puntos** en 11 sprints de 2 semanas (unas 22 semanas, cerca
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
 | Debe | 5 | F1 | S1 | HU-00-02 | RNF-USA-02 |
+
+#### HU-01-10 · Estructura de arquitectura limpia
+
+> **Como** desarrollador, **quiero** que backend, panel web y app móvil nazcan con la estructura de arquitectura limpia y reglas automáticas que la protejan, **para** que VECI escale sin acumular deuda técnica ni archivos llenos de responsabilidades.
+
+**Criterios de aceptación**
+
+- [ ] Cada app tiene la estructura de carpetas de la sección 5.3 del documento de requerimientos: módulos por funcionalidad con capas dominio, aplicación, infraestructura y presentación.
+- [ ] Existe un módulo de ejemplo completo por app (por ejemplo, horarios de servicio) que sirve de plantilla.
+- [ ] CI falla si un archivo supera 300 líneas o una función 50 líneas.
+- [ ] CI falla si el dominio importa el framework, la base de datos o la red, o si un módulo importa archivos internos de otro.
+- [ ] El README explica las capas y dónde va cada tipo de archivo.
+
+| Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
+| --- | --- | --- | --- | --- | --- |
+| Debe | 3 | F1 | S1 | HU-01-01 | RNF-MAN-03, RNF-MAN-01 |
 
 ### EP-02 · Autenticación y roles
 
@@ -1383,8 +1400,9 @@ Cada requerimiento del documento y las historias que lo cumplen. Un requerimient
 | RNF-COM-02 | HU-13-01 |
 | RNF-ESC-01 | HU-13-04 |
 | RNF-ESC-02 | HU-01-04, HU-15-01 |
-| RNF-MAN-01 | HU-01-01, HU-01-02, HU-01-06, HU-07-07 |
+| RNF-MAN-01 | HU-01-01, HU-01-02, HU-01-06, HU-01-10, HU-07-07 |
 | RNF-MAN-02 | HU-01-03, HU-01-08 |
+| RNF-MAN-03 | HU-01-10 |
 | RNF-OBS-01 | HU-01-07 |
 | RNF-COS-01 | HU-01-08 |
 
@@ -1392,5 +1410,14 @@ Cada requerimiento del documento y las historias que lo cumplen. Un requerimient
 
 - Este archivo es la fuente versionada del backlog; cada cambio se hace por PR para que quede la historia en Git.
 - Si cambia un requerimiento, se actualiza primero el documento de requerimientos y luego las historias que lo trazan.
-- Al empezar un sprint, cada historia puede convertirse en un issue de GitHub con su ID en el título (por ejemplo `HU-06-01 Escanear y descontar`) y agruparse por épica con etiquetas `EP-06`.
+- Cada épica y cada historia ya es un [issue de GitHub](https://github.com/Yadirtf/VECI/issues) con su ID en el título; las épicas son los issues #3 a #18 y las historias son sub-issues de su épica (#19 a #99), con etiquetas `EP-xx`, `fase-N`, `prioridad: …` y `sprint: Sx`.
+- Si cambia una historia en este archivo, se actualiza también su issue. Al terminarla se marcan sus criterios y se cierra el issue (o se cierra con `Closes #NN` en el PR).
 - Las historias nuevas toman el siguiente número libre de su épica; los IDs no se reutilizan.
+
+## 8. Historial de versiones
+
+| Versión | Fecha | Cambios |
+| --- | --- | --- |
+| 1.0 | 2026-10-04 | Backlog inicial: 16 épicas, 80 historias, plan de sprints de la Fase 1 y trazabilidad. |
+| 1.1 | 2026-10-04 | Se agrega HU-01-10 (estructura de arquitectura limpia) y el criterio de arquitectura limpia en la definición de terminado. |
+| 1.2 | 2026-10-04 | Se amplía la Fase 1 a los meses 3 a 9 (11 sprints de construcción más 2 meses de piloto); las fases 2 y 3 se corren 3 meses. El backlog queda cargado en GitHub Issues. |
