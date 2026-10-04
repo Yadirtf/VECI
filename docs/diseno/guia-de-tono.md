@@ -37,7 +37,7 @@ Verbo en infinitivo o imperativo corto que diga qué pasa al tocar: **Registrar 
 
 ## Números, fechas y plata
 
-- Plata: `$220.000` (punto de miles, sin decimales; `formatearPesos` de `@veci/shared`).
+- Plata: `$220.000` (punto de miles, sin decimales; `formatearPesos` en `web/src/shared/lib/moneda.ts`).
 - Fechas: “3 de octubre” o “hoy”, “mañana”; nunca `2026-10-03` en pantalla.
 - Horas: “11:30 a. m.”.
 - Singular y plural siempre correctos: “1 almuerzo”, “2 almuerzos” (`VeciSaldo` y `Saldo` ya lo hacen).

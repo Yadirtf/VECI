@@ -6,12 +6,12 @@ VECI tiene que sentirse como un vecino aliado: cálido, claro y fácil para pers
 2. **Contraste alto.** Todo texto sobre su fondo cumple WCAG AA (4,5:1) y el texto de lectura, AAA (7:1). El generador de tokens falla si un par no cumple.
 3. **Pocas palabras y números grandes.** El saldo se lee de lejos (48 px, peso 800).
 
-## Fuente única: `tools/disenio/tokens.json`
+## Fuente única: [`docs/diseno/tokens.json`](tokens.json)
 
-Los colores y medidas se definen una vez y `pnpm generar` produce:
+Los colores y medidas se definen una vez aquí, en la documentación, y cada app genera su versión:
 
-- `apps/web/src/shared/ui/tokens.css`: variables de Tailwind 4 (`bg-selva`, `text-tinta`, `p-m`, `rounded-l`, `h-boton-grande`…).
-- `apps/mobile/lib/core/theme/veci_tokens.dart`: `VeciColores`, `VeciTexto`, `VeciPeso`, `VeciEspacio`, `VeciRadio`, `VeciToque`.
+- `web/src/shared/ui/tokens.css` (con `pnpm generar` en `web/`): variables de Tailwind 4 (`bg-selva`, `text-tinta`, `p-m`, `rounded-l`, `h-boton-grande`…).
+- `mobile/lib/core/theme/veci_tokens.dart` (con `dart run tool/generar_tokens.dart` en `mobile/`): `VeciColores`, `VeciTexto`, `VeciPeso`, `VeciEspacio`, `VeciRadio`, `VeciToque`.
 
 Nunca escriba un color o un tamaño suelto en el código: agréguelo a `tokens.json`. El CI falla si los archivos generados no coinciden con la fuente.
 

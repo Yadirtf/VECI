@@ -1,0 +1,55 @@
+# CI del panel web (HU-01-02, HU-01-06, HU-01-09, HU-01-10). Todo corre dentro de web/.
+name: CI web
+
+on:
+  pull_request:
+  # En develop, Render espera a que estos checks pasen antes de desplegar staging.
+  push:
+    branches: [develop]
+  workflow_call:
+
+concurrency:
+  group: ci-web-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: web
+
+jobs:
+  calidad:
+    name: Web · lint, tipos, arquitectura, pruebas y build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: web/package.json
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: web/.nvmrc
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - name: Cliente de API y tokens al día con docs/
+        run: |
+          pnpm generar
+          node ../.github/scripts/verificar-sin-cambios.mjs src/shared/api/esquema.ts src/shared/ui/tokens.css
+      - name: Formato
+        run: pnpm format:check
+      - name: Lint (archivos de 300 líneas y funciones de 50)
+        run: pnpm lint
+      - name: Tipos
+        run: pnpm typecheck
+      - name: Arquitectura limpia
+        run: pnpm arquitectura
+      - name: Pruebas con cobertura
+        run: pnpm test:cov
+      - name: Reporte de cobertura
+        if: always()
+        run: node ../.github/scripts/resumen-cobertura.mjs "Panel web=coverage/coverage-summary.json"
+      - name: Build
+        run: pnpm build

@@ -1,7 +1,7 @@
 # HU-00-04 · Resultados de la prueba de concepto de escaneo offline
 
 - **Fecha:** 2026-10-04
-- **Código:** [`poc/escaneo-offline/`](../../../poc/escaneo-offline/README.md)
+- **Código:** [`docs/arquitectura/poc/escaneo-offline/`](escaneo-offline/README.md) (código de referencia, no es parte del producto)
 - **Librerías elegidas:** [ADR-0011](../adr/0011-librerias-escaneo-offline.md)
 - **Requerimientos:** RNF-REN-01, RNF-CON-01
 

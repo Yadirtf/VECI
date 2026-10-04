@@ -58,7 +58,7 @@ jobs:
           pg_restore --host localhost --username postgres --dbname restaurada \
             --no-owner --no-acl --exit-on-error copia/veci.dump
       - name: Comprobar la copia restaurada
-        run: psql -h localhost -U postgres -d restaurada -X -f infra/respaldos/verificar-restauracion.sql
+        run: psql -h localhost -U postgres -d restaurada -X -f backend/infra/respaldos/verificar-restauracion.sql
       - name: Dejar constancia
         run: |
           {

@@ -20,7 +20,7 @@ Secretos del entorno `respaldos` en GitHub:
 
 1. Descarga la última copia diaria exitosa y la descifra.
 2. La restaura en un PostgreSQL limpio.
-3. Corre [`infra/respaldos/verificar-restauracion.sql`](../../infra/respaldos/verificar-restauracion.sql), que falla si no hay migraciones, si algún saldo en caché no coincide con la suma del libro o si alguna tabla con `tenant_id` perdió su RLS.
+3. Corre [`backend/infra/respaldos/verificar-restauracion.sql`](../../backend/infra/respaldos/verificar-restauracion.sql), que falla si no hay migraciones, si algún saldo en caché no coincide con la suma del libro o si alguna tabla con `tenant_id` perdió su RLS.
 4. Deja el resultado en el resumen de la ejecución.
 
 Si la prueba falla, se trata como incidente: las copias de ese período no son confiables hasta corregir la causa.
@@ -54,8 +54,8 @@ Agregue una fila con cada prueba mensual (o enlace la ejecución de Actions).
 
    ```bash
    pg_restore --no-owner --no-acl --exit-on-error -d "$URL_NUEVA" veci.dump
-   psql "$URL_NUEVA" -v clave_api='...' -f infra/postgres/crear-roles.sql
-   psql "$URL_NUEVA" -f infra/respaldos/verificar-restauracion.sql
+   psql "$URL_NUEVA" -v clave_api='...' -f backend/infra/postgres/crear-roles.sql
+   psql "$URL_NUEVA" -f backend/infra/respaldos/verificar-restauracion.sql
    ```
 
    `--no-acl` omite los permisos: vuelva a otorgarlos aplicando el bloque de permisos de `docs/arquitectura/modelo-datos/sql/15_seguridad_rls.sql` (sección «permisos» y el bloque de particiones al final) o restaure sin `--no-acl` si los roles ya existen.

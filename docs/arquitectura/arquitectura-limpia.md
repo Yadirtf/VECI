@@ -16,17 +16,17 @@ Así, la regla “un cliente no puede consumir sin saldo” vive en un solo luga
 
 | Regla | Herramienta | Dónde se configura |
 | --- | --- | --- |
-| Archivo ≤ 300 líneas, función ≤ 50, ≤ 5 parámetros (TS) | ESLint | `tools/eslint/reglas-arquitectura.mjs` |
-| Archivo ≤ 300 líneas y función ≤ 50 (Dart) | Script Python | `tools/arquitectura/verificar-flutter.py` |
+| Archivo ≤ 300 líneas, función ≤ 50, ≤ 5 parámetros (TS) | ESLint | `backend/eslint/` y `web/eslint/reglas-arquitectura.mjs` |
+| Archivo ≤ 300 líneas y función ≤ 50 (Dart) | Script Python | `mobile/tool/verificar_arquitectura.py` |
 | El dominio no importa frameworks, base de datos ni red | ESLint, dependency-cruiser y el script de Flutter | `eslint.config.mjs` y `.dependency-cruiser.cjs` de cada app |
-| La aplicación no importa NestJS, Prisma, Sentry, Express ni `pg` | ESLint y dependency-cruiser | `apps/api` |
+| La aplicación no importa NestJS, Prisma, Sentry, Express ni `pg` | ESLint y dependency-cruiser | `backend` |
 | La presentación no importa infraestructura | dependency-cruiser | API y web; en Flutter, `presentation` no importa `data` |
 | Un módulo usa a otro solo por su `index.ts` (o su `domain` en Flutter) | dependency-cruiser y el script de Flutter | regla `modulos-por-su-interfaz-publica` |
 | Sin ciclos de importación | dependency-cruiser | regla `sin-ciclos` |
 
-Se corren juntos con `pnpm lint` y `pnpm arquitectura`. Las pruebas pueden tener funciones largas (un `describe` agrupa muchos casos), pero no archivos de más de 300 líneas.
+En `backend/` y `web/` se corren con `pnpm lint` y `pnpm arquitectura`; en `mobile/`, con `python3 tool/verificar_arquitectura.py`. Las pruebas pueden tener funciones largas (un `describe` agrupa muchos casos), pero no archivos de más de 300 líneas.
 
-## API (NestJS) · `apps/api/src`
+## API (NestJS) · `backend/src`
 
 ```
 modules/<modulo>/
@@ -53,24 +53,25 @@ shared/                  lo transversal, con las mismas cuatro capas
 - Los controladores de un comercio llevan `@RequiereComercio()`: exige la cabecera `x-veci-comercio` y una membresía activa del usuario.
 - Las pruebas unitarias van junto al archivo (`*.spec.ts`); las de integración, contra PostgreSQL real, en `test/integracion/*.int-spec.ts`.
 
-## Panel web (Next.js) · `apps/web/src`
+## Panel web (Next.js) · `web/src`
 
 ```
 app/                         rutas de Next.js: solo componen pantallas de features
 features/<funcionalidad>/
   domain/                    tipos y reglas puras (agrupar-por-dia.ts)
   application/               hooks de casos de uso (use-horarios.ts)
-  infrastructure/            acceso a la API con @veci/api-client
+  infrastructure/            acceso a la API con el cliente de shared/api
   presentation/              componentes (horarios-semana.tsx)
   <funcionalidad>.composicion.tsx   conecta infraestructura y presentación
   index.ts                   interfaz pública
 shared/ui/                   sistema de diseño: Boton, Tarjeta, Campo, Aviso, Saldo, tokens.css
+shared/api                   cliente tipado generado desde docs/api/openapi.json (esquema.ts) y cabeceras
 shared/config, shared/lib    configuración y utilidades
 ```
 
 Las páginas de `app/` importan solo el `index.ts` de una funcionalidad o `shared`, nunca su infraestructura.
 
-## App móvil (Flutter) · `apps/mobile/lib`
+## App móvil (Flutter) · `mobile/lib`
 
 ```
 features/<funcionalidad>/
@@ -103,4 +104,4 @@ El dominio de Flutter solo importa su propio dominio (ni `package:flutter`, ni D
 2. Empiece por el dominio y sus pruebas; luego el caso de uso con un fake en memoria.
 3. Implemente la infraestructura y conéctela en el módulo (`*.module.ts`, `*.composicion.tsx` o `core/di`).
 4. Exponga en `index.ts` solo lo que otros módulos necesitan.
-5. Si cambia el contrato HTTP, corra `pnpm generar` y suba los clientes regenerados.
+5. Si cambia el contrato HTTP, corra `pnpm generar` en `backend/` (actualiza `docs/api/openapi.json`) y luego regenere los clientes: `pnpm generar` en `web/` y `bash tool/generar_cliente.sh` en `mobile/`.

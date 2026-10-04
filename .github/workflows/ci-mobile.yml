@@ -1,0 +1,58 @@
+# CI de la app móvil (HU-01-02, HU-01-06, HU-01-09, HU-01-10). Todo corre dentro de mobile/.
+name: CI mobile
+
+on:
+  pull_request:
+  # En develop, Render espera a que estos checks pasen antes de desplegar staging.
+  push:
+    branches: [develop]
+  workflow_call:
+
+concurrency:
+  group: ci-mobile-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  FLUTTER_VERSION: 3.47.6
+
+defaults:
+  run:
+    working-directory: mobile
+
+jobs:
+  app:
+    name: Mobile · análisis, arquitectura, código generado y pruebas
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: flutter pub get
+      - name: Formato
+        # El código generado (*.g.dart) lo formatea build_runner con su propio ancho.
+        run: dart format --output=none --set-exit-if-changed $(find lib test tool -name '*.dart' ! -name '*.g.dart')
+      - name: Análisis estático
+        run: flutter analyze
+      - name: Arquitectura limpia
+        run: python3 tool/verificar_arquitectura.py
+      - name: Código generado al día (Drift, cliente Dart y tokens)
+        run: |
+          dart run build_runner build --delete-conflicting-outputs
+          bash tool/generar_cliente.sh
+          dart run tool/generar_tokens.dart
+          node ../.github/scripts/verificar-sin-cambios.mjs lib packages/veci_api
+      - name: Pruebas con cobertura
+        run: flutter test --coverage
+      - name: Reporte de cobertura
+        if: always()
+        run: node ../.github/scripts/resumen-cobertura.mjs "App móvil=coverage/lcov.info"

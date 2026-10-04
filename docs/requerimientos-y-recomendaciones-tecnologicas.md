@@ -304,7 +304,7 @@ Backend, panel web y app móvil siguen arquitectura limpia: cada parte del siste
 #### 5.3.2 Backend (NestJS)
 
 ```text
-apps/api/src/
+backend/src/
 ├── main.ts
 ├── app.module.ts
 ├── shared/
@@ -337,7 +337,7 @@ apps/api/src/
 #### 5.3.3 Panel web (Next.js)
 
 ```text
-apps/web/src/
+web/src/
 ├── app/                   # Rutas del App Router: solo componen pantallas, sin lógica
 │   ├── (auth)/login/page.tsx
 │   └── (panel)/reportes/page.tsx
@@ -359,7 +359,7 @@ apps/web/src/
 #### 5.3.4 App móvil (Flutter)
 
 ```text
-apps/mobile/lib/
+mobile/lib/
 ├── main.dart
 ├── core/
 │   ├── di/                # Proveedores de Riverpod para inyección de dependencias
@@ -412,7 +412,7 @@ Para una persona sola, la regla es: pocas piezas, servicios administrados y grat
 | WhatsApp | WhatsApp Business Cloud API (Meta), a futuro | Proveedor intermedio (ej. Twilio) | Plantillas de QR, saldo bajo y OTP; se cobra por conversación, solo en plan Pro. |
 | Pagos en línea (fase 2) | Wompi (a futuro) | Mercado Pago, ePayco | Colombiano, acepta Nequi, PSE, tarjetas y Bancolombia. |
 | Componentes del panel | Tailwind CSS + shadcn/ui + Recharts | MUI | Rápido de construir y liviano. |
-| Repositorio | Monorepo: apps/mobile, apps/web, apps/api, packages/shared | Repos separados | Un solo lugar para código, issues y CI. |
+| Repositorio | Un repositorio con tres proyectos independientes en la raíz: backend/, web/ y mobile/, más docs/ ([ADR 0014](arquitectura/adr/0014-proyectos-independientes-backend-web-mobile.md)) | Monorepo con paquetes compartidos; repos separados | Un solo lugar para issues, documentación y CI, sin acoplar los proyectos entre sí. |
 | Integración continua | GitHub Actions | GitLab CI | Ya se usa GitHub; gratis para repos privados en cuota básica. |
 | Errores y monitoreo | Sentry (plan gratuito) | Firebase Crashlytics | Cubre Flutter, Next.js y NestJS en un solo panel. |
 

@@ -10,14 +10,14 @@ Un proyecto de Sentry por app: `veci-api` (NestJS), `veci-web` (Next.js) y `veci
 | Entorno | `VECI_ENTORNO` | `NEXT_PUBLIC_VECI_ENTORNO` | `--dart-define=VECI_ENTORNO` |
 | Comercio (etiqueta `comercio`) | el comercio activo de la petición | el comercio del panel | el comercio de la caja |
 
-**Sin datos personales (Ley 1581).** Los SDK se configuran para no recoger usuario, IP, cookies, cabeceras, cuerpos, parámetros de consulta, parámetros SQL ni variables locales. Además hay una segunda red antes de enviar: `limpiarDatosPersonales` (en `@veci/shared`, usada por la API y el panel) deja de la petición solo la ruta sin consulta y el método, y borra el usuario y los datos extra; en la app, `beforeSend` borra el usuario y la petición. El comercio se identifica por su id, nunca por nombre ni NIT. Regla para quien escriba código: nunca poner nombres, cédulas, teléfonos ni correos en mensajes de error o en etiquetas.
+**Sin datos personales (Ley 1581).** Los SDK se configuran para no recoger usuario, IP, cookies, cabeceras, cuerpos, parámetros de consulta, parámetros SQL ni variables locales. Además hay una segunda red antes de enviar: `limpiarDatosPersonales` (una copia en cada proyecto: `backend/src/shared/infrastructure/observabilidad` y `web/src/shared/lib`) deja de la petición solo la ruta sin consulta y el método, y borra el usuario y los datos extra; en la app, `beforeSend` borra el usuario y la petición. El comercio se identifica por su id, nunca por nombre ni NIT. Regla para quien escriba código: nunca poner nombres, cédulas, teléfonos ni correos en mensajes de error o en etiquetas.
 
 ## Variables
 
 | App | Variable | Dónde |
 | --- | --- | --- |
 | API | `SENTRY_DSN`, `SENTRY_TRACES_SAMPLE_RATE` | Render |
-| Panel | `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_DSN_WEB` (servidor), `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT_WEB` | Vercel |
+| Panel | `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_DSN_WEB` (servidor), `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT_WEB` | Render (servicio del panel) |
 | App | `--dart-define=SENTRY_DSN=...` al compilar | CI de la app / máquina de publicación |
 
 Sin DSN, Sentry queda apagado: en local no se envía nada.

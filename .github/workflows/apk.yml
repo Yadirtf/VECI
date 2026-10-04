@@ -1,0 +1,56 @@
+# APK de pruebas de la app (mobile/) apuntando a la API de staging en Render.
+# Se construye en cada commit de develop, en los PR que tocan mobile/ y a mano (Run workflow).
+# Descárguelo en Actions → este workflow → Artifacts → veci-staging-apk e instálelo en el celular.
+# Va firmado con la llave de depuración del runner: para instalar una versión nueva, desinstale
+# la anterior. La URL de la API sale de la variable API_URL_STAGING del repositorio, si existe.
+name: APK staging
+
+on:
+  push:
+    branches: [develop]
+    paths: ['mobile/**', '.github/workflows/apk.yml']
+  pull_request:
+    paths: ['mobile/**', '.github/workflows/apk.yml']
+  workflow_dispatch:
+
+concurrency:
+  group: apk-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  FLUTTER_VERSION: 3.47.6
+  API_URL: ${{ vars.API_URL_STAGING || 'https://veci-api-staging.onrender.com' }}
+
+defaults:
+  run:
+    working-directory: mobile
+
+jobs:
+  apk:
+    name: Mobile · APK de staging
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: flutter pub get
+      - name: Construir el APK
+        run: >
+          flutter build apk --release
+          --dart-define=VECI_API="$API_URL"
+          --dart-define=VECI_ENTORNO=staging
+      - uses: actions/upload-artifact@v4
+        with:
+          name: veci-staging-apk
+          path: mobile/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30

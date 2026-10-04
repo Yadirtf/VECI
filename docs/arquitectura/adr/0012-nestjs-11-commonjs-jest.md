@@ -13,7 +13,7 @@ Además, el modelo de datos ya existe como DDL de referencia validado (HU-00-03)
 ## Decisión
 
 1. **NestJS 11 compilado a CommonJS** (`module: node16`) con **Jest 30 + ts-jest**. Es la combinación que el ecosistema de NestJS documenta y prueba; pasar a NestJS 12/ESM se evalúa cuando su paquete de pruebas soporte Jest o Vitest sin trucos.
-2. **TypeScript 6** en todo el monorepo (TS 7 todavía no es compatible con `ts-jest`).
+2. **TypeScript 6** en el backend y el panel (TS 7 todavía no es compatible con `ts-jest`).
 3. **Prisma 7** con `prisma.config.ts`, el generador `prisma-client` en CommonJS y el adaptador `@prisma/adapter-pg`.
 4. **El DDL manda y Prisma lo refleja:** la primera migración es el DDL de referencia concatenado; `schema.prisma` se obtiene por introspección (`db:esquema`) y nunca se edita a mano. Cada cambio de modelo es una migración SQL nueva y su espejo en `docs/arquitectura/modelo-datos/sql`.
 5. **El CI comprueba la paridad:** `db:verificar` levanta un PostgreSQL temporal, aplica el DDL en una base y las migraciones en otra, compara los volcados y corre la prueba de humo. `db:esquema --verificar` falla si `schema.prisma` quedó viejo.
@@ -28,4 +28,4 @@ Además, el modelo de datos ya existe como DDL de referencia validado (HU-00-03)
 
 - Hay que mantener dos piezas en sincronía (DDL de referencia y migraciones), pero el CI lo vigila.
 - Los tipos de Prisma reflejan exactamente la base real, incluidos los esquemas y nombres físicos en inglés.
-- La migración a ESM queda como deuda conocida y acotada a `apps/api`.
+- La migración a ESM queda como deuda conocida y acotada a `backend/`.
