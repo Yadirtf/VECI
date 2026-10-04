@@ -166,9 +166,9 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] Workspaces con pnpm (y Turborepo) para web, api y shared.
-- [ ] Lint y formato configurados en las tres apps (ESLint, Prettier, flutter analyze).
-- [ ] README con cómo correr cada app en local.
+- [x] Workspaces con pnpm (y Turborepo) para web, api y shared.
+- [x] Lint y formato configurados en las tres apps (ESLint, Prettier, flutter analyze).
+- [x] README con cómo correr cada app en local.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -180,8 +180,8 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] Un PR con lint, pruebas o build fallando queda en rojo.
-- [ ] Se reporta la cobertura del núcleo (tiqueteras, consumos, sincronización); la meta es 70 % o más.
+- [x] Un PR con lint, pruebas o build fallando queda en rojo.
+- [x] Se reporta la cobertura del núcleo (tiqueteras, consumos, sincronización); la meta es 70 % o más.
 - [ ] La rama principal está protegida y exige CI en verde.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
@@ -194,9 +194,9 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] Docker Compose levanta PostgreSQL local con datos de ejemplo.
-- [ ] Las migraciones corren automáticamente en staging y producción al desplegar.
-- [ ] Existe un script de datos semilla (comercio demo, cajero, cliente, tiqueteras).
+- [x] Docker Compose levanta PostgreSQL local con datos de ejemplo.
+- [x] Las migraciones corren automáticamente en staging y producción al desplegar.
+- [x] Existe un script de datos semilla (comercio demo, cajero, cliente, tiqueteras).
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -208,9 +208,9 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] Están las tablas Comercio, Sede, Usuario, Membresía, Afiliación, TipoTiquetera, Tiquetera, Movimiento, HorarioServicio, Suscripción y Auditoría.
-- [ ] El saldo de una tiquetera se calcula desde sus movimientos (compra, consumo, reverso, ajuste) y se guarda en caché transaccional.
-- [ ] El tipo de negocio y la unidad (almuerzo, café, pan) son datos configurables.
+- [x] Están las tablas Comercio, Sede, Usuario, Membresía, Afiliación, TipoTiquetera, Tiquetera, Movimiento, HorarioServicio, Suscripción y Auditoría.
+- [x] El saldo de una tiquetera se calcula desde sus movimientos (compra, consumo, reverso, ajuste) y se guarda en caché transaccional.
+- [x] El tipo de negocio y la unidad (almuerzo, café, pan) son datos configurables.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -222,9 +222,9 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] Toda tabla de negocio tiene comercio_id y una política RLS en PostgreSQL.
-- [ ] Un guard de NestJS fija el comercio activo en cada petición.
-- [ ] Pruebas automáticas intentan leer y escribir datos de otro comercio y fallan.
+- [x] Toda tabla de negocio tiene comercio_id y una política RLS en PostgreSQL.
+- [x] Un guard de NestJS fija el comercio activo en cada petición.
+- [x] Pruebas automáticas intentan leer y escribir datos de otro comercio y fallan.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -236,8 +236,8 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] El contrato se publica en /docs del API en dev y staging.
-- [ ] CI regenera los clientes y falla si quedaron desactualizados.
+- [x] El contrato se publica en /docs del API en dev y staging.
+- [x] CI regenera los clientes y falla si quedaron desactualizados.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -249,7 +249,7 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] Los errores de las tres apps llegan a Sentry con versión y comercio (sin datos personales).
+- [x] Los errores de las tres apps llegan a Sentry con versión y comercio (sin datos personales).
 - [ ] Hay una alerta cuando la sincronización falla de forma repetida o la API no responde.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
@@ -263,7 +263,7 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 **Criterios de aceptación**
 
 - [ ] API en Railway, Render o Fly.io; panel en Vercel; PostgreSQL administrado.
-- [ ] Copia diaria retenida 30 días y una prueba de restauración documentada.
+- [x] Copia diaria retenida 30 días y una prueba de restauración documentada.
 - [ ] Despliegue automático a staging al fusionar y a producción con aprobación.
 - [ ] El costo mensual queda por debajo de $150.000 COP.
 
@@ -277,9 +277,9 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] Paleta, tipografía y componentes base en Flutter y en el panel web.
-- [ ] Botones grandes, alto contraste y textos legibles al sol.
-- [ ] Guía de tono con ejemplos de mensajes ("¡Listo, veci! Te quedan 12 almuerzos").
+- [x] Paleta, tipografía y componentes base en Flutter y en el panel web.
+- [x] Botones grandes, alto contraste y textos legibles al sol.
+- [x] Guía de tono con ejemplos de mensajes ("¡Listo, veci! Te quedan 12 almuerzos").
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -291,11 +291,11 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] Cada app tiene la estructura de carpetas de la sección 5.3 del documento de requerimientos: módulos por funcionalidad con capas dominio, aplicación, infraestructura y presentación.
-- [ ] Existe un módulo de ejemplo completo por app (por ejemplo, horarios de servicio) que sirve de plantilla.
-- [ ] CI falla si un archivo supera 300 líneas o una función 50 líneas.
-- [ ] CI falla si el dominio importa el framework, la base de datos o la red, o si un módulo importa archivos internos de otro.
-- [ ] El README explica las capas y dónde va cada tipo de archivo.
+- [x] Cada app tiene la estructura de carpetas de la sección 5.3 del documento de requerimientos: módulos por funcionalidad con capas dominio, aplicación, infraestructura y presentación.
+- [x] Existe un módulo de ejemplo completo por app (por ejemplo, horarios de servicio) que sirve de plantilla.
+- [x] CI falla si un archivo supera 300 líneas o una función 50 líneas.
+- [x] CI falla si el dominio importa el framework, la base de datos o la red, o si un módulo importa archivos internos de otro.
+- [x] El README explica las capas y dónde va cada tipo de archivo.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |

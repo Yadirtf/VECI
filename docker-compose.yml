@@ -1,0 +1,45 @@
+# Entorno local de VECI (HU-01-03). Uso:
+#   pnpm db:levantar && pnpm db:migrar && pnpm db:semilla
+# La base queda en localhost:5432 con el dueño `veci` (migraciones) y el usuario
+# `veci_api` (la API, sujeto a RLS). Ver README.md › Base de datos.
+name: veci
+
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: veci
+      POSTGRES_PASSWORD: veci
+      POSTGRES_DB: veci
+      VECI_API_DB_PASSWORD: veci_api
+    ports:
+      - '5432:5432'
+    volumes:
+      - veci-datos:/var/lib/postgresql/data
+      - ./infra/postgres/crear-roles.sql:/veci/crear-roles.sql:ro
+      - ./infra/postgres/inicializar.sh:/docker-entrypoint-initdb.d/10-roles.sh:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U veci -d veci']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # API en contenedor (opcional; para desarrollo diario use `pnpm --filter @veci/api dev`).
+  api:
+    profiles: ['api']
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      VECI_ENTORNO: desarrollo
+      DATABASE_URL: postgresql://veci:veci@postgres:5432/veci
+      DATABASE_APP_URL: postgresql://veci_api:veci_api@postgres:5432/veci
+    ports:
+      - '3000:3000'
+
+volumes:
+  veci-datos:

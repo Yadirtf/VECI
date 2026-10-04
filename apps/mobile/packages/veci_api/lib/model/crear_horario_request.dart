@@ -1,0 +1,150 @@
+//
+// AUTO-GENERATED FILE, DO NOT MODIFY!
+//
+// @dart=2.18
+
+// ignore_for_file: unused_element, unused_import
+// ignore_for_file: always_put_required_named_parameters_first
+// ignore_for_file: constant_identifier_names
+// ignore_for_file: lines_longer_than_80_chars
+
+part of veci_api;
+
+class CrearHorarioRequest {
+  /// Returns a new [CrearHorarioRequest] instance.
+  CrearHorarioRequest({
+    required this.dia,
+    required this.horaFin,
+    required this.horaInicio,
+    required this.sedeId,
+    required this.servicioId,
+  });
+
+  /// Código del día (catálogo de días)
+  String dia;
+
+  String horaFin;
+
+  String horaInicio;
+
+  /// Sede donde aplica el horario
+  String sedeId;
+
+  /// Servicio (desayuno, almuerzo...)
+  String servicioId;
+
+  @override
+  bool operator ==(Object other) => identical(this, other) || other is CrearHorarioRequest &&
+    other.dia == dia &&
+    other.horaFin == horaFin &&
+    other.horaInicio == horaInicio &&
+    other.sedeId == sedeId &&
+    other.servicioId == servicioId;
+
+  @override
+  int get hashCode =>
+    // ignore: unnecessary_parenthesis
+    (dia.hashCode) +
+    (horaFin.hashCode) +
+    (horaInicio.hashCode) +
+    (sedeId.hashCode) +
+    (servicioId.hashCode);
+
+  @override
+  String toString() => 'CrearHorarioRequest[dia=$dia, horaFin=$horaFin, horaInicio=$horaInicio, sedeId=$sedeId, servicioId=$servicioId]';
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+      json[r'dia'] = this.dia;
+      json[r'horaFin'] = this.horaFin;
+      json[r'horaInicio'] = this.horaInicio;
+      json[r'sedeId'] = this.sedeId;
+      json[r'servicioId'] = this.servicioId;
+    return json;
+  }
+
+  /// Returns a new [CrearHorarioRequest] instance and imports its values from
+  /// [value] if it's a [Map], null otherwise.
+  // ignore: prefer_constructors_over_static_methods
+  static CrearHorarioRequest? fromJson(dynamic value) {
+    if (value is Map) {
+      final json = value.cast<String, dynamic>();
+
+      // Ensure that the map contains the required keys.
+      // Note 1: the values aren't checked for validity beyond being non-null.
+      // Note 2: this code is stripped in release mode!
+      assert(() {
+        assert(json.containsKey(r'dia'), 'Required key "CrearHorarioRequest[dia]" is missing from JSON.');
+        assert(json[r'dia'] != null, 'Required key "CrearHorarioRequest[dia]" has a null value in JSON.');
+        assert(json.containsKey(r'horaFin'), 'Required key "CrearHorarioRequest[horaFin]" is missing from JSON.');
+        assert(json[r'horaFin'] != null, 'Required key "CrearHorarioRequest[horaFin]" has a null value in JSON.');
+        assert(json.containsKey(r'horaInicio'), 'Required key "CrearHorarioRequest[horaInicio]" is missing from JSON.');
+        assert(json[r'horaInicio'] != null, 'Required key "CrearHorarioRequest[horaInicio]" has a null value in JSON.');
+        assert(json.containsKey(r'sedeId'), 'Required key "CrearHorarioRequest[sedeId]" is missing from JSON.');
+        assert(json[r'sedeId'] != null, 'Required key "CrearHorarioRequest[sedeId]" has a null value in JSON.');
+        assert(json.containsKey(r'servicioId'), 'Required key "CrearHorarioRequest[servicioId]" is missing from JSON.');
+        assert(json[r'servicioId'] != null, 'Required key "CrearHorarioRequest[servicioId]" has a null value in JSON.');
+        return true;
+      }());
+
+      return CrearHorarioRequest(
+        dia: mapValueOfType<String>(json, r'dia')!,
+        horaFin: mapValueOfType<String>(json, r'horaFin')!,
+        horaInicio: mapValueOfType<String>(json, r'horaInicio')!,
+        sedeId: mapValueOfType<String>(json, r'sedeId')!,
+        servicioId: mapValueOfType<String>(json, r'servicioId')!,
+      );
+    }
+    return null;
+  }
+
+  static List<CrearHorarioRequest> listFromJson(dynamic json, {bool growable = false,}) {
+    final result = <CrearHorarioRequest>[];
+    if (json is List && json.isNotEmpty) {
+      for (final row in json) {
+        final value = CrearHorarioRequest.fromJson(row);
+        if (value != null) {
+          result.add(value);
+        }
+      }
+    }
+    return result.toList(growable: growable);
+  }
+
+  static Map<String, CrearHorarioRequest> mapFromJson(dynamic json) {
+    final map = <String, CrearHorarioRequest>{};
+    if (json is Map && json.isNotEmpty) {
+      json = json.cast<String, dynamic>(); // ignore: parameter_assignments
+      for (final entry in json.entries) {
+        final value = CrearHorarioRequest.fromJson(entry.value);
+        if (value != null) {
+          map[entry.key] = value;
+        }
+      }
+    }
+    return map;
+  }
+
+  // maps a json object with a list of CrearHorarioRequest-objects as value to a dart map
+  static Map<String, List<CrearHorarioRequest>> mapListFromJson(dynamic json, {bool growable = false,}) {
+    final map = <String, List<CrearHorarioRequest>>{};
+    if (json is Map && json.isNotEmpty) {
+      // ignore: parameter_assignments
+      json = json.cast<String, dynamic>();
+      for (final entry in json.entries) {
+        map[entry.key] = CrearHorarioRequest.listFromJson(entry.value, growable: growable,);
+      }
+    }
+    return map;
+  }
+
+  /// The list of required keys that must be present in a JSON.
+  static const requiredKeys = <String>{
+    'dia',
+    'horaFin',
+    'horaInicio',
+    'sedeId',
+    'servicioId',
+  };
+}
+

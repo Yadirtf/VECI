@@ -1,0 +1,2048 @@
+// Generado con `pnpm --filter @veci/api db:esquema` desde la base migrada.
+// No editar a mano: la fuente es prisma/migrations (y el DDL de docs/arquitectura/modelo-datos/sql).
+generator client {
+  provider            = "prisma-client"
+  output              = "../generated/prisma"
+  previewFeatures     = ["partialIndexes"]
+  importFileExtension = ""
+  moduleFormat        = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["audit", "billing", "compliance", "consumptions", "core", "customers", "identity", "ledger", "notifications", "prepaid", "sales", "sync", "tenancy"]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model actions {
+  id           Int         @id @db.SmallInt
+  module_id    Int         @db.SmallInt
+  code         String      @unique @db.VarChar(40)
+  name         String      @db.VarChar(120)
+  is_sensitive Boolean     @default(false)
+  modules      modules     @relation(fields: [module_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  audit_log    audit_log[]
+
+  @@schema("audit")
+}
+
+/// This table is a partition table and requires additional setup for migrations. Visit https://pris.ly/d/partition-tables for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model audit_log {
+  id                  String   @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  occurred_at         DateTime @default(now()) @db.Timestamptz(6)
+  tenant_id           String?  @db.Uuid
+  action_id           Int      @db.SmallInt
+  actor_user_id       String?  @db.Uuid
+  actor_membership_id String?  @db.Uuid
+  entity_table        String   @db.VarChar(63)
+  entity_id           String?  @db.Uuid
+  device_id           String?  @db.Uuid
+  ip_address          String?  @db.Inet
+  request_id          String?  @db.Uuid
+  before_data         Json?
+  after_data          Json?
+  actions             actions  @relation(fields: [action_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([id, occurred_at])
+  @@index([entity_table, entity_id], map: "audit_log_entity_ix")
+  @@index([tenant_id, occurred_at(sort: Desc)], map: "audit_log_tenant_ix")
+  @@schema("audit")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model billing_periods {
+  id     Int     @id @db.SmallInt
+  code   String  @unique @db.VarChar(40)
+  name   String  @db.VarChar(40)
+  months Int     @db.SmallInt
+  plans  plans[]
+
+  @@schema("billing")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model features {
+  id            Int             @id @db.SmallInt
+  code          String          @unique @db.VarChar(40)
+  name          String          @db.VarChar(80)
+  description   String?
+  plan_features plan_features[]
+
+  @@schema("billing")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model limit_types {
+  id          Int           @id @db.SmallInt
+  code        String        @unique @db.VarChar(40)
+  name        String        @db.VarChar(80)
+  description String?
+  plan_limits plan_limits[]
+
+  @@schema("billing")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model plan_features {
+  plan_id    Int      @db.SmallInt
+  feature_id Int      @db.SmallInt
+  features   features @relation(fields: [feature_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  plans      plans    @relation(fields: [plan_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([plan_id, feature_id])
+  @@schema("billing")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model plan_limits {
+  plan_id       Int         @db.SmallInt
+  limit_type_id Int         @db.SmallInt
+  max_value     Int?
+  limit_types   limit_types @relation(fields: [limit_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  plans         plans       @relation(fields: [plan_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([plan_id, limit_type_id])
+  @@schema("billing")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model plans {
+  id                Int             @id @db.SmallInt
+  code              String          @unique @db.VarChar(40)
+  name              String          @db.VarChar(80)
+  price_amount      Decimal         @db.Decimal(14, 2)
+  currency_code     String          @default("COP") @db.Char(3)
+  billing_period_id Int             @db.SmallInt
+  trial_days        Int?            @db.SmallInt
+  grace_days        Int             @default(7) @db.SmallInt
+  is_public         Boolean         @default(true)
+  is_active         Boolean         @default(true)
+  plan_features     plan_features[]
+  plan_limits       plan_limits[]
+  billing_periods   billing_periods @relation(fields: [billing_period_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  currencies        currencies      @relation(fields: [currency_code], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  subscriptions     subscriptions[]
+
+  @@schema("billing")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model subscription_payments {
+  id                  String            @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id           String            @db.Uuid
+  subscription_id     String            @db.Uuid
+  paid_at             DateTime          @db.Timestamptz(6)
+  amount              Decimal           @db.Decimal(14, 2)
+  currency_code       String            @default("COP") @db.Char(3)
+  payment_method_id   Int               @db.SmallInt
+  payment_channel_id  Int?              @db.SmallInt
+  reference           String?           @db.VarChar(60)
+  period_starts_on    DateTime          @db.Date
+  period_ends_on      DateTime          @db.Date
+  recorded_by_user_id String            @db.Uuid
+  created_at          DateTime          @default(now()) @db.Timestamptz(6)
+  currencies          currencies        @relation(fields: [currency_code], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  payment_channels    payment_channels? @relation(fields: [payment_channel_id, payment_method_id], references: [id, payment_method_id], onDelete: NoAction, onUpdate: NoAction)
+  payment_methods     payment_methods   @relation(fields: [payment_method_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users               users             @relation(fields: [recorded_by_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subscriptions       subscriptions     @relation(fields: [tenant_id, subscription_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("billing")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model subscription_status_transitions {
+  from_status_id                                                                              Int                   @db.SmallInt
+  to_status_id                                                                                Int                   @db.SmallInt
+  subscription_statuses_subscription_status_transitions_from_status_idTosubscription_statuses subscription_statuses @relation("subscription_status_transitions_from_status_idTosubscription_statuses", fields: [from_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subscription_statuses_subscription_status_transitions_to_status_idTosubscription_statuses   subscription_statuses @relation("subscription_status_transitions_to_status_idTosubscription_statuses", fields: [to_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([from_status_id, to_status_id])
+  @@schema("billing")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model subscription_statuses {
+  id                                                                                                    Int                               @id @db.SmallInt
+  code                                                                                                  String                            @unique @db.VarChar(40)
+  name                                                                                                  String                            @db.VarChar(80)
+  description                                                                                           String?
+  allows_writes                                                                                         Boolean
+  is_initial                                                                                            Boolean                           @default(false)
+  is_terminal                                                                                           Boolean                           @default(false)
+  subscription_status_transitions_subscription_status_transitions_from_status_idTosubscription_statuses subscription_status_transitions[] @relation("subscription_status_transitions_from_status_idTosubscription_statuses")
+  subscription_status_transitions_subscription_status_transitions_to_status_idTosubscription_statuses   subscription_status_transitions[] @relation("subscription_status_transitions_to_status_idTosubscription_statuses")
+  subscriptions                                                                                         subscriptions[]
+
+  @@schema("billing")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model subscriptions {
+  id                     String                  @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id              String                  @unique(map: "subscriptions_current_ux", where: raw("(ended_at IS NULL)")) @db.Uuid
+  plan_id                Int                     @db.SmallInt
+  subscription_status_id Int                     @db.SmallInt
+  status_changed_at      DateTime                @default(now()) @db.Timestamptz(6)
+  started_at             DateTime                @default(now()) @db.Timestamptz(6)
+  current_period_ends_at DateTime                @db.Timestamptz(6)
+  grace_ends_at          DateTime?               @db.Timestamptz(6)
+  ended_at               DateTime?               @db.Timestamptz(6)
+  subscription_payments  subscription_payments[]
+  plans                  plans                   @relation(fields: [plan_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subscription_statuses  subscription_statuses   @relation(fields: [subscription_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenants                tenants                 @relation(fields: [tenant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([tenant_id, id])
+  @@index([current_period_ends_at], map: "subscriptions_due_ix", where: raw("(ended_at IS NULL)"))
+  @@schema("billing")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model consent_channels {
+  id       Int        @id @db.SmallInt
+  code     String     @unique @db.VarChar(40)
+  name     String     @db.VarChar(80)
+  consents consents[]
+
+  @@schema("compliance")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model consents {
+  id                        String           @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  person_id                 String           @db.Uuid
+  policy_version_id         String           @db.Uuid
+  consent_channel_id        Int              @db.SmallInt
+  accepted_at               DateTime         @default(now()) @db.Timestamptz(6)
+  captured_by_tenant_id     String?          @db.Uuid
+  captured_by_membership_id String?          @db.Uuid
+  device_id                 String?          @db.Uuid
+  ip_address                String?          @db.Inet
+  revoked_at                DateTime?        @db.Timestamptz(6)
+  memberships               memberships?     @relation(fields: [captured_by_membership_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenants                   tenants?         @relation(fields: [captured_by_tenant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  consent_channels          consent_channels @relation(fields: [consent_channel_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  devices                   devices?         @relation(fields: [device_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  people                    people           @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  policy_versions           policy_versions  @relation(fields: [policy_version_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([person_id, policy_version_id])
+  @@schema("compliance")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model data_request_status_transitions {
+  from_status_id                                                                              Int                   @db.SmallInt
+  to_status_id                                                                                Int                   @db.SmallInt
+  data_request_statuses_data_request_status_transitions_from_status_idTodata_request_statuses data_request_statuses @relation("data_request_status_transitions_from_status_idTodata_request_statuses", fields: [from_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  data_request_statuses_data_request_status_transitions_to_status_idTodata_request_statuses   data_request_statuses @relation("data_request_status_transitions_to_status_idTodata_request_statuses", fields: [to_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([from_status_id, to_status_id])
+  @@schema("compliance")
+}
+
+model data_request_statuses {
+  id                                                                                                    Int                               @id @db.SmallInt
+  code                                                                                                  String                            @unique @db.VarChar(40)
+  name                                                                                                  String                            @db.VarChar(80)
+  is_initial                                                                                            Boolean                           @default(false)
+  is_terminal                                                                                           Boolean                           @default(false)
+  data_request_status_transitions_data_request_status_transitions_from_status_idTodata_request_statuses data_request_status_transitions[] @relation("data_request_status_transitions_from_status_idTodata_request_statuses")
+  data_request_status_transitions_data_request_status_transitions_to_status_idTodata_request_statuses   data_request_status_transitions[] @relation("data_request_status_transitions_to_status_idTodata_request_statuses")
+  data_requests                                                                                         data_requests[]
+
+  @@schema("compliance")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model data_request_types {
+  id                       Int             @id @db.SmallInt
+  code                     String          @unique @db.VarChar(40)
+  name                     String          @db.VarChar(80)
+  legal_term_business_days Int             @db.SmallInt
+  data_requests            data_requests[]
+
+  @@schema("compliance")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model data_requests {
+  id                     String                @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  person_id              String                @db.Uuid
+  data_request_type_id   Int                   @db.SmallInt
+  data_request_status_id Int                   @db.SmallInt
+  status_changed_at      DateTime              @default(now()) @db.Timestamptz(6)
+  filed_at               DateTime              @default(now()) @db.Timestamptz(6)
+  due_on                 DateTime              @db.Date
+  request_detail         String                @db.VarChar(2000)
+  resolution_detail      String?               @db.VarChar(2000)
+  resolved_by_user_id    String?               @db.Uuid
+  resolved_at            DateTime?             @db.Timestamptz(6)
+  data_request_statuses  data_request_statuses @relation(fields: [data_request_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  data_request_types     data_request_types    @relation(fields: [data_request_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  people                 people                @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users                  users?                @relation(fields: [resolved_by_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([data_request_status_id, due_on], map: "data_requests_due_ix")
+  @@schema("compliance")
+}
+
+model policy_document_types {
+  id              Int               @id @db.SmallInt
+  code            String            @unique @db.VarChar(40)
+  name            String            @db.VarChar(120)
+  policy_versions policy_versions[]
+
+  @@schema("compliance")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model policy_versions {
+  id                      String                @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  policy_document_type_id Int                   @db.SmallInt
+  version_label           String                @db.VarChar(20)
+  content_url             String                @db.VarChar(500)
+  content_sha256          Bytes
+  published_at            DateTime              @db.Timestamptz(6)
+  requires_reacceptance   Boolean               @default(true)
+  consents                consents[]
+  policy_document_types   policy_document_types @relation(fields: [policy_document_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([policy_document_type_id, version_label])
+  @@schema("compliance")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model capture_methods {
+  id           Int            @id @db.SmallInt
+  code         String         @unique @db.VarChar(40)
+  name         String         @db.VarChar(80)
+  consumptions consumptions[]
+
+  @@schema("consumptions")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model consumption_overrides {
+  event_id                    String        @id @db.Uuid
+  tenant_id                   String        @db.Uuid
+  event_reason_id             Int           @db.SmallInt
+  reason_note                 String        @db.VarChar(500)
+  authorized_by_membership_id String        @db.Uuid
+  authorized_at               DateTime      @db.Timestamptz(6)
+  event_reasons               event_reasons @relation(fields: [event_reason_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  memberships                 memberships   @relation(fields: [tenant_id, authorized_by_membership_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  consumptions                consumptions  @relation(fields: [tenant_id, event_id], references: [tenant_id, event_id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("consumptions")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model consumptions {
+  event_id                      String                 @id @db.Uuid
+  tenant_id                     String                 @db.Uuid
+  capture_method_id             Int                    @db.SmallInt
+  service_id                    String?                @db.Uuid
+  service_schedule_id           String?                @db.Uuid
+  business_date                 DateTime               @db.Date
+  units_requested               Int
+  affiliation_qr_code_id        String?                @db.Uuid
+  device_reported_balance_after Int?
+  consumption_overrides         consumption_overrides[]
+  capture_methods               capture_methods        @relation(fields: [capture_method_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  affiliation_qr_codes          affiliation_qr_codes?  @relation(fields: [tenant_id, affiliation_qr_code_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  events                        events                 @relation(fields: [tenant_id, event_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  services                      services?              @relation(fields: [tenant_id, service_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  service_schedules             service_schedules?     @relation(fields: [tenant_id, service_schedule_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([tenant_id, event_id])
+  @@index([tenant_id, service_id, business_date], map: "consumptions_service_day_ix")
+  @@schema("consumptions")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model contact_types {
+  id                     Int                      @id @db.SmallInt
+  code                   String                   @unique @db.VarChar(40)
+  name                   String                   @db.VarChar(80)
+  can_login              Boolean
+  validation_regex       String?                  @db.VarChar(120)
+  is_active              Boolean                  @default(true)
+  person_contacts        person_contacts[]
+  user_login_identifiers user_login_identifiers[]
+  tenant_contacts        tenant_contacts[]
+
+  @@unique([id, can_login])
+  @@schema("core")
+}
+
+model countries {
+  id             Int              @id @db.SmallInt
+  iso2           String           @unique @db.Char(2)
+  name           String           @db.VarChar(80)
+  phone_prefix   String           @db.VarChar(5)
+  departments    departments[]
+  document_types document_types[]
+  holidays       holidays[]
+
+  @@schema("core")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model currencies {
+  code                  String                  @id @db.Char(3)
+  name                  String                  @db.VarChar(60)
+  minor_units           Int                     @db.SmallInt
+  plans                 plans[]
+  subscription_payments subscription_payments[]
+  tenants               tenants[]
+
+  @@schema("core")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model data_types {
+  id                  Int                   @id @db.SmallInt
+  code                String                @unique @db.VarChar(40)
+  name                String                @db.VarChar(40)
+  setting_definitions setting_definitions[]
+
+  @@schema("core")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model departments {
+  id             Int              @id @db.SmallInt
+  country_id     Int              @db.SmallInt
+  official_code  String           @db.VarChar(10)
+  name           String           @db.VarChar(80)
+  countries      countries        @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  municipalities municipalities[]
+
+  @@unique([country_id, official_code])
+  @@schema("core")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model document_types {
+  id                 Int       @id @db.SmallInt
+  code               String    @unique @db.VarChar(40)
+  name               String    @db.VarChar(80)
+  country_id         Int       @db.SmallInt
+  for_natural_person Boolean
+  for_legal_entity   Boolean
+  validation_regex   String?   @db.VarChar(120)
+  sort_order         Int       @default(0) @db.SmallInt
+  is_active          Boolean   @default(true)
+  countries          countries @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  people             people[]
+  tenants            tenants[]
+
+  @@schema("core")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model holidays {
+  country_id   Int       @db.SmallInt
+  holiday_date DateTime  @db.Date
+  name         String    @db.VarChar(80)
+  countries    countries @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([country_id, holiday_date])
+  @@schema("core")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model modules {
+  id                  Int                   @id @db.SmallInt
+  code                String                @unique @db.VarChar(40)
+  name                String                @db.VarChar(80)
+  description         String?
+  is_active           Boolean               @default(true)
+  actions             actions[]
+  permissions         permissions[]
+  notification_types  notification_types[]
+  setting_definitions setting_definitions[]
+
+  @@schema("core")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model municipalities {
+  id            Int         @id
+  department_id Int         @db.SmallInt
+  official_code String      @unique @db.VarChar(10)
+  name          String      @db.VarChar(80)
+  departments   departments @relation(fields: [department_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  branches      branches[]
+
+  @@schema("core")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model payment_channels {
+  id                    Int                     @id @db.SmallInt
+  payment_method_id     Int                     @db.SmallInt
+  code                  String                  @unique @db.VarChar(40)
+  name                  String                  @db.VarChar(80)
+  sort_order            Int                     @default(0) @db.SmallInt
+  is_active             Boolean                 @default(true)
+  subscription_payments subscription_payments[]
+  payment_methods       payment_methods         @relation(fields: [payment_method_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  sale_payments         sale_payments[]
+
+  @@unique([id, payment_method_id])
+  @@schema("core")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model payment_methods {
+  id                    Int                     @id @db.SmallInt
+  code                  String                  @unique @db.VarChar(40)
+  name                  String                  @db.VarChar(80)
+  needs_channel         Boolean
+  sort_order            Int                     @default(0) @db.SmallInt
+  is_active             Boolean                 @default(true)
+  subscription_payments subscription_payments[]
+  payment_channels      payment_channels[]
+  sale_payments         sale_payments[]
+
+  @@schema("core")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model qr_revocation_reasons {
+  id                   Int                    @id @db.SmallInt
+  code                 String                 @unique @db.VarChar(40)
+  name                 String                 @db.VarChar(80)
+  is_active            Boolean                @default(true)
+  affiliation_qr_codes affiliation_qr_codes[]
+  personal_qr_codes    personal_qr_codes[]
+
+  @@schema("core")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model weekdays {
+  id                Int                 @id @db.SmallInt
+  code              String              @unique @db.VarChar(40)
+  name              String              @db.VarChar(20)
+  service_schedules service_schedules[]
+
+  @@schema("core")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model affiliation_channels {
+  id           Int            @id @db.SmallInt
+  code         String         @unique @db.VarChar(40)
+  name         String         @db.VarChar(80)
+  affiliations affiliations[]
+
+  @@schema("customers")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model affiliation_qr_codes {
+  id                    String                 @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id             String                 @db.Uuid
+  affiliation_id        String                 @unique(map: "affiliation_qr_codes_current_ux", where: raw("(revoked_at IS NULL)")) @db.Uuid
+  version               Int
+  signing_key_id        String                 @db.Uuid
+  issued_at             DateTime               @default(now()) @db.Timestamptz(6)
+  revoked_at            DateTime?              @db.Timestamptz(6)
+  revoked_by_user_id    String?                @db.Uuid
+  revocation_reason_id  Int?                   @db.SmallInt
+  sync_version          BigInt                 @default(0)
+  consumptions          consumptions[]
+  qr_revocation_reasons qr_revocation_reasons? @relation(fields: [revocation_reason_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users                 users?                 @relation(fields: [revoked_by_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  affiliations          affiliations           @relation(fields: [tenant_id, affiliation_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  tenant_signing_keys   tenant_signing_keys    @relation(fields: [tenant_id, signing_key_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([affiliation_id, version])
+  @@unique([tenant_id, id])
+  @@schema("customers")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model affiliation_status_transitions {
+  from_status_id                                                                           Int                  @db.SmallInt
+  to_status_id                                                                             Int                  @db.SmallInt
+  affiliation_statuses_affiliation_status_transitions_from_status_idToaffiliation_statuses affiliation_statuses @relation("affiliation_status_transitions_from_status_idToaffiliation_statuses", fields: [from_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  affiliation_statuses_affiliation_status_transitions_to_status_idToaffiliation_statuses   affiliation_statuses @relation("affiliation_status_transitions_to_status_idToaffiliation_statuses", fields: [to_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([from_status_id, to_status_id])
+  @@schema("customers")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model affiliation_statuses {
+  id                                                                                                 Int                              @id @db.SmallInt
+  code                                                                                               String                           @unique @db.VarChar(40)
+  name                                                                                               String                           @db.VarChar(80)
+  description                                                                                        String?
+  allows_operations                                                                                  Boolean
+  is_initial                                                                                         Boolean                          @default(false)
+  is_terminal                                                                                        Boolean                          @default(false)
+  sort_order                                                                                         Int                              @default(0) @db.SmallInt
+  affiliation_status_transitions_affiliation_status_transitions_from_status_idToaffiliation_statuses affiliation_status_transitions[] @relation("affiliation_status_transitions_from_status_idToaffiliation_statuses")
+  affiliation_status_transitions_affiliation_status_transitions_to_status_idToaffiliation_statuses   affiliation_status_transitions[] @relation("affiliation_status_transitions_to_status_idToaffiliation_statuses")
+  affiliations                                                                                       affiliations[]
+
+  @@schema("customers")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model affiliations {
+  id                          String                @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id                   String                @db.Uuid
+  person_id                   String                @db.Uuid
+  affiliation_status_id       Int                   @db.SmallInt
+  status_changed_at           DateTime              @default(now()) @db.Timestamptz(6)
+  affiliation_channel_id      Int                   @db.SmallInt
+  branch_id                   String?               @db.Uuid
+  affiliated_by_membership_id String?               @db.Uuid
+  affiliated_at               DateTime              @default(now()) @db.Timestamptz(6)
+  created_at                  DateTime              @default(now()) @db.Timestamptz(6)
+  updated_at                  DateTime              @default(now()) @db.Timestamptz(6)
+  sync_version                BigInt                @default(0)
+  affiliation_qr_codes        affiliation_qr_codes[]
+  affiliation_channels        affiliation_channels  @relation(fields: [affiliation_channel_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  affiliation_statuses        affiliation_statuses  @relation(fields: [affiliation_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  people                      people                @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  memberships                 memberships?          @relation(fields: [tenant_id, affiliated_by_membership_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  branches                    branches?             @relation(fields: [tenant_id, branch_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  tenants                     tenants               @relation(fields: [tenant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  balance_links               balance_links[]
+  events                      events[]
+  packages                    packages[]
+
+  @@unique([tenant_id, id])
+  @@unique([tenant_id, person_id])
+  @@index([person_id], map: "affiliations_person_ix")
+  @@schema("customers")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model balance_links {
+  id                 String       @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id          String       @db.Uuid
+  affiliation_id     String       @unique(map: "balance_links_current_ux", where: raw("(revoked_at IS NULL)")) @db.Uuid
+  token_hash         Bytes        @unique
+  created_by_user_id String?      @db.Uuid
+  created_at         DateTime     @default(now()) @db.Timestamptz(6)
+  last_accessed_at   DateTime?    @db.Timestamptz(6)
+  revoked_at         DateTime?    @db.Timestamptz(6)
+  users              users?       @relation(fields: [created_by_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  affiliations       affiliations @relation(fields: [tenant_id, affiliation_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("customers")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model personal_qr_codes {
+  id                    String                 @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  person_id             String                 @unique(map: "personal_qr_codes_current_ux", where: raw("(revoked_at IS NULL)")) @db.Uuid
+  version               Int
+  issued_at             DateTime               @default(now()) @db.Timestamptz(6)
+  revoked_at            DateTime?              @db.Timestamptz(6)
+  revocation_reason_id  Int?                   @db.SmallInt
+  people                people                 @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  qr_revocation_reasons qr_revocation_reasons? @relation(fields: [revocation_reason_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([person_id, version])
+  @@schema("customers")
+}
+
+model credential_revocation_reasons {
+  id               Int                @id @db.SmallInt
+  code             String             @unique @db.VarChar(40)
+  name             String             @db.VarChar(80)
+  user_credentials user_credentials[]
+
+  @@schema("identity")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model credential_types {
+  id                  Int                @id @db.SmallInt
+  code                String             @unique @db.VarChar(40)
+  name                String             @db.VarChar(80)
+  max_failed_attempts Int                @db.SmallInt
+  lock_minutes        Int                @db.SmallInt
+  is_active           Boolean            @default(true)
+  user_credentials    user_credentials[]
+
+  @@schema("identity")
+}
+
+model device_platforms {
+  id      Int       @id @db.SmallInt
+  code    String    @unique @db.VarChar(40)
+  name    String    @db.VarChar(40)
+  devices devices[]
+
+  @@schema("identity")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model devices {
+  id                 String               @id @db.Uuid
+  device_platform_id Int                  @db.SmallInt
+  model              String?              @db.VarChar(80)
+  os_version         String?              @db.VarChar(40)
+  app_version        String?              @db.VarChar(40)
+  first_seen_at      DateTime             @default(now()) @db.Timestamptz(6)
+  last_seen_at       DateTime             @default(now()) @db.Timestamptz(6)
+  consents           consents[]
+  device_platforms   device_platforms     @relation(fields: [device_platform_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  sessions           sessions[]
+  events             events[]
+  push_tokens        push_tokens[]
+  device_checkpoints device_checkpoints[]
+  sync_batches       sync_batches[]
+  tenant_devices     tenant_devices[]
+
+  @@schema("identity")
+}
+
+/// This table is a partition table and requires additional setup for migrations. Visit https://pris.ly/d/partition-tables for more info.
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model login_attempts {
+  id                      String                 @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  attempted_at            DateTime               @default(now()) @db.Timestamptz(6)
+  identifier_hash         Bytes
+  user_id                 String?                @db.Uuid
+  device_id               String?                @db.Uuid
+  ip_address              String?                @db.Inet
+  succeeded               Boolean
+  login_failure_reason_id Int?                   @db.SmallInt
+  login_failure_reasons   login_failure_reasons? @relation(fields: [login_failure_reason_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([id, attempted_at])
+  @@index([user_id, attempted_at], map: "login_attempts_user_ix")
+  @@schema("identity")
+}
+
+model login_failure_reasons {
+  id             Int              @id @db.SmallInt
+  code           String           @unique @db.VarChar(40)
+  name           String           @db.VarChar(80)
+  login_attempts login_attempts[]
+
+  @@schema("identity")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
+model people {
+  id                String             @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  document_type_id  Int                @db.SmallInt
+  document_number   String             @db.VarChar(20)
+  given_names       String             @db.VarChar(80)
+  family_names      String?            @db.VarChar(80)
+  person_status_id  Int                @db.SmallInt
+  status_changed_at DateTime           @default(now()) @db.Timestamptz(6)
+  created_at        DateTime           @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime           @default(now()) @db.Timestamptz(6)
+  sync_version      BigInt             @default(0)
+  consents          consents[]
+  data_requests     data_requests[]
+  affiliations      affiliations[]
+  personal_qr_codes personal_qr_codes[]
+  document_types    document_types     @relation(fields: [document_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  person_statuses   person_statuses    @relation(fields: [person_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  person_contacts   person_contacts[]
+  users             users?
+  notifications     notifications[]
+
+  @@unique([document_type_id, document_number], map: "people_document_uk")
+  @@schema("identity")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model permissions {
+  id               Int                @id @db.SmallInt
+  module_id        Int                @db.SmallInt
+  code             String             @unique @db.VarChar(80)
+  name             String             @db.VarChar(120)
+  description      String?
+  modules          modules            @relation(fields: [module_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  role_permissions role_permissions[]
+
+  @@schema("identity")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model person_contacts {
+  id              String        @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  person_id       String        @db.Uuid
+  contact_type_id Int           @db.SmallInt
+  value           String        @db.VarChar(120)
+  is_primary      Boolean       @default(false)
+  verified_at     DateTime?     @db.Timestamptz(6)
+  created_at      DateTime      @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime      @default(now()) @db.Timestamptz(6)
+  contact_types   contact_types @relation(fields: [contact_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  people          people        @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([person_id, contact_type_id], map: "person_contacts_one_primary_ux", where: raw("is_primary"))
+  @@unique([person_id, contact_type_id, value])
+  @@index([contact_type_id, value], map: "person_contacts_value_ix")
+  @@schema("identity")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model person_status_transitions {
+  from_status_id                                                            Int             @db.SmallInt
+  to_status_id                                                              Int             @db.SmallInt
+  person_statuses_person_status_transitions_from_status_idToperson_statuses person_statuses @relation("person_status_transitions_from_status_idToperson_statuses", fields: [from_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  person_statuses_person_status_transitions_to_status_idToperson_statuses   person_statuses @relation("person_status_transitions_to_status_idToperson_statuses", fields: [to_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([from_status_id, to_status_id])
+  @@schema("identity")
+}
+
+model person_statuses {
+  id                                                                                  Int                         @id @db.SmallInt
+  code                                                                                String                      @unique @db.VarChar(40)
+  name                                                                                String                      @db.VarChar(80)
+  description                                                                         String?
+  is_initial                                                                          Boolean                     @default(false)
+  is_terminal                                                                         Boolean                     @default(false)
+  sort_order                                                                          Int                         @default(0) @db.SmallInt
+  people                                                                              people[]
+  person_status_transitions_person_status_transitions_from_status_idToperson_statuses person_status_transitions[] @relation("person_status_transitions_from_status_idToperson_statuses")
+  person_status_transitions_person_status_transitions_to_status_idToperson_statuses   person_status_transitions[] @relation("person_status_transitions_to_status_idToperson_statuses")
+
+  @@schema("identity")
+}
+
+model role_permissions {
+  role_id       Int         @db.SmallInt
+  permission_id Int         @db.SmallInt
+  permissions   permissions @relation(fields: [permission_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  roles         roles       @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([role_id, permission_id])
+  @@schema("identity")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model roles {
+  id                       Int                   @id @db.SmallInt
+  code                     String                @unique @db.VarChar(40)
+  name                     String                @db.VarChar(80)
+  description              String?
+  assignable_to_platform   Boolean
+  assignable_to_membership Boolean
+  is_active                Boolean               @default(true)
+  role_permissions         role_permissions[]
+  user_platform_roles      user_platform_roles[]
+  membership_roles         membership_roles[]
+
+  @@unique([id, assignable_to_membership])
+  @@unique([id, assignable_to_platform])
+  @@schema("identity")
+}
+
+model session_revocation_reasons {
+  id       Int        @id @db.SmallInt
+  code     String     @unique @db.VarChar(40)
+  name     String     @db.VarChar(80)
+  sessions sessions[]
+
+  @@schema("identity")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sessions {
+  id                                       String                      @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  user_id                                  String                      @db.Uuid
+  device_id                                String                      @db.Uuid
+  refresh_token_hash                       Bytes                       @unique
+  created_at                               DateTime                    @default(now()) @db.Timestamptz(6)
+  last_refreshed_at                        DateTime                    @default(now()) @db.Timestamptz(6)
+  expires_at                               DateTime                    @db.Timestamptz(6)
+  revoked_at                               DateTime?                   @db.Timestamptz(6)
+  revoked_by_user_id                       String?                     @db.Uuid
+  revocation_reason_id                     Int?                        @db.SmallInt
+  devices                                  devices                     @relation(fields: [device_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  session_revocation_reasons               session_revocation_reasons? @relation(fields: [revocation_reason_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_sessions_revoked_by_user_idTousers users?                      @relation("sessions_revoked_by_user_idTousers", fields: [revoked_by_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_sessions_user_idTousers            users                       @relation("sessions_user_idTousers", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([device_id], map: "sessions_device_ix", where: raw("(revoked_at IS NULL)"))
+  @@index([user_id], map: "sessions_user_ix", where: raw("(revoked_at IS NULL)"))
+  @@schema("identity")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user_credentials {
+  id                                               String                         @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  user_id                                          String                         @db.Uuid
+  credential_type_id                               Int                            @db.SmallInt
+  secret_hash                                      String
+  must_change                                      Boolean                        @default(false)
+  failed_attempts                                  Int                            @default(0) @db.SmallInt
+  locked_until                                     DateTime?                      @db.Timestamptz(6)
+  created_by_user_id                               String?                        @db.Uuid
+  created_at                                       DateTime                       @default(now()) @db.Timestamptz(6)
+  revoked_at                                       DateTime?                      @db.Timestamptz(6)
+  revocation_reason_id                             Int?                           @db.SmallInt
+  users_user_credentials_created_by_user_idTousers users?                         @relation("user_credentials_created_by_user_idTousers", fields: [created_by_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  credential_types                                 credential_types               @relation(fields: [credential_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  credential_revocation_reasons                    credential_revocation_reasons? @relation(fields: [revocation_reason_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_user_credentials_user_idTousers            users                          @relation("user_credentials_user_idTousers", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([user_id, credential_type_id], map: "user_credentials_current_ux", where: raw("(revoked_at IS NULL)"))
+  @@schema("identity")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user_login_identifiers {
+  id              String        @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  user_id         String        @db.Uuid
+  contact_type_id Int           @db.SmallInt
+  can_login       Boolean       @default(true)
+  value           String        @db.VarChar(120)
+  verified_at     DateTime?     @db.Timestamptz(6)
+  created_at      DateTime      @default(now()) @db.Timestamptz(6)
+  revoked_at      DateTime?     @db.Timestamptz(6)
+  contact_types   contact_types @relation(fields: [contact_type_id, can_login], references: [id, can_login], onDelete: NoAction, onUpdate: NoAction)
+  users           users         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([contact_type_id, value], map: "user_login_identifiers_value_ux", where: raw("(revoked_at IS NULL)"))
+  @@schema("identity")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user_platform_roles {
+  id                                                  String    @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  user_id                                             String    @db.Uuid
+  role_id                                             Int       @db.SmallInt
+  assignable_to_platform                              Boolean   @default(true)
+  granted_by_user_id                                  String?   @db.Uuid
+  granted_at                                          DateTime  @default(now()) @db.Timestamptz(6)
+  revoked_at                                          DateTime? @db.Timestamptz(6)
+  users_user_platform_roles_granted_by_user_idTousers users?    @relation("user_platform_roles_granted_by_user_idTousers", fields: [granted_by_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  roles                                               roles     @relation(fields: [role_id, assignable_to_platform], references: [id, assignable_to_platform], onDelete: NoAction, onUpdate: NoAction)
+  users_user_platform_roles_user_idTousers            users     @relation("user_platform_roles_user_idTousers", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([user_id, role_id], map: "user_platform_roles_current_ux", where: raw("(revoked_at IS NULL)"))
+  @@schema("identity")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model user_status_transitions {
+  from_status_id                                                      Int           @db.SmallInt
+  to_status_id                                                        Int           @db.SmallInt
+  user_statuses_user_status_transitions_from_status_idTouser_statuses user_statuses @relation("user_status_transitions_from_status_idTouser_statuses", fields: [from_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_statuses_user_status_transitions_to_status_idTouser_statuses   user_statuses @relation("user_status_transitions_to_status_idTouser_statuses", fields: [to_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([from_status_id, to_status_id])
+  @@schema("identity")
+}
+
+model user_statuses {
+  id                                                                            Int                       @id @db.SmallInt
+  code                                                                          String                    @unique @db.VarChar(40)
+  name                                                                          String                    @db.VarChar(80)
+  description                                                                   String?
+  allows_login                                                                  Boolean
+  is_initial                                                                    Boolean                   @default(false)
+  is_terminal                                                                   Boolean                   @default(false)
+  sort_order                                                                    Int                       @default(0) @db.SmallInt
+  user_status_transitions_user_status_transitions_from_status_idTouser_statuses user_status_transitions[] @relation("user_status_transitions_from_status_idTouser_statuses")
+  user_status_transitions_user_status_transitions_to_status_idTouser_statuses   user_status_transitions[] @relation("user_status_transitions_to_status_idTouser_statuses")
+  users                                                                         users[]
+
+  @@schema("identity")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model users {
+  id                                                                String                   @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  person_id                                                         String                   @unique @db.Uuid
+  user_status_id                                                    Int                      @db.SmallInt
+  status_changed_at                                                 DateTime                 @default(now()) @db.Timestamptz(6)
+  activated_at                                                      DateTime?                @db.Timestamptz(6)
+  last_login_at                                                     DateTime?                @db.Timestamptz(6)
+  created_at                                                        DateTime                 @default(now()) @db.Timestamptz(6)
+  updated_at                                                        DateTime                 @default(now()) @db.Timestamptz(6)
+  subscription_payments                                             subscription_payments[]
+  data_requests                                                     data_requests[]
+  affiliation_qr_codes                                              affiliation_qr_codes[]
+  balance_links                                                     balance_links[]
+  sessions_sessions_revoked_by_user_idTousers                       sessions[]               @relation("sessions_revoked_by_user_idTousers")
+  sessions_sessions_user_idTousers                                  sessions[]               @relation("sessions_user_idTousers")
+  user_credentials_user_credentials_created_by_user_idTousers       user_credentials[]       @relation("user_credentials_created_by_user_idTousers")
+  user_credentials_user_credentials_user_idTousers                  user_credentials[]       @relation("user_credentials_user_idTousers")
+  user_login_identifiers                                            user_login_identifiers[]
+  user_platform_roles_user_platform_roles_granted_by_user_idTousers user_platform_roles[]    @relation("user_platform_roles_granted_by_user_idTousers")
+  user_platform_roles_user_platform_roles_user_idTousers            user_platform_roles[]    @relation("user_platform_roles_user_idTousers")
+  people                                                            people                   @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_statuses                                                     user_statuses            @relation(fields: [user_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  push_tokens                                                       push_tokens[]
+  package_types                                                     package_types[]
+  membership_branches                                               membership_branches[]
+  membership_roles_membership_roles_granted_by_user_idTousers       membership_roles[]       @relation("membership_roles_granted_by_user_idTousers")
+  membership_roles_membership_roles_revoked_by_user_idTousers       membership_roles[]       @relation("membership_roles_revoked_by_user_idTousers")
+  memberships_memberships_invited_by_user_idTousers                 memberships[]            @relation("memberships_invited_by_user_idTousers")
+  memberships_memberships_user_idTousers                            memberships[]            @relation("memberships_user_idTousers")
+  tenant_devices                                                    tenant_devices[]
+  tenant_settings                                                   tenant_settings[]
+  tenants                                                           tenants[]
+
+  @@schema("identity")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model event_origins {
+  id     Int      @id @db.SmallInt
+  code   String   @unique @db.VarChar(40)
+  name   String   @db.VarChar(80)
+  events events[]
+
+  @@schema("ledger")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model event_reasons {
+  id                    Int                     @id @db.SmallInt
+  code                  String                  @unique @db.VarChar(40)
+  name                  String                  @db.VarChar(80)
+  is_active             Boolean                 @default(true)
+  sort_order            Int                     @default(0) @db.SmallInt
+  consumption_overrides consumption_overrides[]
+  events                events[]
+
+  @@schema("ledger")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model event_types {
+  id                Int      @id @db.SmallInt
+  code              String   @unique @db.VarChar(40)
+  name              String   @db.VarChar(80)
+  description       String?
+  balance_effect    Int      @db.SmallInt
+  requires_actor    Boolean
+  requires_reason   Boolean
+  is_reversal       Boolean
+  is_reversible     Boolean
+  notifies_customer Boolean
+  events            events[]
+
+  @@schema("ledger")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model events {
+  id                  String            @id @db.Uuid
+  tenant_id           String            @db.Uuid
+  event_type_id       Int               @db.SmallInt
+  event_origin_id     Int               @db.SmallInt
+  affiliation_id      String            @db.Uuid
+  branch_id           String?           @db.Uuid
+  actor_membership_id String?           @db.Uuid
+  device_id           String?           @db.Uuid
+  occurred_at         DateTime          @db.Timestamptz(6)
+  recorded_at         DateTime          @default(now()) @db.Timestamptz(6)
+  reverses_event_id   String?           @unique(map: "events_reversed_once_ux", where: raw("(reverses_event_id IS NOT NULL)")) @db.Uuid
+  event_reason_id     Int?              @db.SmallInt
+  reason_note         String?           @db.VarChar(500)
+  consumptions        consumptions?
+  devices             devices?          @relation(fields: [device_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  event_origins       event_origins     @relation(fields: [event_origin_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  event_reasons       event_reasons?    @relation(fields: [event_reason_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  event_types         event_types       @relation(fields: [event_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  memberships         memberships?      @relation(fields: [tenant_id, actor_membership_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  affiliations        affiliations      @relation(fields: [tenant_id, affiliation_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  branches            branches?         @relation(fields: [tenant_id, branch_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  tenants             tenants           @relation(fields: [tenant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  events              events?           @relation("eventsToevents", fields: [tenant_id, reverses_event_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  other_events        events[]           @relation("eventsToevents")
+  movements           movements[]
+  notifications       notifications[]
+  sales               sales?
+  conflict_events     conflict_events[]
+  conflicts           conflicts[]
+  inbound_events      inbound_events[]
+
+  @@unique([tenant_id, id])
+  @@index([tenant_id, actor_membership_id, occurred_at], map: "events_actor_ix")
+  @@index([tenant_id, affiliation_id, occurred_at(sort: Desc)], map: "events_affiliation_ix")
+  @@index([tenant_id, branch_id, occurred_at], map: "events_branch_day_ix")
+  @@schema("ledger")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model movements {
+  id            String   @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id     String   @db.Uuid
+  event_id      String   @db.Uuid
+  package_id    String   @db.Uuid
+  units_delta   Int
+  balance_after Int
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  events        events   @relation(fields: [tenant_id, event_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  packages      packages @relation(fields: [tenant_id, package_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([event_id, package_id])
+  @@index([tenant_id, package_id, created_at], map: "movements_package_ix")
+  @@schema("ledger")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model channels {
+  id            Int             @id @db.SmallInt
+  code          String          @unique @db.VarChar(40)
+  name          String          @db.VarChar(40)
+  is_enabled    Boolean         @default(true)
+  notifications notifications[]
+  templates     templates[]
+
+  @@schema("notifications")
+}
+
+model delivery_attempts {
+  id                  String        @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  notification_id     String        @db.Uuid
+  attempted_at        DateTime      @default(now()) @db.Timestamptz(6)
+  succeeded           Boolean
+  provider_message_id String?       @db.VarChar(200)
+  error_code          String?       @db.VarChar(60)
+  error_message       String?       @db.VarChar(500)
+  notifications       notifications @relation(fields: [notification_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([notification_id], map: "delivery_attempts_notification_ix")
+  @@schema("notifications")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model notification_status_transitions {
+  from_status_id                                                                              Int                   @db.SmallInt
+  to_status_id                                                                                Int                   @db.SmallInt
+  notification_statuses_notification_status_transitions_from_status_idTonotification_statuses notification_statuses @relation("notification_status_transitions_from_status_idTonotification_statuses", fields: [from_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  notification_statuses_notification_status_transitions_to_status_idTonotification_statuses   notification_statuses @relation("notification_status_transitions_to_status_idTonotification_statuses", fields: [to_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([from_status_id, to_status_id])
+  @@schema("notifications")
+}
+
+model notification_statuses {
+  id                                                                                                    Int                               @id @db.SmallInt
+  code                                                                                                  String                            @unique @db.VarChar(40)
+  name                                                                                                  String                            @db.VarChar(80)
+  is_terminal                                                                                           Boolean
+  notification_status_transitions_notification_status_transitions_from_status_idTonotification_statuses notification_status_transitions[] @relation("notification_status_transitions_from_status_idTonotification_statuses")
+  notification_status_transitions_notification_status_transitions_to_status_idTonotification_statuses   notification_status_transitions[] @relation("notification_status_transitions_to_status_idTonotification_statuses")
+  notifications                                                                                         notifications[]
+
+  @@schema("notifications")
+}
+
+model notification_types {
+  id            Int             @id @db.SmallInt
+  module_id     Int             @db.SmallInt
+  code          String          @unique @db.VarChar(40)
+  name          String          @db.VarChar(120)
+  description   String?
+  modules       modules         @relation(fields: [module_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  notifications notifications[]
+  templates     templates[]
+
+  @@schema("notifications")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model notifications {
+  id                     String                @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id              String?               @db.Uuid
+  recipient_person_id    String                @db.Uuid
+  notification_type_id   Int                   @db.SmallInt
+  channel_id             Int                   @db.SmallInt
+  template_id            String                @db.Uuid
+  source_event_id        String?               @db.Uuid
+  package_id             String?               @db.Uuid
+  variables              Json                  @default("{}")
+  notification_status_id Int                   @db.SmallInt
+  status_changed_at      DateTime              @default(now()) @db.Timestamptz(6)
+  scheduled_at           DateTime              @default(now()) @db.Timestamptz(6)
+  sent_at                DateTime?             @db.Timestamptz(6)
+  created_at             DateTime              @default(now()) @db.Timestamptz(6)
+  delivery_attempts      delivery_attempts[]
+  channels               channels              @relation(fields: [channel_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  notification_statuses  notification_statuses @relation(fields: [notification_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  notification_types     notification_types    @relation(fields: [notification_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  packages               packages?             @relation(fields: [package_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  people                 people                @relation(fields: [recipient_person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  events                 events?               @relation(fields: [source_event_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  templates              templates             @relation(fields: [template_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenants                tenants?              @relation(fields: [tenant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([package_id, notification_type_id, channel_id], map: "notifications_once_per_package_ux", where: raw("(package_id IS NOT NULL)"))
+  @@index([notification_status_id, scheduled_at], map: "notifications_dispatch_ix")
+  @@index([recipient_person_id, created_at(sort: Desc)], map: "notifications_recipient_ix")
+  @@schema("notifications")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model push_tokens {
+  id            String    @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  user_id       String    @db.Uuid
+  device_id     String    @db.Uuid
+  token         String    @unique(map: "push_tokens_current_ux", where: raw("(revoked_at IS NULL)")) @db.VarChar(500)
+  registered_at DateTime  @default(now()) @db.Timestamptz(6)
+  revoked_at    DateTime? @db.Timestamptz(6)
+  devices       devices   @relation(fields: [device_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users         users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([user_id], map: "push_tokens_user_ix", where: raw("(revoked_at IS NULL)"))
+  @@schema("notifications")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model templates {
+  id                   String             @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  notification_type_id Int                @db.SmallInt
+  channel_id           Int                @db.SmallInt
+  locale               String             @default("es-CO") @db.VarChar(10)
+  version              Int
+  title_template       String?            @db.VarChar(120)
+  body_template        String             @db.VarChar(1000)
+  is_active            Boolean            @default(true)
+  created_at           DateTime           @default(now()) @db.Timestamptz(6)
+  notifications        notifications[]
+  channels             channels           @relation(fields: [channel_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  notification_types   notification_types @relation(fields: [notification_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([notification_type_id, channel_id, locale, version])
+  @@unique([notification_type_id, channel_id, locale], map: "templates_one_active_ux", where: raw("is_active"))
+  @@schema("notifications")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model consumption_units {
+  id            String          @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id     String?         @db.Uuid
+  code          String          @db.VarChar(40)
+  singular_name String          @db.VarChar(40)
+  plural_name   String          @db.VarChar(40)
+  is_active     Boolean         @default(true)
+  created_at    DateTime        @default(now()) @db.Timestamptz(6)
+  sync_version  BigInt          @default(0)
+  tenants       tenants?        @relation(fields: [tenant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  package_types package_types[]
+
+  @@unique([tenant_id, code], map: "consumption_units_code_uk")
+  @@schema("prepaid")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model package_status_transitions {
+  from_status_id                                                               Int              @db.SmallInt
+  to_status_id                                                                 Int              @db.SmallInt
+  package_statuses_package_status_transitions_from_status_idTopackage_statuses package_statuses @relation("package_status_transitions_from_status_idTopackage_statuses", fields: [from_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  package_statuses_package_status_transitions_to_status_idTopackage_statuses   package_statuses @relation("package_status_transitions_to_status_idTopackage_statuses", fields: [to_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([from_status_id, to_status_id])
+  @@schema("prepaid")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model package_statuses {
+  id                                                                                     Int                          @id @db.SmallInt
+  code                                                                                   String                       @unique @db.VarChar(40)
+  name                                                                                   String                       @db.VarChar(80)
+  description                                                                            String?
+  allows_consumption                                                                     Boolean
+  counts_as_liability                                                                    Boolean
+  is_initial                                                                             Boolean                      @default(false)
+  is_terminal                                                                            Boolean                      @default(false)
+  sort_order                                                                             Int                          @default(0) @db.SmallInt
+  package_status_transitions_package_status_transitions_from_status_idTopackage_statuses package_status_transitions[] @relation("package_status_transitions_from_status_idTopackage_statuses")
+  package_status_transitions_package_status_transitions_to_status_idTopackage_statuses   package_status_transitions[] @relation("package_status_transitions_to_status_idTopackage_statuses")
+  packages                                                                               packages[]
+
+  @@schema("prepaid")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model package_type_status_transitions {
+  from_status_id                                                                              Int                   @db.SmallInt
+  to_status_id                                                                                Int                   @db.SmallInt
+  package_type_statuses_package_type_status_transitions_from_status_idTopackage_type_statuses package_type_statuses @relation("package_type_status_transitions_from_status_idTopackage_type_statuses", fields: [from_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  package_type_statuses_package_type_status_transitions_to_status_idTopackage_type_statuses   package_type_statuses @relation("package_type_status_transitions_to_status_idTopackage_type_statuses", fields: [to_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([from_status_id, to_status_id])
+  @@schema("prepaid")
+}
+
+model package_type_statuses {
+  id                                                                                                    Int                               @id @db.SmallInt
+  code                                                                                                  String                            @unique @db.VarChar(40)
+  name                                                                                                  String                            @db.VarChar(80)
+  allows_sale                                                                                           Boolean
+  is_initial                                                                                            Boolean                           @default(false)
+  is_terminal                                                                                           Boolean                           @default(false)
+  sort_order                                                                                            Int                               @default(0) @db.SmallInt
+  package_type_status_transitions_package_type_status_transitions_from_status_idTopackage_type_statuses package_type_status_transitions[] @relation("package_type_status_transitions_from_status_idTopackage_type_statuses")
+  package_type_status_transitions_package_type_status_transitions_to_status_idTopackage_type_statuses   package_type_status_transitions[] @relation("package_type_status_transitions_to_status_idTopackage_type_statuses")
+  package_types                                                                                         package_types[]
+
+  @@schema("prepaid")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model package_types {
+  id                     String                @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id              String                @db.Uuid
+  name                   String                @db.VarChar(80)
+  consumption_unit_id    String                @db.Uuid
+  units_quantity         Int
+  price_amount           Decimal               @db.Decimal(14, 2)
+  validity_days          Int
+  package_type_status_id Int                   @db.SmallInt
+  status_changed_at      DateTime              @default(now()) @db.Timestamptz(6)
+  created_by_user_id     String?               @db.Uuid
+  created_at             DateTime              @default(now()) @db.Timestamptz(6)
+  updated_at             DateTime              @default(now()) @db.Timestamptz(6)
+  sync_version           BigInt                @default(0)
+  consumption_units      consumption_units     @relation(fields: [consumption_unit_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users                  users?                @relation(fields: [created_by_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  package_type_statuses  package_type_statuses @relation(fields: [package_type_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenants                tenants               @relation(fields: [tenant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  packages               packages[]
+  sale_items             sale_items[]
+
+  @@unique([tenant_id, id])
+  @@unique([tenant_id, name])
+  @@schema("prepaid")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model packages {
+  id                 String           @id @db.Uuid
+  tenant_id          String           @db.Uuid
+  affiliation_id     String           @db.Uuid
+  package_type_id    String           @db.Uuid
+  sale_item_id       String           @db.Uuid
+  starts_at          DateTime         @db.Timestamptz(6)
+  expires_at         DateTime         @db.Timestamptz(6)
+  package_status_id  Int              @db.SmallInt
+  status_changed_at  DateTime         @default(now()) @db.Timestamptz(6)
+  units_balance      Int              @default(0)
+  balance_updated_at DateTime         @default(now()) @db.Timestamptz(6)
+  created_at         DateTime         @default(now()) @db.Timestamptz(6)
+  sync_version       BigInt           @default(0)
+  movements          movements[]
+  notifications      notifications[]
+  package_statuses   package_statuses @relation(fields: [package_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  affiliations       affiliations     @relation(fields: [tenant_id, affiliation_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  package_types      package_types    @relation(fields: [tenant_id, package_type_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  sale_items         sale_items       @relation(fields: [tenant_id, sale_item_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([tenant_id, id])
+  @@index([tenant_id, affiliation_id, expires_at], map: "packages_affiliation_fifo_ix")
+  @@index([expires_at, package_status_id], map: "packages_expiration_ix")
+  @@index([tenant_id, sale_item_id], map: "packages_sale_item_ix")
+  @@schema("prepaid")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model cash_closings {
+  id            String      @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id     String      @db.Uuid
+  branch_id     String      @db.Uuid
+  membership_id String      @db.Uuid
+  business_date DateTime    @db.Date
+  expected_cash Decimal     @db.Decimal(14, 2)
+  counted_cash  Decimal     @db.Decimal(14, 2)
+  difference    Decimal?    @default(dbgenerated("((counted_cash)::numeric - (expected_cash)::numeric)")) @db.Decimal(14, 2)
+  note          String?     @db.VarChar(500)
+  closed_at     DateTime    @default(now()) @db.Timestamptz(6)
+  branches      branches    @relation(fields: [tenant_id, branch_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  memberships   memberships @relation(fields: [tenant_id, membership_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([tenant_id, branch_id, membership_id, business_date])
+  @@schema("sales")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model sale_items {
+  id              String        @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id       String        @db.Uuid
+  sale_id         String        @db.Uuid
+  line_number     Int           @db.SmallInt
+  package_type_id String        @db.Uuid
+  quantity        Int           @db.SmallInt
+  unit_price      Decimal       @db.Decimal(14, 2)
+  line_total      Decimal?      @default(dbgenerated("((quantity)::numeric * (unit_price)::numeric)")) @db.Decimal(14, 2)
+  packages        packages[]
+  package_types   package_types @relation(fields: [tenant_id, package_type_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  sales           sales         @relation(fields: [tenant_id, sale_id], references: [tenant_id, event_id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([sale_id, line_number])
+  @@unique([tenant_id, id])
+  @@schema("sales")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model sale_payments {
+  id                 String            @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id          String            @db.Uuid
+  sale_id            String            @db.Uuid
+  payment_method_id  Int               @db.SmallInt
+  payment_channel_id Int?              @db.SmallInt
+  amount             Decimal           @db.Decimal(14, 2)
+  reference          String?           @db.VarChar(60)
+  payment_channels   payment_channels? @relation(fields: [payment_channel_id, payment_method_id], references: [id, payment_method_id], onDelete: NoAction, onUpdate: NoAction)
+  payment_methods    payment_methods   @relation(fields: [payment_method_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  sales              sales             @relation(fields: [tenant_id, sale_id], references: [tenant_id, event_id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([tenant_id, sale_id], map: "sale_payments_sale_ix")
+  @@schema("sales")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model sale_status_transitions {
+  from_status_id                                                      Int           @db.SmallInt
+  to_status_id                                                        Int           @db.SmallInt
+  sale_statuses_sale_status_transitions_from_status_idTosale_statuses sale_statuses @relation("sale_status_transitions_from_status_idTosale_statuses", fields: [from_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  sale_statuses_sale_status_transitions_to_status_idTosale_statuses   sale_statuses @relation("sale_status_transitions_to_status_idTosale_statuses", fields: [to_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([from_status_id, to_status_id])
+  @@schema("sales")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sale_statuses {
+  id                                                                            Int                       @id @db.SmallInt
+  code                                                                          String                    @unique @db.VarChar(40)
+  name                                                                          String                    @db.VarChar(80)
+  counts_as_revenue                                                             Boolean
+  is_initial                                                                    Boolean                   @default(false)
+  is_terminal                                                                   Boolean                   @default(false)
+  sale_status_transitions_sale_status_transitions_from_status_idTosale_statuses sale_status_transitions[] @relation("sale_status_transitions_from_status_idTosale_statuses")
+  sale_status_transitions_sale_status_transitions_to_status_idTosale_statuses   sale_status_transitions[] @relation("sale_status_transitions_to_status_idTosale_statuses")
+  sales                                                                         sales[]
+
+  @@schema("sales")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model sales {
+  event_id          String          @id @db.Uuid
+  tenant_id         String          @db.Uuid
+  sale_status_id    Int             @db.SmallInt
+  status_changed_at DateTime        @default(now()) @db.Timestamptz(6)
+  sale_items        sale_items[]
+  sale_payments     sale_payments[]
+  sale_statuses     sale_statuses   @relation(fields: [sale_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  events            events          @relation(fields: [tenant_id, event_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([tenant_id, event_id])
+  @@schema("sales")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model conflict_events {
+  tenant_id   String    @db.Uuid
+  conflict_id String    @db.Uuid
+  event_id    String    @db.Uuid
+  conflicts   conflicts @relation(fields: [tenant_id, conflict_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  events      events    @relation(fields: [tenant_id, event_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([conflict_id, event_id])
+  @@schema("sync")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model conflict_status_transitions {
+  from_status_id                                                                  Int               @db.SmallInt
+  to_status_id                                                                    Int               @db.SmallInt
+  conflict_statuses_conflict_status_transitions_from_status_idToconflict_statuses conflict_statuses @relation("conflict_status_transitions_from_status_idToconflict_statuses", fields: [from_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  conflict_statuses_conflict_status_transitions_to_status_idToconflict_statuses   conflict_statuses @relation("conflict_status_transitions_to_status_idToconflict_statuses", fields: [to_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([from_status_id, to_status_id])
+  @@schema("sync")
+}
+
+model conflict_statuses {
+  id                                                                                        Int                           @id @db.SmallInt
+  code                                                                                      String                        @unique @db.VarChar(40)
+  name                                                                                      String                        @db.VarChar(80)
+  is_initial                                                                                Boolean                       @default(false)
+  is_terminal                                                                               Boolean                       @default(false)
+  conflict_status_transitions_conflict_status_transitions_from_status_idToconflict_statuses conflict_status_transitions[] @relation("conflict_status_transitions_from_status_idToconflict_statuses")
+  conflict_status_transitions_conflict_status_transitions_to_status_idToconflict_statuses   conflict_status_transitions[] @relation("conflict_status_transitions_to_status_idToconflict_statuses")
+  conflicts                                                                                 conflicts[]
+
+  @@schema("sync")
+}
+
+model conflict_types {
+  id          Int         @id @db.SmallInt
+  code        String      @unique @db.VarChar(40)
+  name        String      @db.VarChar(120)
+  description String?
+  conflicts   conflicts[]
+
+  @@schema("sync")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model conflicts {
+  id                        String            @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id                 String            @db.Uuid
+  conflict_type_id          Int               @db.SmallInt
+  conflict_status_id        Int               @db.SmallInt
+  status_changed_at         DateTime          @default(now()) @db.Timestamptz(6)
+  detected_at               DateTime          @default(now()) @db.Timestamptz(6)
+  resolved_by_membership_id String?           @db.Uuid
+  resolution_note           String?           @db.VarChar(500)
+  resolution_event_id       String?           @db.Uuid
+  conflict_events           conflict_events[]
+  conflict_statuses         conflict_statuses @relation(fields: [conflict_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  conflict_types            conflict_types    @relation(fields: [conflict_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenants                   tenants           @relation(fields: [tenant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  events                    events?           @relation(fields: [tenant_id, resolution_event_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  memberships               memberships?      @relation(fields: [tenant_id, resolved_by_membership_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([tenant_id, id])
+  @@index([tenant_id, conflict_status_id, detected_at], map: "conflicts_open_ix")
+  @@schema("sync")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model device_checkpoints {
+  tenant_id           String    @db.Uuid
+  device_id           String    @db.Uuid
+  last_pulled_version BigInt    @default(0)
+  last_pulled_at      DateTime? @db.Timestamptz(6)
+  last_pushed_at      DateTime? @db.Timestamptz(6)
+  pending_reported    Int       @default(0)
+  oldest_pending_at   DateTime? @db.Timestamptz(6)
+  devices             devices   @relation(fields: [device_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenants             tenants   @relation(fields: [tenant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([tenant_id, device_id])
+  @@schema("sync")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model inbound_event_kinds {
+  id             Int              @id @db.SmallInt
+  code           String           @unique @db.VarChar(40)
+  name           String           @db.VarChar(80)
+  inbound_events inbound_events[]
+
+  @@schema("sync")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model inbound_event_status_transitions {
+  from_status_id                                                                                 Int                    @db.SmallInt
+  to_status_id                                                                                   Int                    @db.SmallInt
+  inbound_event_statuses_inbound_event_status_transitions_from_status_idToinbound_event_statuses inbound_event_statuses @relation("inbound_event_status_transitions_from_status_idToinbound_event_statuses", fields: [from_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  inbound_event_statuses_inbound_event_status_transitions_to_status_idToinbound_event_statuses   inbound_event_statuses @relation("inbound_event_status_transitions_to_status_idToinbound_event_statuses", fields: [to_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([from_status_id, to_status_id])
+  @@schema("sync")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model inbound_event_statuses {
+  id                                                                                                       Int                                @id @db.SmallInt
+  code                                                                                                     String                             @unique @db.VarChar(40)
+  name                                                                                                     String                             @db.VarChar(80)
+  is_terminal                                                                                              Boolean
+  inbound_event_status_transitions_inbound_event_status_transitions_from_status_idToinbound_event_statuses inbound_event_status_transitions[] @relation("inbound_event_status_transitions_from_status_idToinbound_event_statuses")
+  inbound_event_status_transitions_inbound_event_status_transitions_to_status_idToinbound_event_statuses   inbound_event_status_transitions[] @relation("inbound_event_status_transitions_to_status_idToinbound_event_statuses")
+  inbound_events                                                                                           inbound_events[]
+
+  @@schema("sync")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model inbound_events {
+  id                      String                 @id @db.Uuid
+  tenant_id               String                 @db.Uuid
+  batch_id                String                 @db.Uuid
+  inbound_event_kind_id   Int                    @db.SmallInt
+  inbound_event_status_id Int                    @db.SmallInt
+  status_changed_at       DateTime               @default(now()) @db.Timestamptz(6)
+  rejection_reason_id     Int?                   @db.SmallInt
+  occurred_at             DateTime               @db.Timestamptz(6)
+  received_at             DateTime               @default(now()) @db.Timestamptz(6)
+  payload                 Json?
+  payload_sha256          Bytes
+  ledger_event_id         String?                @db.Uuid
+  inbound_event_kinds     inbound_event_kinds    @relation(fields: [inbound_event_kind_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  inbound_event_statuses  inbound_event_statuses @relation(fields: [inbound_event_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  rejection_reasons       rejection_reasons?     @relation(fields: [rejection_reason_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  sync_batches            sync_batches           @relation(fields: [tenant_id, batch_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  events                  events?                @relation(fields: [tenant_id, ledger_event_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([tenant_id, inbound_event_status_id, occurred_at], map: "inbound_events_pending_ix")
+  @@schema("sync")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model rejection_reasons {
+  id             Int              @id @db.SmallInt
+  code           String           @unique @db.VarChar(40)
+  name           String           @db.VarChar(120)
+  inbound_events inbound_events[]
+
+  @@schema("sync")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model sync_batches {
+  id             String           @id @db.Uuid
+  tenant_id      String           @db.Uuid
+  device_id      String           @db.Uuid
+  membership_id  String           @db.Uuid
+  event_count    Int
+  received_at    DateTime         @default(now()) @db.Timestamptz(6)
+  inbound_events inbound_events[]
+  devices        devices          @relation(fields: [device_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenants        tenants          @relation(fields: [tenant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  memberships    memberships      @relation(fields: [tenant_id, membership_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([tenant_id, id])
+  @@schema("sync")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model branch_status_transitions {
+  from_status_id                                                            Int             @db.SmallInt
+  to_status_id                                                              Int             @db.SmallInt
+  branch_statuses_branch_status_transitions_from_status_idTobranch_statuses branch_statuses @relation("branch_status_transitions_from_status_idTobranch_statuses", fields: [from_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  branch_statuses_branch_status_transitions_to_status_idTobranch_statuses   branch_statuses @relation("branch_status_transitions_to_status_idTobranch_statuses", fields: [to_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([from_status_id, to_status_id])
+  @@schema("tenancy")
+}
+
+model branch_statuses {
+  id                                                                                  Int                         @id @db.SmallInt
+  code                                                                                String                      @unique @db.VarChar(40)
+  name                                                                                String                      @db.VarChar(80)
+  allows_operations                                                                   Boolean
+  sort_order                                                                          Int                         @default(0) @db.SmallInt
+  branch_status_transitions_branch_status_transitions_from_status_idTobranch_statuses branch_status_transitions[] @relation("branch_status_transitions_from_status_idTobranch_statuses")
+  branch_status_transitions_branch_status_transitions_to_status_idTobranch_statuses   branch_status_transitions[] @relation("branch_status_transitions_to_status_idTobranch_statuses")
+  branches                                                                            branches[]
+
+  @@schema("tenancy")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model branches {
+  id                  String                @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id           String                @unique(map: "branches_one_main_ux", where: raw("is_main")) @db.Uuid
+  name                String                @db.VarChar(120)
+  is_main             Boolean               @default(false)
+  branch_status_id    Int                   @db.SmallInt
+  status_changed_at   DateTime              @default(now()) @db.Timestamptz(6)
+  municipality_id     Int?
+  address_line        String?               @db.VarChar(200)
+  created_at          DateTime              @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime              @default(now()) @db.Timestamptz(6)
+  affiliations        affiliations[]
+  events              events[]
+  cash_closings       cash_closings[]
+  branch_statuses     branch_statuses       @relation(fields: [branch_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  municipalities      municipalities?       @relation(fields: [municipality_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenants             tenants               @relation(fields: [tenant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  membership_branches membership_branches[]
+  service_schedules   service_schedules[]
+  tenant_devices      tenant_devices[]
+
+  @@unique([tenant_id, id])
+  @@unique([tenant_id, name])
+  @@schema("tenancy")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model business_types {
+  id          Int       @id @db.SmallInt
+  code        String    @unique @db.VarChar(40)
+  name        String    @db.VarChar(80)
+  description String?
+  sort_order  Int       @default(0) @db.SmallInt
+  is_active   Boolean   @default(true)
+  tenants     tenants[]
+
+  @@schema("tenancy")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model membership_branches {
+  id                  String      @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id           String      @db.Uuid
+  membership_id       String      @db.Uuid
+  branch_id           String      @db.Uuid
+  assigned_by_user_id String?     @db.Uuid
+  assigned_at         DateTime    @default(now()) @db.Timestamptz(6)
+  revoked_at          DateTime?   @db.Timestamptz(6)
+  users               users?      @relation(fields: [assigned_by_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  branches            branches    @relation(fields: [tenant_id, branch_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  memberships         memberships @relation(fields: [tenant_id, membership_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([membership_id, branch_id], map: "membership_branches_current_ux", where: raw("(revoked_at IS NULL)"))
+  @@schema("tenancy")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model membership_roles {
+  id                                               String      @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id                                        String      @db.Uuid
+  membership_id                                    String      @db.Uuid
+  role_id                                          Int         @db.SmallInt
+  assignable_to_membership                         Boolean     @default(true)
+  granted_by_user_id                               String?     @db.Uuid
+  granted_at                                       DateTime    @default(now()) @db.Timestamptz(6)
+  revoked_at                                       DateTime?   @db.Timestamptz(6)
+  revoked_by_user_id                               String?     @db.Uuid
+  users_membership_roles_granted_by_user_idTousers users?      @relation("membership_roles_granted_by_user_idTousers", fields: [granted_by_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_membership_roles_revoked_by_user_idTousers users?      @relation("membership_roles_revoked_by_user_idTousers", fields: [revoked_by_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  roles                                            roles       @relation(fields: [role_id, assignable_to_membership], references: [id, assignable_to_membership], onDelete: NoAction, onUpdate: NoAction)
+  memberships                                      memberships @relation(fields: [tenant_id, membership_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([membership_id, role_id], map: "membership_roles_current_ux", where: raw("(revoked_at IS NULL)"))
+  @@schema("tenancy")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model membership_status_transitions {
+  from_status_id                                                                        Int                 @db.SmallInt
+  to_status_id                                                                          Int                 @db.SmallInt
+  membership_statuses_membership_status_transitions_from_status_idTomembership_statuses membership_statuses @relation("membership_status_transitions_from_status_idTomembership_statuses", fields: [from_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  membership_statuses_membership_status_transitions_to_status_idTomembership_statuses   membership_statuses @relation("membership_status_transitions_to_status_idTomembership_statuses", fields: [to_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([from_status_id, to_status_id])
+  @@schema("tenancy")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model membership_statuses {
+  id                                                                                              Int                             @id @db.SmallInt
+  code                                                                                            String                          @unique @db.VarChar(40)
+  name                                                                                            String                          @db.VarChar(80)
+  description                                                                                     String?
+  allows_login                                                                                    Boolean
+  is_initial                                                                                      Boolean                         @default(false)
+  is_terminal                                                                                     Boolean                         @default(false)
+  sort_order                                                                                      Int                             @default(0) @db.SmallInt
+  membership_status_transitions_membership_status_transitions_from_status_idTomembership_statuses membership_status_transitions[] @relation("membership_status_transitions_from_status_idTomembership_statuses")
+  membership_status_transitions_membership_status_transitions_to_status_idTomembership_statuses   membership_status_transitions[] @relation("membership_status_transitions_to_status_idTomembership_statuses")
+  memberships                                                                                     memberships[]
+
+  @@schema("tenancy")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model memberships {
+  id                                          String                  @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id                                   String                  @db.Uuid
+  user_id                                     String                  @db.Uuid
+  membership_status_id                        Int                     @db.SmallInt
+  status_changed_at                           DateTime                @default(now()) @db.Timestamptz(6)
+  invited_by_user_id                          String?                 @db.Uuid
+  invited_at                                  DateTime                @default(now()) @db.Timestamptz(6)
+  joined_at                                   DateTime?               @db.Timestamptz(6)
+  created_at                                  DateTime                @default(now()) @db.Timestamptz(6)
+  updated_at                                  DateTime                @default(now()) @db.Timestamptz(6)
+  consents                                    consents[]
+  consumption_overrides                       consumption_overrides[]
+  affiliations                                affiliations[]
+  events                                      events[]
+  cash_closings                               cash_closings[]
+  conflicts                                   conflicts[]
+  sync_batches                                sync_batches[]
+  membership_branches                         membership_branches[]
+  membership_roles                            membership_roles[]
+  users_memberships_invited_by_user_idTousers users?                  @relation("memberships_invited_by_user_idTousers", fields: [invited_by_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  membership_statuses                         membership_statuses     @relation(fields: [membership_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenants                                     tenants                 @relation(fields: [tenant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_memberships_user_idTousers            users                   @relation("memberships_user_idTousers", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([tenant_id, id])
+  @@unique([tenant_id, user_id])
+  @@index([user_id], map: "memberships_user_ix")
+  @@schema("tenancy")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This table contains exclusion constraints and requires additional setup for migrations. Visit https://pris.ly/d/exclusion-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model service_schedules {
+  id           String                    @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id    String                    @db.Uuid
+  service_id   String                    @db.Uuid
+  branch_id    String                    @db.Uuid
+  weekday_id   Int                       @db.SmallInt
+  hours        Unsupported("time_range")
+  valid_during Unsupported("daterange")  @default(dbgenerated("daterange(CURRENT_DATE, NULL::date, '[)'::text)"))
+  is_active    Boolean                   @default(true)
+  created_at   DateTime                  @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime                  @default(now()) @db.Timestamptz(6)
+  sync_version BigInt                    @default(0)
+  consumptions consumptions[]
+  branches     branches                  @relation(fields: [tenant_id, branch_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  services     services                  @relation(fields: [tenant_id, service_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  weekdays     weekdays                  @relation(fields: [weekday_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([tenant_id, id])
+  @@schema("tenancy")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model services {
+  id                String              @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id         String              @db.Uuid
+  name              String              @db.VarChar(60)
+  sort_order        Int                 @default(0) @db.SmallInt
+  is_active         Boolean             @default(true)
+  created_at        DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime            @default(now()) @db.Timestamptz(6)
+  sync_version      BigInt              @default(0)
+  consumptions      consumptions[]
+  service_schedules service_schedules[]
+  tenants           tenants             @relation(fields: [tenant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([tenant_id, id])
+  @@unique([tenant_id, name])
+  @@schema("tenancy")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model setting_definitions {
+  id              Int               @id @db.SmallInt
+  module_id       Int               @db.SmallInt
+  code            String            @unique @db.VarChar(40)
+  name            String            @db.VarChar(120)
+  description     String?
+  data_type_id    Int               @db.SmallInt
+  default_value   String
+  min_value       Decimal?          @db.Decimal
+  max_value       Decimal?          @db.Decimal
+  data_types      data_types        @relation(fields: [data_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  modules         modules           @relation(fields: [module_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenant_settings tenant_settings[]
+
+  @@schema("tenancy")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model tenant_contacts {
+  id              String        @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id       String        @db.Uuid
+  contact_type_id Int           @db.SmallInt
+  value           String        @db.VarChar(120)
+  is_primary      Boolean       @default(false)
+  created_at      DateTime      @default(now()) @db.Timestamptz(6)
+  contact_types   contact_types @relation(fields: [contact_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenants         tenants       @relation(fields: [tenant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([tenant_id, contact_type_id], map: "tenant_contacts_one_primary_ux", where: raw("is_primary"))
+  @@unique([tenant_id, contact_type_id, value])
+  @@schema("tenancy")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model tenant_devices {
+  id                    String    @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id             String    @db.Uuid
+  device_id             String    @db.Uuid
+  branch_id             String?   @db.Uuid
+  name                  String?   @db.VarChar(80)
+  registered_by_user_id String?   @db.Uuid
+  registered_at         DateTime  @default(now()) @db.Timestamptz(6)
+  revoked_at            DateTime? @db.Timestamptz(6)
+  devices               devices   @relation(fields: [device_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users                 users?    @relation(fields: [registered_by_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  branches              branches? @relation(fields: [tenant_id, branch_id], references: [tenant_id, id], onDelete: NoAction, onUpdate: NoAction)
+  tenants               tenants   @relation(fields: [tenant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([tenant_id, device_id], map: "tenant_devices_current_ux", where: raw("(revoked_at IS NULL)"))
+  @@unique([tenant_id, id])
+  @@schema("tenancy")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model tenant_settings {
+  tenant_id             String              @db.Uuid
+  setting_definition_id Int                 @db.SmallInt
+  value                 String
+  updated_by_user_id    String?             @db.Uuid
+  updated_at            DateTime            @default(now()) @db.Timestamptz(6)
+  setting_definitions   setting_definitions @relation(fields: [setting_definition_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenants               tenants             @relation(fields: [tenant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users                 users?              @relation(fields: [updated_by_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([tenant_id, setting_definition_id])
+  @@schema("tenancy")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model tenant_signing_keys {
+  id                   String                 @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  tenant_id            String                 @unique(map: "tenant_signing_keys_active_ux", where: raw("(retired_at IS NULL)")) @db.Uuid
+  key_id               String                 @db.VarChar(40)
+  algorithm            String                 @default("Ed25519") @db.VarChar(20)
+  public_key           Bytes
+  private_key_ref      String                 @db.VarChar(200)
+  activated_at         DateTime               @default(now()) @db.Timestamptz(6)
+  retired_at           DateTime?              @db.Timestamptz(6)
+  sync_version         BigInt                 @default(0)
+  affiliation_qr_codes affiliation_qr_codes[]
+  tenants              tenants                @relation(fields: [tenant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([tenant_id, id])
+  @@unique([tenant_id, key_id])
+  @@schema("tenancy")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model tenant_status_transitions {
+  from_status_id                                                            Int             @db.SmallInt
+  to_status_id                                                              Int             @db.SmallInt
+  tenant_statuses_tenant_status_transitions_from_status_idTotenant_statuses tenant_statuses @relation("tenant_status_transitions_from_status_idTotenant_statuses", fields: [from_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenant_statuses_tenant_status_transitions_to_status_idTotenant_statuses   tenant_statuses @relation("tenant_status_transitions_to_status_idTotenant_statuses", fields: [to_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([from_status_id, to_status_id])
+  @@schema("tenancy")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tenant_statuses {
+  id                                                                                  Int                         @id @db.SmallInt
+  code                                                                                String                      @unique @db.VarChar(40)
+  name                                                                                String                      @db.VarChar(80)
+  description                                                                         String?
+  allows_operations                                                                   Boolean
+  is_initial                                                                          Boolean                     @default(false)
+  is_terminal                                                                         Boolean                     @default(false)
+  sort_order                                                                          Int                         @default(0) @db.SmallInt
+  tenant_status_transitions_tenant_status_transitions_from_status_idTotenant_statuses tenant_status_transitions[] @relation("tenant_status_transitions_from_status_idTotenant_statuses")
+  tenant_status_transitions_tenant_status_transitions_to_status_idTotenant_statuses   tenant_status_transitions[] @relation("tenant_status_transitions_to_status_idTotenant_statuses")
+  tenants                                                                             tenants[]
+
+  @@schema("tenancy")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model tenants {
+  id                  String               @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  slug                String               @unique @db.VarChar(60)
+  display_name        String               @db.VarChar(120)
+  legal_name          String?              @db.VarChar(160)
+  document_type_id    Int                  @db.SmallInt
+  document_number     String               @db.VarChar(20)
+  business_type_id    Int                  @db.SmallInt
+  tenant_status_id    Int                  @db.SmallInt
+  status_changed_at   DateTime             @default(now()) @db.Timestamptz(6)
+  currency_code       String               @default("COP") @db.Char(3)
+  time_zone           String               @default("America/Bogota") @db.VarChar(64)
+  logo_url            String?              @db.VarChar(500)
+  created_by_user_id  String?              @db.Uuid
+  created_at          DateTime             @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime             @default(now()) @db.Timestamptz(6)
+  subscriptions       subscriptions?
+  consents            consents[]
+  affiliations        affiliations[]
+  events              events[]
+  notifications       notifications[]
+  consumption_units   consumption_units[]
+  package_types       package_types[]
+  conflicts           conflicts[]
+  device_checkpoints  device_checkpoints[]
+  sync_batches        sync_batches[]
+  branches            branches?
+  memberships         memberships[]
+  services            services[]
+  tenant_contacts     tenant_contacts[]
+  tenant_devices      tenant_devices[]
+  tenant_settings     tenant_settings[]
+  tenant_signing_keys tenant_signing_keys?
+  business_types      business_types       @relation(fields: [business_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users               users?               @relation(fields: [created_by_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  currencies          currencies           @relation(fields: [currency_code], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  document_types      document_types       @relation(fields: [document_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenant_statuses     tenant_statuses      @relation(fields: [tenant_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([document_type_id, document_number], map: "tenants_document_ix")
+  @@schema("tenancy")
+}

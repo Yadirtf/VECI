@@ -1,0 +1,7 @@
+# Solo se genera el código del cliente: sin documentación, pruebas ni CI de ejemplo.
+doc/**
+test/**
+.travis.yml
+git_push.sh
+README.md
+.gitignore
