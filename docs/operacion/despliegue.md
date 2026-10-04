@@ -12,7 +12,7 @@ La app (`mobile/`) no se despliega en un servidor: el workflow [`apk.yml`](../..
 
 ### Staging
 
-Los blueprints [`backend/render.yaml`](../../backend/render.yaml) y [`web/render.yaml`](../../web/render.yaml) crean los dos servicios de staging con `autoDeployTrigger: checksPass`: en cada commit de `develop`, Render espera a que pasen los CI de GitHub y despliega. Al arrancar, el contenedor de la API:
+El blueprint [`render.yaml`](../../render.yaml) de la raíz crea los dos servicios de staging (cada uno se construye solo desde su carpeta) con `autoDeployTrigger: checksPass`: en cada commit de `develop`, Render espera a que pasen los CI de GitHub y despliega. Al arrancar, el contenedor de la API:
 
 1. Aplica las migraciones pendientes (`prisma migrate deploy`, con `DATABASE_URL`, el dueño de la base).
 2. Crea o actualiza el usuario `veci_api` (sin `BYPASSRLS`) con la clave `VECI_API_DB_PASSWORD`, que Render genera ([`scripts/preparar-base.ts`](../../backend/scripts/preparar-base.ts)).
@@ -32,24 +32,20 @@ El plan gratuito de Render se duerme tras 15 minutos sin tráfico: la primera pe
 1. En [neon.tech](https://neon.tech), crear el proyecto `veci-staging` con **PostgreSQL 16** en *AWS US East (Ohio)*, cerca de Render.
 2. En *Connect*, copiar la cadena de conexión del dueño (`neondb_owner`) **sin** *connection pooling*. Termina en `?sslmode=require`.
 
-### 2. API en Render
+### 2. API y panel en Render
 
-1. En [render.com](https://render.com), *New → Blueprint*, elegir este repositorio, rama `develop` y *Blueprint Path* `backend/render.yaml`.
-2. Pegar la cadena de Neon en `DATABASE_URL`. `SENTRY_DSN` es opcional. Aplicar.
-3. Cuando termine, abrir `https://<servicio>.onrender.com/salud` (debe decir `"estado":"ok"`) y `/docs` para ver el contrato.
+1. En [render.com](https://render.com), *New → Blueprint*, elegir este repositorio y la rama `develop`. Render encuentra `render.yaml` en la raíz y muestra los dos servicios: `veci-api-staging` y `veci-web-staging`.
+2. Pegar la cadena de Neon en `DATABASE_URL`. `SENTRY_DSN` y `NEXT_PUBLIC_SENTRY_DSN` son opcionales. Aplicar.
+3. Cuando termine, abrir `https://<api>.onrender.com/salud` (debe decir `"estado":"ok"`), `/docs` para ver el contrato y la URL del panel.
+4. Si Render dio URLs distintas de `https://veci-api-staging.onrender.com` o `https://veci-web-staging.onrender.com`, corregir `NEXT_PUBLIC_VECI_API_URL` (y redesplegar el panel, porque esa variable se usa al construir) o `VECI_ORIGENES` en la API.
 
-### 3. Panel en Render
-
-1. Otra vez *New → Blueprint*, el mismo repositorio y rama, con *Blueprint Path* `web/render.yaml`.
-2. Si Render le dio a la API una URL distinta de `https://veci-api-staging.onrender.com`, cambiar `NEXT_PUBLIC_VECI_API_URL` y redesplegar el panel (esa variable se usa al construir). Si el panel quedó con otra URL, cambiar `VECI_ORIGENES` en la API.
-
-### 4. App en el celular
+### 3. App en el celular
 
 1. En GitHub, *Actions → APK staging*. Si la API quedó con otra URL, crear antes la variable del repositorio `API_URL_STAGING` (*Settings → Secrets and variables → Actions → Variables*) y correr el workflow con *Run workflow*.
 2. Abrir la ejecución más reciente en verde, descargar `veci-staging-apk` (un .zip con `app-release.apk`) y pasarlo al celular.
 3. Instalarlo permitiendo “instalar apps desconocidas”. Cada APK sale firmado con una llave de depuración distinta, así que para instalar uno nuevo hay que desinstalar el anterior.
 
-### 5. GitHub
+### 4. GitHub
 
 En *Settings → Branches* (o *Rules*), proteger `main` y `develop`: exigir PR, exigir los checks de `CI backend`, `CI web` y `CI mobile`, y bloquear *force push*.
 

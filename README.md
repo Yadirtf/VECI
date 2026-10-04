@@ -11,7 +11,7 @@ El repositorio tiene tres proyectos independientes y su documentación. Cada pro
 | [`mobile/`](mobile) | App única (modos Cajero y Cliente), offline primero | Flutter 3.47, Riverpod, Drift | [mobile/README.md](mobile/README.md) |
 | [`docs/`](docs) | Requerimientos, backlog, arquitectura, operación, diseño y el contrato de la API | Markdown, JSON | [docs/](docs) |
 
-`.github/` solo guarda los workflows de CI y despliegue, que GitHub exige en la raíz.
+`.github/` solo guarda los workflows de CI y despliegue, y [`render.yaml`](render.yaml) es el blueprint que despliega la API y el panel de staging en Render. Los dos van en la raíz porque GitHub y Render los buscan ahí.
 
 ## Cómo se conectan
 

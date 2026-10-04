@@ -44,8 +44,8 @@ backend/
 ├── scripts/           exportar el contrato OpenAPI y preparar la base al arrancar en Render
 ├── infra/             roles de PostgreSQL y comprobación de copias de seguridad
 ├── eslint/            reglas de arquitectura
-├── Dockerfile, docker-compose.yml, render.yaml
+├── Dockerfile, docker-compose.yml
 └── package.json
 ```
 
-El contrato que consumen el panel y la app se publica en [`docs/api/openapi.json`](../docs/api/openapi.json). Si cambia un endpoint, corra `pnpm generar` y suba el contrato junto con el código. Staging se despliega en Render con [`render.yaml`](render.yaml) cuando un commit de `develop` pasa el CI. La guía de capas está en [docs/arquitectura/arquitectura-limpia.md](../docs/arquitectura/arquitectura-limpia.md) y la operación (despliegue, copias, alertas) en [docs/operacion](../docs/operacion/README.md).
+El contrato que consumen el panel y la app se publica en [`docs/api/openapi.json`](../docs/api/openapi.json). Si cambia un endpoint, corra `pnpm generar` y suba el contrato junto con el código. Staging se despliega en Render, con el blueprint [`render.yaml`](../render.yaml) de la raíz, cuando un commit de `develop` pasa el CI. La guía de capas está en [docs/arquitectura/arquitectura-limpia.md](../docs/arquitectura/arquitectura-limpia.md) y la operación (despliegue, copias, alertas) en [docs/operacion](../docs/operacion/README.md).
