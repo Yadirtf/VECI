@@ -1,6 +1,6 @@
 # VECI · Documento de Requerimientos y Recomendaciones Tecnológicas
 
-Versión 1.1 · 4 de octubre de 2026 · Ing. Yadir
+Versión 1.2 · 4 de octubre de 2026 · Ing. Yadir
 
 VECI es una plataforma SaaS web y móvil que digitaliza la tiquetera prepagada de los restaurantes con un código QR por cliente, y que se presenta como un "veci" (un vecino aliado), no como un software más. Este documento fija qué debe hacer la primera versión (MVP), con qué calidad, y qué tecnologías conviene usar para un emprendimiento de una persona en Mocoa, Putumayo.
 
@@ -212,6 +212,7 @@ Cada requerimiento tiene una meta medible para verificarla en el piloto.
 | RNF-ESC-02 | Escalabilidad | Agregar un nuevo tipo de negocio no requiere cambiar el modelo central de datos. |
 | RNF-MAN-01 | Mantenibilidad | Código en repositorio con integración continua, pruebas automáticas del núcleo (tiqueteras, consumos, sincronización) con cobertura de 70 % o más. |
 | RNF-MAN-02 | Mantenibilidad | Migraciones de base de datos versionadas; despliegue a producción con un solo comando o automático. |
+| RNF-MAN-03 | Mantenibilidad | Backend, panel web y app móvil siguen arquitectura limpia: carpetas por funcionalidad, capas con una sola responsabilidad, archivos de 300 líneas como máximo y funciones de 50 líneas como máximo, verificado en CI (ver sección 5.3). |
 | RNF-OBS-01 | Observabilidad | Registro centralizado de errores en app, panel y API, con alerta al fundador cuando falle la sincronización o la API. |
 | RNF-COS-01 | Costo | La infraestructura cuesta menos de $150.000 COP al mes hasta los 30 comercios. |
 
@@ -269,6 +270,129 @@ La app del cajero guarda cada venta y consumo en el celular y los envía a la AP
 3. **Offline primero con bandeja de salida (outbox).** La app guarda cada venta o consumo en SQLite local con un ID único (UUID v7) y lo envía a un endpoint de sincronización idempotente; reintentar nunca duplica.
 4. **QR sin datos sensibles.** El QR lleva un token firmado (cliente + comercio + versión); la app del cajero puede verificar la firma sin internet.
 5. **Modelo genérico para crecer.** Las entidades centrales son Comercio, Cliente, Paquete (tiquetera), Movimiento (compra, consumo, ajuste) y, más adelante, Producto. Un colegio o una panadería reutilizan el mismo núcleo.
+
+### 5.3 Arquitectura limpia (Clean Architecture)
+
+Backend, panel web y app móvil siguen arquitectura limpia: cada parte del sistema se organiza **por funcionalidad** y, dentro de cada funcionalidad, **por capas con una sola responsabilidad**. El objetivo es que VECI pueda crecer a nuevos sectores sin acumular deuda técnica y que cualquier archivo se entienda en pocos minutos.
+
+#### 5.3.1 Reglas que aplican a las tres aplicaciones
+
+1. **Regla de dependencia.** Las dependencias apuntan siempre hacia adentro: presentación e infraestructura dependen de aplicación, y aplicación depende de dominio. El dominio no importa nada del framework (NestJS, Next.js, Flutter), de la base de datos ni de servicios externos.
+2. **Cuatro capas por funcionalidad.**
+
+    | Capa | Responsabilidad | Ejemplos en VECI | No puede contener |
+    | --- | --- | --- | --- |
+    | Dominio | Reglas del negocio puras: entidades, objetos de valor, reglas y contratos (interfaces) de repositorios. | Tiquetera, Movimiento, regla "un consumo por horario de servicio", cálculo de saldo. | Código de framework, SQL, HTTP, UI. |
+    | Aplicación | Casos de uso que orquestan el dominio; un caso de uso por acción. | RegistrarConsumo, VenderTiquetera, AfiliarCliente, SincronizarEventos. | Detalles de base de datos o de pantalla. |
+    | Infraestructura | Implementaciones técnicas de los contratos. | Repositorios con Prisma o Drift, cliente HTTP, Firebase Cloud Messaging, firma de QR. | Reglas de negocio. |
+    | Presentación | Entrada y salida: controladores, páginas, widgets, validación de formato. | Controlador de consumos, pantalla de escaneo, tablero del propietario. | Reglas de negocio o acceso directo a la base de datos. |
+
+3. **Carpetas por funcionalidad, no por tipo de archivo.** Cada módulo (auth, comercios, clientes, tiqueteras, consumos, sincronizacion, notificaciones, reportes, suscripciones) tiene su propia carpeta con sus capas. Lo que comparten varios módulos va en una carpeta `shared` (backend y web) o `core` (mobile).
+4. **Una responsabilidad por archivo.** Un archivo contiene una clase, un caso de uso, un componente o un widget principal. El nombre del archivo dice qué hace (`registrar-consumo.use-case.ts`, `scan_page.dart`).
+5. **Archivos y funciones cortos.**
+
+    | Elemento | Recomendado | Máximo (CI falla) |
+    | --- | --- | --- |
+    | Archivo | 200 líneas | 300 líneas |
+    | Función o método | 30 líneas | 50 líneas |
+    | Parámetros por función | 3 | 5 (usar un objeto) |
+
+    Si un archivo se acerca al máximo, se divide por responsabilidad, no se comprime.
+6. **Inyección de dependencias.** Los casos de uso reciben interfaces, nunca implementaciones concretas. Así el dominio y la aplicación se prueban sin base de datos ni red.
+7. **Pruebas por capa.** Dominio y aplicación con pruebas unitarias rápidas; infraestructura con pruebas de integración; presentación con pruebas de widgets o componentes en los flujos clave.
+
+#### 5.3.2 Backend (NestJS)
+
+```text
+apps/api/src/
+├── main.ts
+├── app.module.ts
+├── shared/
+│   ├── domain/            # Errores base, objetos de valor comunes (Dinero, Celular)
+│   ├── application/       # Interfaces comunes (UnitOfWork, Clock, IdGenerator)
+│   ├── infrastructure/    # Prisma, configuración, logger, Sentry
+│   └── presentation/      # Filtros de error, interceptores, guard de comercio activo
+└── modules/
+    └── consumos/
+        ├── domain/
+        │   ├── entities/          # consumo.entity.ts
+        │   ├── value-objects/     # unidades.vo.ts
+        │   ├── rules/             # un-consumo-por-horario.rule.ts
+        │   └── repositories/      # consumo.repository.ts (interfaz)
+        ├── application/
+        │   ├── use-cases/         # registrar-consumo.use-case.ts, reversar-consumo.use-case.ts
+        │   └── dto/               # registrar-consumo.input.ts
+        ├── infrastructure/
+        │   ├── persistence/       # prisma-consumo.repository.ts, consumo.mapper.ts
+        │   └── services/          # verificador-qr.service.ts
+        ├── presentation/
+        │   └── http/              # consumos.controller.ts, registrar-consumo.request.ts
+        └── consumos.module.ts     # Solo conecta las piezas
+```
+
+- Los controladores solo validan la petición, llaman a un caso de uso y devuelven la respuesta.
+- Prisma solo se usa dentro de `infrastructure/persistence`.
+- Un módulo no importa archivos internos de otro módulo; si necesita algo, lo pide por la interfaz que ese módulo exporta.
+
+#### 5.3.3 Panel web (Next.js)
+
+```text
+apps/web/src/
+├── app/                   # Rutas del App Router: solo componen pantallas, sin lógica
+│   ├── (auth)/login/page.tsx
+│   └── (panel)/reportes/page.tsx
+├── features/
+│   └── reportes/
+│       ├── domain/        # Tipos y reglas de presentación de datos (dinero comprometido)
+│       ├── application/   # Hooks de caso de uso: use-dinero-comprometido.ts
+│       ├── infrastructure/# Llamadas al API con el cliente generado desde OpenAPI
+│       └── presentation/  # Componentes: dinero-comprometido-card.tsx, ventas-chart.tsx
+└── shared/
+    ├── ui/                # Componentes base (shadcn/ui) y sistema de diseño VECI
+    ├── lib/               # Utilidades: formato de moneda COP, fechas
+    └── config/
+```
+
+- Las páginas de `app/` no llaman al API directamente: usan los hooks de `application`.
+- Los componentes de `presentation` no conocen URLs ni detalles HTTP.
+
+#### 5.3.4 App móvil (Flutter)
+
+```text
+apps/mobile/lib/
+├── main.dart
+├── core/
+│   ├── di/                # Proveedores de Riverpod para inyección de dependencias
+│   ├── database/          # Drift: base local y migraciones
+│   ├── network/           # Cliente HTTP generado, interceptores, sesión
+│   ├── sync/              # Bandeja de salida y motor de sincronización
+│   ├── router/            # go_router
+│   ├── theme/             # Sistema de diseño VECI
+│   └── error/             # Fallos y excepciones comunes
+└── features/
+    └── consumos/
+        ├── domain/
+        │   ├── entities/      # consumo.dart
+        │   ├── repositories/  # consumo_repository.dart (abstracto)
+        │   └── usecases/      # registrar_consumo.dart
+        ├── data/
+        │   ├── datasources/   # consumo_local_datasource.dart, consumo_remote_datasource.dart
+        │   ├── models/        # consumo_model.dart (DTO y mapeo)
+        │   └── repositories/  # consumo_repository_impl.dart (decide local o remoto)
+        └── presentation/
+            ├── pages/         # scan_page.dart
+            ├── widgets/       # resultado_consumo_card.dart
+            └── providers/     # registrar_consumo_controller.dart
+```
+
+- Los widgets no llaman a Drift ni al API: usan un controlador de Riverpod que ejecuta un caso de uso.
+- El repositorio de `data` decide si guarda en la base local, en la bandeja de salida o en el API; el resto de la app no sabe si hay internet.
+
+#### 5.3.5 Cómo se hace cumplir
+
+- **Linters en CI:** ESLint con `max-lines` y `max-lines-per-function` en backend y web; `dart analyze` con reglas estrictas y un chequeo de longitud de archivos en mobile.
+- **Límites entre capas:** dependency-cruiser (o eslint-plugin-boundaries) en backend y web rechaza importaciones que rompan la regla de dependencia; en mobile, un chequeo en CI impide que `domain/` importe Flutter, Drift o paquetes de red.
+- **Revisión de PR:** cada PR se revisa contra esta sección antes de fusionarse.
 
 ## 6. Recomendaciones tecnológicas
 
@@ -347,5 +471,6 @@ No se pasa a la siguiente fase sin cumplir su puerta: así el esfuerzo de una so
 | --- | --- | --- |
 | 1.0 | 2026-10-04 | Versión inicial: requerimientos funcionales y no funcionales, arquitectura y recomendaciones tecnológicas. |
 | 1.1 | 2026-10-04 | Correcciones del autor: inicio de sesión con celular y PIN de 6 dígitos; "horario de servicio" en lugar de "franja"; auto-registro del cliente con QR personal y QR único por comercio; pagos en efectivo o transferencia (Nequi, Daviplata, Bancolombia); notificación explicada para consumos sincronizados tarde (RF-OFF-06); backend NestJS separado; OTP, WhatsApp y Wompi pasan a futuro. |
+| 1.2 | 2026-10-04 | Se agrega la sección 5.3 de arquitectura limpia para backend, web y mobile y el requerimiento RNF-MAN-03. |
 
 El backlog derivado de este documento está en [backlog.md](backlog.md).
