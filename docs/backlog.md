@@ -1,6 +1,6 @@
 # VECI · Backlog del producto
 
-Versión 1.2 · 4 de octubre de 2026 · Ing. Yadir
+Versión 1.3 · 4 de octubre de 2026 · Ing. Yadir
 
 Este backlog convierte el [Documento de Requerimientos y Recomendaciones Tecnológicas](requerimientos-y-recomendaciones-tecnologicas.md) en épicas e historias de usuario listas para implementar por fases. Tiene **16 épicas** y **81 historias**; cada historia apunta a los requerimientos (RF/RNF) que cumple.
 
@@ -126,9 +126,11 @@ La Fase 1 suma **226 puntos** en 11 sprints de 2 semanas (unas 22 semanas, cerca
 
 **Criterios de aceptación**
 
-- [ ] Diagrama entidad-relación con Comercio, Sede, Usuario, Membresía, Afiliación (cliente-comercio), TipoTiquetera, Tiquetera, Movimiento, HorarioServicio, Suscripción y Auditoría.
-- [ ] ADR para: multi-comercio con RLS, consumos como eventos, offline con outbox, QR firmado, backend NestJS separado.
-- [ ] Ambos quedan en docs/ del repositorio.
+- [x] Diagrama entidad-relación con Comercio, Sede, Usuario, Membresía, Afiliación (cliente-comercio), TipoTiquetera, Tiquetera, Movimiento, HorarioServicio, Suscripción y Auditoría.
+- [x] ADR para: multi-comercio con RLS, consumos como eventos, offline con outbox, QR firmado, backend NestJS separado.
+- [x] Ambos quedan en docs/ del repositorio.
+
+**Entregable:** [docs/arquitectura/](arquitectura/README.md): [modelo de datos](arquitectura/modelo-datos/README.md) con DDL de referencia validado en PostgreSQL y [10 ADR](arquitectura/adr/README.md).
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -1421,3 +1423,4 @@ Cada requerimiento del documento y las historias que lo cumplen. Un requerimient
 | 1.0 | 2026-10-04 | Backlog inicial: 16 épicas, 80 historias, plan de sprints de la Fase 1 y trazabilidad. |
 | 1.1 | 2026-10-04 | Se agrega HU-01-10 (estructura de arquitectura limpia) y el criterio de arquitectura limpia en la definición de terminado. |
 | 1.2 | 2026-10-04 | Se amplía la Fase 1 a los meses 3 a 9 (11 sprints de construcción más 2 meses de piloto); las fases 2 y 3 se corren 3 meses. El backlog queda cargado en GitHub Issues. |
+| 1.3 | 2026-10-04 | HU-00-03 terminada: modelo de datos y ADR en docs/arquitectura. |
