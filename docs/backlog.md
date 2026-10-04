@@ -316,10 +316,10 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] Con celular y PIN correctos, entro y veo la pantalla de mi rol.
-- [ ] El PIN se guarda con hash (Argon2 o bcrypt), nunca en texto plano.
-- [ ] Tras 5 intentos fallidos, la cuenta se bloquea temporalmente (15 min) y se registra en auditoría.
-- [ ] La sesión usa token de acceso de 15 min y token de renovación.
+- [x] Con celular y PIN correctos, entro y veo la pantalla de mi rol.
+- [x] El PIN se guarda con hash (Argon2 o bcrypt), nunca en texto plano.
+- [x] Tras 5 intentos fallidos, la cuenta se bloquea temporalmente (15 min) y se registra en auditoría.
+- [x] La sesión usa token de acceso de 15 min y token de renovación.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -331,8 +331,8 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] El panel acepta celular + PIN o correo + contraseña.
-- [ ] Aplican las mismas reglas de bloqueo y expiración.
+- [x] El panel acepta celular + PIN o correo + contraseña.
+- [x] Aplican las mismas reglas de bloqueo y expiración.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -344,9 +344,9 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] Existen los roles Administrador VECI, Propietario, Cajero y Cliente.
-- [ ] Cada endpoint verifica rol y comercio activo; sin permiso responde 403.
-- [ ] Una misma persona puede ser cliente en un comercio y cajero en otro, y elige el comercio activo.
+- [x] Existen los roles Administrador VECI, Propietario, Cajero y Cliente.
+- [x] Cada endpoint verifica rol y comercio activo; sin permiso responde 403.
+- [x] Una misma persona puede ser cliente en un comercio y cajero en otro, y elige el comercio activo.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -358,9 +358,9 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] Invito a un cajero por su celular; al entrar define su PIN.
-- [ ] Un cajero suspendido o retirado no puede iniciar sesión en mi comercio.
-- [ ] El límite de cajeros del plan se respeta (ver HU-11-01).
+- [x] Invito a un cajero por su celular; al entrar define su PIN.
+- [x] Un cajero suspendido o retirado no puede iniciar sesión en mi comercio.
+- [x] El límite de cajeros del plan se respeta (ver HU-11-01).
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -372,9 +372,9 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] El propietario restablece el PIN de sus cajeros desde el panel.
-- [ ] Soporte VECI restablece el PIN de un cliente tras verificar su documento.
-- [ ] El usuario debe crear un PIN nuevo al entrar y la acción queda en auditoría.
+- [x] El propietario restablece el PIN de sus cajeros desde el panel.
+- [x] Soporte VECI restablece el PIN de un cliente tras verificar su documento.
+- [x] El usuario debe crear un PIN nuevo al entrar y la acción queda en auditoría.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -388,8 +388,8 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] La sesión del cajero se mantiene en el dispositivo registrado.
-- [ ] Desde el panel cierro la sesión de un dispositivo; al conectarse, se cierra y avisa si hay eventos sin sincronizar.
+- [x] La sesión del cajero se mantiene en el dispositivo registrado.
+- [x] Desde el panel cierro la sesión de un dispositivo; al conectarse, se cierra y avisa si hay eventos sin sincronizar.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -1429,3 +1429,4 @@ Cada requerimiento del documento y las historias que lo cumplen. Un requerimient
 | 1.3 | 2026-10-04 | HU-00-03 terminada: modelo de datos y ADR en docs/arquitectura. |
 | 1.4 | 2026-10-04 | HU-00-04: prueba de concepto de escaneo offline en poc/escaneo-offline, resultados en docs/arquitectura/poc y ADR-0011. Falta la medición en el Android de 2 GB. |
 | 1.5 | 2026-10-04 | EP-01 implementada (PR #102). El repositorio se reorganiza en tres proyectos independientes, backend/, web/ y mobile/, más docs/ (ADR-0014); la prueba de concepto pasa a docs/arquitectura/poc/escaneo-offline. |
+| 1.6 | 2026-10-04 | Guía de mejor solución (SSoT) en la definición de listo. EP-02 implementada (PR #106): ingreso con PIN y correo, bloqueo, tokens con renovación, roles y permisos por comercio, equipo, PIN temporal, dispositivos y cierre remoto en API, panel y app (ADR-0015). HU-02-06 se adelanta de la Fase 2. |

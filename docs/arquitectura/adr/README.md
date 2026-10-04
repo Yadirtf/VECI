@@ -18,6 +18,7 @@ Un ADR deja escrito una decisión que cuesta cambiar: el contexto, lo que se eli
 | [0012](0012-nestjs-11-commonjs-jest.md) | NestJS 11 en CommonJS con Jest, Prisma 7 y migraciones desde el DDL | Propuesta |
 | [0013](0013-infraestructura-y-despliegue.md) | Infraestructura: Render, Neon y GitHub Actions | Propuesta |
 | [0014](0014-proyectos-independientes-backend-web-mobile.md) | Tres proyectos independientes: backend, web y mobile | Propuesta |
+| [0015](0015-sesion-pin-temporal-y-acceso-propio.md) | Sesión con PIN, token corto validado contra la sesión y PIN temporal | Propuesta |
 
 ## Cómo proponer uno nuevo
 
