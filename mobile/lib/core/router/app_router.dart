@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/clientes/presentation/rutas_clientes.dart';
 import '../../features/comercios/presentation/pages/alta_negocio_page.dart';
 import '../../features/horarios/presentation/pages/horarios_page.dart';
 import '../../features/inicio/presentation/pages/inicio_page.dart';
 import '../../features/inicio/presentation/pages/muestrario_page.dart';
+import '../../features/mi_qr/presentation/pages/mi_qr_page.dart';
+import '../../features/mi_qr/presentation/pages/qr_en_negocio_page.dart';
+import '../../features/mi_qr/presentation/pages/tus_negocios_page.dart';
+import '../../features/registro/presentation/pages/politica_page.dart';
+import '../../features/registro/presentation/pages/registro_page.dart';
 import '../../features/sesion/domain/entities/estado_sesion.dart';
 import '../../features/sesion/domain/reglas/reglas_ingreso.dart';
 import '../../features/sesion/domain/usecases/gestor_sesion.dart';
@@ -22,20 +28,33 @@ class _CambiosDeSesion extends ChangeNotifier {
 }
 
 /// Navegación de la app (go_router, sección 6.1). Sin sesión o sin negocio, la app
-/// lleva a entrar, crear el PIN o elegir el negocio (EP-02).
+/// lleva a entrar, crear la cuenta, crear el PIN o elegir el negocio (EP-02, EP-04).
+/// Quien solo es cliente tiene como inicio Mi QR o Tus negocios.
 GoRouter crearRouter(GestorSesion gestor) => GoRouter(
   initialLocation: Rutas.cargando,
   refreshListenable: _CambiosDeSesion(gestor),
   redirect: (_, estadoRuta) => redirigir(gestor.estado, estadoRuta.matchedLocation),
   routes: [
     GoRoute(path: Rutas.cargando, builder: (_, _) => const _Cargando()),
-    GoRoute(path: Rutas.entrar, builder: (_, _) => const EntrarPage()),
+    GoRoute(
+      path: Rutas.entrar,
+      builder: (_, estado) => EntrarPage(celular: estado.uri.queryParameters['celular']),
+    ),
+    GoRoute(path: Rutas.registro, builder: (_, _) => const RegistroPage()),
+    GoRoute(path: Rutas.politica, builder: (_, _) => const PoliticaPage()),
     GoRoute(path: Rutas.pinNuevo, builder: (_, _) => const PinNuevoPage()),
     GoRoute(path: Rutas.negocio, builder: (_, _) => const ElegirNegocioPage()),
     GoRoute(path: Rutas.registrarNegocio, builder: (_, _) => const AltaNegocioPage()),
     GoRoute(path: Rutas.inicio, builder: (_, _) => _inicio(gestor)),
     GoRoute(path: Rutas.horarios, builder: (_, _) => const HorariosPage()),
     GoRoute(path: Rutas.disenio, builder: (_, _) => const MuestrarioPage()),
+    GoRoute(path: Rutas.miQr, builder: (_, _) => const MiQrPage()),
+    GoRoute(path: Rutas.tusNegocios, builder: (_, _) => const TusNegociosPage()),
+    GoRoute(
+      path: Rutas.qrEnNegocio,
+      builder: (_, estado) => QrEnNegocioPage(comercioId: estado.pathParameters['comercioId']!),
+    ),
+    ...rutasDeClientes(),
   ],
 );
 
@@ -49,6 +68,7 @@ Widget _inicio(GestorSesion gestor) {
     variosNegocios: estado is SesionActiva && estado.sesion.espacios.length > 1,
     alCambiarNegocio: gestor.cambiarDeNegocio,
     alSalir: gestor.salir,
+    rutaCaja: RutasClientes.caja,
   );
 }
 

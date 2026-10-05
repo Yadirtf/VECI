@@ -54,6 +54,9 @@ class GestorSesion {
     await _abrir(await _repositorio.crearPinNuevo(actual.tokenCambio, pinNuevo));
   }
 
+  /// Con la sesión que devuelve el registro del cliente (HU-04-01): entra de una vez.
+  Future<void> entrarConSesionNueva(SesionAbierta sesion) => _abrir(sesion);
+
   /// Elige el negocio: el servidor registra el celular y acepta la invitación pendiente.
   Future<void> elegirComercio(String comercioId) async {
     final token = await tokenVigente();

@@ -71,6 +71,8 @@ INSERT INTO identity.user_status_transitions VALUES (1,2),(1,4),(2,3),(3,2),(2,4
 INSERT INTO identity.credential_types (id, code, name, max_failed_attempts, lock_minutes, is_active) VALUES
   (1,'PIN','PIN de 6 dígitos',5,15,true), (2,'PASSWORD','Contraseña',5,15,true),
   (3,'OTP','Código de un solo uso (WhatsApp o SMS)',3,15,false);
+-- El PIN temporal (invitación, restablecimiento, bienvenida) sirve una semana (EP-04).
+UPDATE identity.credential_types SET temporary_valid_hours = 168 WHERE code = 'PIN';
 INSERT INTO identity.credential_revocation_reasons VALUES
   (1,'CHANGED_BY_USER','Cambiado por el usuario'), (2,'RESET_BY_OWNER','Restablecido por el propietario'),
   (3,'RESET_BY_SUPPORT','Restablecido por soporte VECI'), (4,'USER_CLOSED','Cuenta cerrada');

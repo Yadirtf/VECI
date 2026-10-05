@@ -31,6 +31,10 @@ services:
       # Firma de los tokens de sesión (EP-02). Mínimo 32 caracteres; Render la genera.
       - key: VECI_TOKENS_SECRETO
         generateValue: true
+      # Secreto del que salen las claves Ed25519 de los QR (EP-04, ADR-0017). No se cambia:
+      # cambiarlo invalida todos los QR impresos y guardados en los celulares.
+      - key: VECI_QR_SECRETO
+        generateValue: true
       - key: VECI_SEMBRAR_DEMO
         value: 'true'
       # URL del panel (CORS). Si Render le asigna otra, cámbiela aquí.

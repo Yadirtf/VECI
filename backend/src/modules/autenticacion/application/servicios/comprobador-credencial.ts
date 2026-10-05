@@ -4,6 +4,7 @@ import { Reloj } from '../../../../shared/application/puertos/reloj.port';
 import { Credencial } from '../../domain/entities/credencial.entity';
 import { CredencialesIncorrectas } from '../../domain/errors/credenciales-incorrectas.error';
 import { CuentaBloqueada } from '../../domain/errors/cuenta-bloqueada.error';
+import { PinTemporalVencido } from '../../domain/errors/pin-temporal-vencido.error';
 import { CredencialesRepository } from '../puertos/credenciales.repository';
 import { IntentoIngreso, IntentosIngreso } from '../puertos/intentos-ingreso.port';
 
@@ -41,6 +42,10 @@ export class ComprobadorCredencial {
       if (credencial.intentosFallidos > 0 || credencial.bloqueadaHasta) {
         credencial.registrarExito();
         await this.d.credenciales.guardarIntentos(credencial);
+      }
+      if (credencial.temporalVencida(ahora)) {
+        await this.d.intentos.registrar({ ...intento, motivoFallo: 'USER_NOT_ALLOWED' });
+        throw new PinTemporalVencido();
       }
       return;
     }

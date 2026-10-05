@@ -20,6 +20,7 @@ Un ADR deja escrito una decisión que cuesta cambiar: el contexto, lo que se eli
 | [0014](0014-proyectos-independientes-backend-web-mobile.md) | Tres proyectos independientes: backend, web y mobile | Propuesta |
 | [0015](0015-sesion-pin-temporal-y-acceso-propio.md) | Sesión con PIN, token corto validado contra la sesión y PIN temporal | Propuesta |
 | [0016](0016-alta-de-comercios-horarios-y-sedes.md) | Alta de comercios, horarios con historia y ETag, sedes por plan y diseño propio | Propuesta |
+| [0017](0017-clientes-qr-firmado-y-copia-local.md) | Clientes: QR firmados con claves derivadas, datos enmascarados y copia local | Propuesta |
 
 ## Cómo proponer uno nuevo
 

@@ -15,6 +15,8 @@ export interface Configuracion {
   readonly identidadDesarrollo: boolean;
   /** Secreto HS256 de los tokens de acceso (VECI_TOKENS_SECRETO, 32+ caracteres). */
   readonly secretoTokens: string;
+  /** Secreto maestro del que salen las claves Ed25519 de los QR (VECI_QR_SECRETO, ADR-0017). */
+  readonly secretoQr: string;
   /** Vida del token de acceso: 15 minutos (HU-02-01). */
   readonly segundosAcceso: number;
   /** Días que dura una sesión sin usarse; cada renovación la extiende (HU-02-06). */
@@ -65,14 +67,21 @@ function leerUrlBaseDatos(variables: Variables, entorno: Entorno): string {
 }
 
 const SECRETO_DESARROLLO = 'secreto-de-desarrollo-solo-para-local-0123456789';
+const SECRETO_QR_DESARROLLO = 'secreto-qr-de-desarrollo-solo-para-local-0123456789';
 
-function leerSecretoTokens(variables: Variables, entorno: Entorno): string {
-  const secreto = variables.VECI_TOKENS_SECRETO;
+/** Secreto de 32+ caracteres; en staging y producción es obligatorio. */
+function leerSecreto(
+  variables: Variables,
+  entorno: Entorno,
+  nombre: string,
+  paraQue: string,
+): string | undefined {
+  const secreto = variables[nombre];
   if (secreto && secreto.length >= 32) return secreto;
   if (entorno === 'staging' || entorno === 'produccion') {
-    throw new Error('Falta VECI_TOKENS_SECRETO (32 caracteres o más) para firmar las sesiones.');
+    throw new Error(`Falta ${nombre} (32 caracteres o más) para ${paraQue}.`);
   }
-  return SECRETO_DESARROLLO;
+  return undefined;
 }
 
 export function leerConfiguracion(variables: Variables = process.env): Configuracion {
@@ -85,7 +94,11 @@ export function leerConfiguracion(variables: Variables = process.env): Configura
     databaseAppUrl: leerUrlBaseDatos(variables, entorno),
     documentacionActiva: !esProduccion && leerBooleano(variables.VECI_DOCS, true),
     identidadDesarrollo: esLocal && leerBooleano(variables.VECI_IDENTIDAD_DESARROLLO, true),
-    secretoTokens: leerSecretoTokens(variables, entorno),
+    secretoTokens:
+      leerSecreto(variables, entorno, 'VECI_TOKENS_SECRETO', 'firmar las sesiones') ??
+      SECRETO_DESARROLLO,
+    secretoQr:
+      leerSecreto(variables, entorno, 'VECI_QR_SECRETO', 'firmar los QR') ?? SECRETO_QR_DESARROLLO,
     segundosAcceso: Number(variables.VECI_SEGUNDOS_ACCESO ?? 900),
     diasSesion: Number(variables.VECI_DIAS_SESION ?? 30),
     origenesPermitidos: (variables.VECI_ORIGENES ?? 'http://localhost:3001').split(','),

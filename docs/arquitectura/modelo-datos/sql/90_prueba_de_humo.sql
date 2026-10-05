@@ -179,7 +179,7 @@ SELECT pg_temp.expect_error('el comercio intenta cambiarse de plan',
 
 -- Búsqueda global enmascarada
 SELECT pg_temp.expect('búsqueda por documento devuelve datos enmascarados',
-  (SELECT masked_document FROM customers.find_person_by_document('CC','1124000003')) = '******0003');
+  (SELECT masked_document FROM customers.find_person_by_document('CC','1124000003')) = '****0003');
 
 -- ------------------------------------------------- 3. Aislamiento entre comercios
 SET app.tenant_id = '10000000-0000-7000-8000-00000000000b';

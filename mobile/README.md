@@ -30,6 +30,14 @@ Con los datos de ejemplo de la semilla, Jhon (cajero de Restaurante La Vecina) e
 - Si la propietaria cierra la sesión del celular desde el panel, al conectarse la app vuelve a la pantalla de ingreso y avisa si hay registros guardados sin enviar (la cuenta real llega con la cola de envío de EP-07).
 - El respaldo automático de Android está apagado para que la sesión no viaje a otro celular.
 
+## Clientes y caja (EP-04)
+
+Luz Marina (clienta de la semilla) entra con **310 000 0103** y el PIN **246813**.
+
+- Quien no tiene cuenta la crea desde "¿Primera vez? Crea tu cuenta": una pregunta por pantalla, la política "en corto" y su PIN. Al terminar ve **Mi QR**, un carnet que se guarda en el celular y se muestra sin internet; "Cambiar mi QR" invalida el anterior. **Tus negocios** muestra el QR de cada negocio donde es cliente.
+- En la caja, "Atender a quien sigue" abre la ranura: un solo campo para nombre, celular o documento que busca en la copia local (Drift, versión 3 de la base) y un botón para escanear (`mobile_scanner`). Afiliar y registrar necesitan señal; buscar no.
+- La copia local guarda solo datos tapados y los últimos 4 números; se actualiza con `If-None-Match` y responde 304 si nada cambió.
+
 ## Comandos
 
 ```bash

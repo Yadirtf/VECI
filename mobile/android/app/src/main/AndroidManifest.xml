@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- La app habla con la API (HU-01-08); sin este permiso el APK de release no tiene red. -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- La caja escanea el QR del cliente con mobile_scanner (EP-04, ADR-0011). -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <application
         android:label="veci"
         android:name="${applicationName}"

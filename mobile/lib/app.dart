@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'core/di/mi_qr_providers.dart';
 import 'core/di/sesion_providers.dart';
 import 'core/observabilidad/sentry_veci.dart';
 import 'core/router/app_router.dart';
@@ -29,6 +30,8 @@ class _VeciAppState extends ConsumerState<VeciApp> {
     _etiquetas = gestor.cambios.listen((estado) {
       final comercio = estado is SesionActiva ? estado.comercioId : null;
       unawaited(SentryVeci.etiquetarComercio(comercio));
+      // El QR de una persona no se queda en el celular cuando sale (EP-04).
+      if (estado is SinSesion) unawaited(ref.read(miQrRepositoryProvider).olvidar());
     });
     unawaited(gestor.iniciar());
   }

@@ -14,6 +14,7 @@ describe('leerConfiguracion', () => {
       VECI_ENTORNO: 'produccion',
       DATABASE_APP_URL: 'postgresql://x',
       VECI_TOKENS_SECRETO: 'x'.repeat(32),
+      VECI_QR_SECRETO: 'q'.repeat(32),
       VECI_DOCS: 'true',
       VECI_IDENTIDAD_DESARROLLO: 'true',
     });
@@ -31,6 +32,7 @@ describe('leerConfiguracion', () => {
       DATABASE_URL: 'postgresql://dueno:secreta@db.neon.tech/veci?sslmode=require',
       VECI_API_DB_PASSWORD: 'clave-api',
       VECI_TOKENS_SECRETO: 'x'.repeat(32),
+      VECI_QR_SECRETO: 'q'.repeat(32),
     });
     expect(config.databaseAppUrl).toBe(
       'postgresql://veci_api:clave-api@db.neon.tech/veci?sslmode=require',
@@ -51,6 +53,7 @@ describe('leerConfiguracion', () => {
       VECI_ENTORNO: 'staging',
       DATABASE_APP_URL: 'postgresql://x',
       VECI_TOKENS_SECRETO: 'x'.repeat(32),
+      VECI_QR_SECRETO: 'q'.repeat(32),
     });
     expect(config.identidadDesarrollo).toBe(false);
     expect(config.documentacionActiva).toBe(true);
@@ -63,6 +66,18 @@ describe('leerConfiguracion', () => {
       'VECI_TOKENS_SECRETO',
     );
     expect(leerConfiguracion({}).secretoTokens.length).toBeGreaterThanOrEqual(32);
+  });
+
+  it('exige el secreto de los QR fuera de desarrollo (ADR-0017)', () => {
+    const base = {
+      VECI_ENTORNO: 'produccion',
+      DATABASE_APP_URL: 'postgresql://x',
+      VECI_TOKENS_SECRETO: 'x'.repeat(32),
+    };
+    expect(() => leerConfiguracion(base)).toThrow('VECI_QR_SECRETO');
+    const config = leerConfiguracion({ ...base, VECI_QR_SECRETO: 'q'.repeat(40) });
+    expect(config.secretoQr).toBe('q'.repeat(40));
+    expect(leerConfiguracion({}).secretoQr).not.toBe(leerConfiguracion({}).secretoTokens);
   });
 
   it('el acceso dura 15 minutos y la sesión 30 días por defecto', () => {

@@ -1,6 +1,6 @@
 # VECI · Backlog del producto
 
-Versión 1.7 · 5 de octubre de 2026 · Ing. Yadir
+Versión 1.8 · 5 de octubre de 2026 · Ing. Yadir
 
 Este backlog convierte el [Documento de Requerimientos y Recomendaciones Tecnológicas](requerimientos-y-recomendaciones-tecnologicas.md) en épicas e historias de usuario listas para implementar por fases. Tiene **16 épicas** y **81 historias**; cada historia apunta a los requerimientos (RF/RNF) que cumple.
 
@@ -460,9 +460,9 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] Valido mi celular (10 dígitos) y documento; no se permiten duplicados.
-- [ ] Antes de crear la cuenta acepto la política de datos y queda la fecha y versión.
-- [ ] Al terminar veo un mensaje de bienvenida en el tono VECI.
+- [x] Valido mi celular (10 dígitos) y documento; no se permiten duplicados.
+- [x] Antes de crear la cuenta acepto la política de datos y queda la fecha y versión.
+- [x] Al terminar veo un mensaje de bienvenida en el tono VECI.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -474,9 +474,9 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] El QR se genera al registrarme y contiene solo un token firmado, sin datos personales.
-- [ ] Se ve sin internet.
-- [ ] Puedo regenerarlo si lo perdí; el anterior queda revocado.
+- [x] El QR se genera al registrarme y contiene solo un token firmado, sin datos personales.
+- [x] Se ve sin internet.
+- [x] Puedo regenerarlo si lo perdí; el anterior queda revocado.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -488,10 +488,10 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] Al escanear veo nombre y documento enmascarado (ej. ****5678) y confirmo.
-- [ ] Se crea la afiliación y el QR único del cliente en mi comercio, distinto del de otros comercios.
-- [ ] Si ya estaba afiliado, la app lo indica y abre su ficha.
-- [ ] El cliente ve el nuevo comercio en su app.
+- [x] Al escanear veo nombre y documento enmascarado (ej. ****5678) y confirmo.
+- [x] Se crea la afiliación y el QR único del cliente en mi comercio, distinto del de otros comercios.
+- [x] Si ya estaba afiliado, la app lo indica y abre su ficha.
+- [x] El cliente ve el nuevo comercio en su app.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -503,10 +503,10 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] El registro toma menos de 30 segundos.
-- [ ] Si el celular o el documento ya existen en VECI, se vincula esa persona sin duplicarla.
-- [ ] El cajero confirma que el cliente aceptó la política de datos y queda registrado.
-- [ ] El cliente puede activar después su app con su celular y PIN.
+- [x] El registro toma menos de 30 segundos.
+- [x] Si el celular o el documento ya existen en VECI, se vincula esa persona sin duplicarla.
+- [x] El cajero confirma que el cliente aceptó la política de datos y queda registrado.
+- [x] El cliente puede activar después su app con su celular y PIN.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -518,13 +518,15 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] Los resultados aparecen mientras escribo (desde 3 caracteres).
-- [ ] La búsqueda funciona sin internet sobre la copia local.
-- [ ] Solo veo clientes de mi comercio.
+- [x] Los resultados aparecen mientras escribo (desde 3 caracteres).
+- [x] La búsqueda funciona sin internet sobre la copia local.
+- [x] Solo veo clientes de mi comercio.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
 | Debe | 3 | F1 | S6 | HU-04-03 | RF-CLI-07 |
+
+*Nota:* Implementada en EP-04 (ADR-0017). Afiliar y registrar en la caja necesitan señal; la afiliación sin internet (en cola) llega con el outbox de EP-07.
 
 ### EP-05 · Tiqueteras y ventas
 
@@ -1092,15 +1094,15 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] La política está publicada y versionada.
-- [ ] Se guarda quién aceptó, qué versión y cuándo.
+- [x] La política está publicada y versionada.
+- [x] Se guarda quién aceptó, qué versión y cuándo.
 - [ ] Si la versión cambia, se pide aceptar de nuevo.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
 | Debe | 3 | F1 | S4 | HU-01-04 | RF-CLI-05, RNF-LEG-01 |
 
-*Nota:* Requiere redactar el texto legal (ver próximos pasos del documento).
+*Nota:* EP-04 publica la versión 1.0 (`GET /politica-de-datos`, página `/politica-de-datos` del panel) y guarda el consentimiento al registrarse; un registro con una versión vieja se rechaza. Pedir aceptar de nuevo a quien ya tiene cuenta queda pendiente para cuando se publique la 1.1. El texto lo debe revisar un abogado antes del piloto.
 
 #### HU-12-02 · Derechos de habeas data
 
@@ -1433,3 +1435,4 @@ Cada requerimiento del documento y las historias que lo cumplen. Un requerimient
 | 1.5 | 2026-10-04 | EP-01 implementada (PR #102). El repositorio se reorganiza en tres proyectos independientes, backend/, web/ y mobile/, más docs/ (ADR-0014); la prueba de concepto pasa a docs/arquitectura/poc/escaneo-offline. |
 | 1.6 | 2026-10-04 | Guía de mejor solución (SSoT) en la definición de listo. EP-02 implementada (PR #106): ingreso con PIN y correo, bloqueo, tokens con renovación, roles y permisos por comercio, equipo, PIN temporal, dispositivos y cierre remoto en API, panel y app (ADR-0015). HU-02-06 se adelanta de la Fase 2. |
 | 1.7 | 2026-10-05 | EP-03 implementada: alta de negocios por el dueño (conversación) y por Administración VECI (PIN temporal del propietario), horarios editables con historia, pausa y ETag para la caja, y sedes del plan Pro con cajeros por sede (ADR-0016). HU-03-03 se adelanta de la Fase 2; su filtro por sede en consumos y reportes queda para EP-06 y EP-10. |
+| 1.8 | 2026-10-05 | EP-04 implementada: registro propio del cliente con política de datos versionada (HU-12-01 en parte), QR personal firmado que se ve sin internet y se regenera, afiliación con un escaneo y QR propio por negocio, registro asistido con PIN de bienvenida de 7 días y búsqueda en la caja sobre una copia local enmascarada (ADR-0017). |

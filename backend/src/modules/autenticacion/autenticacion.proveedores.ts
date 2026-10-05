@@ -27,6 +27,7 @@ import { ConsultarEspacios } from './application/use-cases/consultar-espacios.us
 import { DefinirCorreoYContrasena } from './application/use-cases/definir-correo-y-contrasena.use-case';
 import { DefinirPinNuevo } from './application/use-cases/definir-pin-nuevo.use-case';
 import { EmitirPinTemporal } from './application/use-cases/emitir-pin-temporal.use-case';
+import { EntrarConCuentaNueva } from './application/use-cases/entrar-con-cuenta-nueva.use-case';
 import { IniciarSesion } from './application/use-cases/iniciar-sesion.use-case';
 import { RenovarSesion } from './application/use-cases/renovar-sesion.use-case';
 import { PIEZAS, Piezas } from './autenticacion.piezas';
@@ -109,6 +110,11 @@ export const PROVEEDORES_AUTENTICACION: FactoryProvider[] = [
     [EmisorSesion, RELOJ],
   ),
   fabrica(CerrarSesion, (p) => new CerrarSesion(p.sesiones)),
+  fabrica(
+    EntrarConCuentaNueva,
+    (p, emisor: EmisorSesion) => new EntrarConCuentaNueva(p.cuentas, emisor),
+    [EmisorSesion],
+  ),
   fabrica(
     CambiarPin,
     (p, comprobador: ComprobadorCredencial) => new CambiarPin({ ...p, comprobador }),

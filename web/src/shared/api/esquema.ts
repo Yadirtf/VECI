@@ -4,6 +4,142 @@
  */
 
 export interface paths {
+    "/clientes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Por nombre, celular o documento (HU-04-05) */
+        get: operations["buscarClientes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clientes/{clienteId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Ficha del cliente */
+        get: operations["consultarCliente"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clientes/{clienteId}/pin-bienvenida": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** PIN nuevo para activar la app (HU-04-04) */
+        post: operations["darPinDeBienvenida"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clientes/afiliaciones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Afilia con el QR personal (HU-04-03) */
+        post: operations["afiliarPorQr"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clientes/copia-local": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Copia para buscar sin internet; 304 si no cambió (HU-04-05) */
+        get: operations["bajarCopiaLocalDeClientes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clientes/qr": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Qué es el QR que escaneó la caja */
+        post: operations["leerQrDeCliente"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clientes/registro-asistido": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Registra a quien no tiene la app (HU-04-04) */
+        post: operations["registrarClienteAsistido"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/clientes/registro-asistido/revisar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** ¿Ya está en VECI? Solo datos enmascarados (HU-04-04) */
+        post: operations["revisarDocumentoDeCliente"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/comercio": {
         parameters: {
             query?: never;
@@ -312,6 +448,57 @@ export interface paths {
         patch: operations["cambiarEstadoHorario"];
         trace?: never;
     };
+    "/mi-qr": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Mi QR personal para afiliarme */
+        get: operations["consultarMiQr"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/mi-qr/regenerar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** QR nuevo; el anterior deja de servir (HU-04-02) */
+        post: operations["regenerarMiQr"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/mis-comercios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Negocios donde soy cliente, con mi QR en cada uno */
+        get: operations["listarMisComercios"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/plataforma/comercios": {
         parameters: {
             query?: never;
@@ -323,6 +510,57 @@ export interface paths {
         put?: never;
         /** Administración VECI registra un negocio e invita a su dueño (HU-03-01) */
         post: operations["registrarComercioParaPropietario"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/politica-de-datos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Política de datos vigente */
+        get: operations["consultarPoliticaDeDatos"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/registro": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** El cliente crea su cuenta y entra (HU-04-01) */
+        post: operations["registrarme"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/registro/tipos-documento": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Documentos de personas */
+        get: operations["listarTiposDeDocumento"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -522,6 +760,11 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AfiliacionResponse: {
+            cliente: components["schemas"]["ClienteResponse"];
+            /** @description Ya era cliente: no se creó nada */
+            yaEstaba: boolean;
+        };
         AsignarSedesRequest: {
             /** @description Vacío = trabaja en todas las sedes */
             sedeIds: string[];
@@ -554,6 +797,75 @@ export interface components {
             /** @example 1 */
             sesionesCerradas: number;
         };
+        ClavePublicaResponse: {
+            /** @description Ed25519, 32 bytes en base64url */
+            clavePublica: string;
+            /** @example k1 */
+            keyId: string;
+        };
+        ClienteEnCajaResponse: {
+            /** @example ••• 8888 */
+            celular?: string | null;
+            /** @example 8888 */
+            celularFinal?: string | null;
+            /** Format: uuid */
+            clienteId: string;
+            /** @enum {string} */
+            cuenta: "ACTIVA" | "PENDIENTE" | "SIN_CUENTA";
+            /** @example ****5678 */
+            documento: string;
+            /**
+             * @description Últimos 4 dígitos, para buscar sin internet
+             * @example 5678
+             */
+            documentoFinal: string;
+            /** @enum {string} */
+            estado: "ACTIVE" | "BLOCKED" | "ENDED";
+            /** @example Luz Marina Chindoy */
+            nombre: string;
+            /**
+             * @description Sin tildes ni mayúsculas
+             * @example luz marina chindoy
+             */
+            nombreBusqueda: string;
+        };
+        ClienteResponse: {
+            /** Format: date-time */
+            afiliadoEn: string;
+            /** @example Chindoy */
+            apellidos?: string | null;
+            /** @enum {string} */
+            canal: "PERSONAL_QR_SCAN" | "ASSISTED_REGISTRATION" | "DATA_IMPORT";
+            /** @example ••• 8888 */
+            celular?: string | null;
+            /**
+             * Format: uuid
+             * @description Id de la afiliación: el cliente en este negocio
+             */
+            clienteId: string;
+            /**
+             * @description ACTIVA: usa la app. PENDIENTE: espera su PIN.
+             * @enum {string}
+             */
+            cuenta: "ACTIVA" | "PENDIENTE" | "SIN_CUENTA";
+            /** @description Se ven el documento y el celular completos */
+            datosCompletos: boolean;
+            /**
+             * @description Completo solo con customers.view_full_document
+             * @example ****5678
+             */
+            documento: string;
+            /** @enum {string} */
+            estado: "ACTIVE" | "BLOCKED" | "ENDED";
+            /** @example Luz Marina Chindoy */
+            nombre: string;
+            /** @example Luz Marina */
+            nombres: string;
+            /** Format: uuid */
+            personaId: string;
+            /** @example CC */
+            tipoDocumento: string;
+        };
         ComercioActivoRequest: {
             /** Format: uuid */
             comercioId: string;
@@ -582,6 +894,15 @@ export interface components {
             /** @example +573100000101 */
             celular?: string | null;
             correo?: string | null;
+        };
+        CopiaLocalResponse: {
+            claves: components["schemas"]["ClavePublicaResponse"][];
+            clientes: components["schemas"]["ClienteEnCajaResponse"][];
+            /**
+             * @description Va también en el ETag
+             * @example 1042.37
+             */
+            version: string;
         };
         CorreoResponse: {
             /** @example marta@lavecina.co */
@@ -667,6 +988,15 @@ export interface components {
             /** Format: date-time */
             ultimaVez: string;
         };
+        DocumentoRequest: {
+            /** @example 1124500777 */
+            numeroDocumento: string;
+            /**
+             * @description Código del tipo de documento (catálogo)
+             * @example CC
+             */
+            tipoDocumento: string;
+        };
         DocumentoResponse: {
             /**
              * @description El NIT incluye el dígito de verificación
@@ -701,6 +1031,24 @@ export interface components {
             municipioId?: number | null;
             /** @example Sede del parque */
             nombre?: string;
+        };
+        EnCortoResponse: {
+            /**
+             * @example [
+             *       "Tu nombre",
+             *       "Tu celular",
+             *       "Tu documento"
+             *     ]
+             */
+            anotamos: string[];
+            /**
+             * @example [
+             *       "Vender ni prestar tus datos"
+             *     ]
+             */
+            nuncaHacemos: string[];
+            /** @example Para saber cuántos almuerzos te quedan. */
+            paraQue: string;
         };
         EspacioResponse: {
             /** Format: uuid */
@@ -794,10 +1142,27 @@ export interface components {
              */
             tipoDocumento: string;
         };
+        LecturaQrResponse: {
+            cliente?: components["schemas"]["ClienteResponse"];
+            persona?: components["schemas"]["PersonaPorAfiliarResponse"];
+            /** @enum {string} */
+            resultado: "PERSONA_POR_AFILIAR" | "CLIENTE" | "QR_CAMBIADO" | "OTRO_NEGOCIO" | "NO_ES_DE_VECI";
+        };
         MapaDeSedesResponse: {
             cajeros: components["schemas"]["CajeroEnSedesResponse"][];
             cupo: components["schemas"]["CupoDeSedesResponse"];
             sedes: components["schemas"]["SedeResponse"][];
+        };
+        MiComercioResponse: {
+            /** Format: date-time */
+            afiliadoEn: string;
+            /** Format: uuid */
+            comercioId: string;
+            /** @example Restaurante La Vecina */
+            nombre: string;
+            qr?: components["schemas"]["QrEnComercioResponse"] | null;
+            /** @example RESTAURANT */
+            tipoNegocio: string;
         };
         MiembroResponse: {
             /** @example +573100000102 */
@@ -816,6 +1181,14 @@ export interface components {
             roles: string[];
             /** Format: uuid */
             usuarioId: string;
+        };
+        MiQrResponse: {
+            /** Format: date-time */
+            emitidoEn: string;
+            /** @description Texto del QR: solo un token firmado, sin datos personales */
+            token: string;
+            /** @example 1 */
+            version: number;
         };
         MunicipioResponse: {
             /** @example 86001 */
@@ -850,6 +1223,23 @@ export interface components {
             slug: string;
             /** @example RESTAURANT */
             tipoNegocio: string;
+        };
+        PersonaPorAfiliarResponse: {
+            /** Format: uuid */
+            clienteId?: string | null;
+            /** @example ****5678 */
+            documento: string;
+            /** @example Luz Marina C. */
+            nombre: string;
+            /** Format: uuid */
+            personaId: string;
+        };
+        PinBienvenidaResponse: {
+            /**
+             * @description Se muestra una sola vez. Sirve 7 días.
+             * @example 482915
+             */
+            pinBienvenida: string;
         };
         PinClienteResponse: {
             /**
@@ -890,6 +1280,21 @@ export interface components {
              */
             venceEl: string;
         };
+        PoliticaResponse: {
+            enCorto: components["schemas"]["EnCortoResponse"];
+            /** @description SHA-256 del contenido, en hexadecimal */
+            huella: string;
+            /**
+             * Format: uuid
+             * @description Se envía al aceptar
+             */
+            id: string;
+            /** Format: date-time */
+            publicadaEn: string;
+            secciones: components["schemas"]["SeccionPoliticaResponse"][];
+            /** @example 1.0 */
+            version: string;
+        };
         PropietarioInvitadoRequest: {
             /** @example Chindoy */
             apellidos?: string;
@@ -901,6 +1306,12 @@ export interface components {
             numeroDocumento: string;
             /** @example CC */
             tipoDocumento: string;
+        };
+        QrEnComercioResponse: {
+            /** @description Token firmado por el negocio */
+            token: string;
+            /** @example 1 */
+            version: number;
         };
         RegistrarComercioRequest: {
             /** @example 310 000 0101 */
@@ -961,6 +1372,73 @@ export interface components {
              */
             tipoNegocio: string;
         };
+        RegistroAsistidoRequest: {
+            /** @example Chindoy */
+            apellidos?: string;
+            /**
+             * @description Solo si la persona es nueva
+             * @example 315 777 8888
+             */
+            celular?: string;
+            /**
+             * @description El celular es de otra persona de la familia: queda solo de contacto
+             * @default false
+             */
+            celularCompartido: boolean;
+            /**
+             * @description Solo si la persona es nueva
+             * @example Luz Marina
+             */
+            nombres?: string;
+            /** @example 1124500777 */
+            numeroDocumento: string;
+            /**
+             * Format: uuid
+             * @description Versión de la política que se le leyó y aceptó (confirmada por el cajero)
+             */
+            politicaVersionId: string;
+            /**
+             * @description Código del tipo de documento (catálogo)
+             * @example CC
+             */
+            tipoDocumento: string;
+        };
+        RegistroAsistidoResponse: {
+            cliente: components["schemas"]["ClienteResponse"];
+            /**
+             * @description Se muestra una sola vez para dictárselo. Sirve 7 días.
+             * @example 482915
+             */
+            pinBienvenida?: string | null;
+            /** @description Ya estaba en VECI y solo se afilió */
+            vinculado: boolean;
+        };
+        RegistroRequest: {
+            /** @example Chindoy */
+            apellidos?: string;
+            /**
+             * @description Celular como lo escribe la persona
+             * @example 315 777 8888
+             */
+            celular: string;
+            dispositivo: components["schemas"]["DispositivoRequest"];
+            /** @example Luz Marina */
+            nombres: string;
+            /** @example 1124500777 */
+            numeroDocumento: string;
+            /** @example 190573 */
+            pin: string;
+            /**
+             * Format: uuid
+             * @description Versión de la política que la persona aceptó
+             */
+            politicaVersionId: string;
+            /**
+             * @description Código del tipo de documento (catálogo)
+             * @example CC
+             */
+            tipoDocumento: string;
+        };
         RenovarSesionRequest: {
             tokenRenovacion: string;
         };
@@ -983,6 +1461,9 @@ export interface components {
             /** @example CC */
             tipoDocumento: string;
         };
+        RevisionDocumentoResponse: {
+            persona?: components["schemas"]["PersonaPorAfiliarResponse"] | null;
+        };
         SaludResponse: {
             /** @enum {string} */
             baseDatos: "ok" | "sin-conexion";
@@ -990,6 +1471,13 @@ export interface components {
             estado: "ok" | "degradado";
             /** @example 0.1.0+abc1234 */
             version: string;
+        };
+        SeccionPoliticaResponse: {
+            /** @example La cajera ve tu nombre y los últimos 4 números de tu documento. */
+            enPalabrasDeVecino: string;
+            texto: string;
+            /** @example Quién ve tus datos */
+            titulo: string;
         };
         SedeResponse: {
             activa: boolean;
@@ -1048,6 +1536,21 @@ export interface components {
             nombre: string;
             servicios: components["schemas"]["ServicioSugeridoResponse"][];
         };
+        TipoDocumentoResponse: {
+            /** @example CC */
+            codigo: string;
+            /** @example Cédula de ciudadanía */
+            nombre: string;
+            /** @example ^[0-9]{6,10}$ */
+            patron?: string | null;
+        };
+        TokenQrRequest: {
+            /**
+             * @description Texto leído del QR, tal cual
+             * @example VP1.eyJr…
+             */
+            token: string;
+        };
         UsuarioResponse: {
             /** Format: uuid */
             id: string;
@@ -1063,6 +1566,433 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    buscarClientes: {
+        parameters: {
+            query: {
+                /** @description Desde 3 letras o números */
+                q: unknown;
+            };
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClienteResponse"][];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso customers.search */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Muy corta */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    consultarCliente: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path: {
+                clienteId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClienteResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso customers.search */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    darPinDeBienvenida: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path: {
+                clienteId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PinBienvenidaResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso customers.register */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Ya activó su app */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    afiliarPorQr: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TokenQrRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AfiliacionResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso customers.affiliate */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El QR no sirve */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    bajarCopiaLocalDeClientes: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CopiaLocalResponse"];
+                };
+            };
+            /** @description La copia del celular está al día */
+            304: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso customers.search */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    leerQrDeCliente: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TokenQrRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LecturaQrResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso customers.affiliate */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    registrarClienteAsistido: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegistroAsistidoRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegistroAsistidoResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso customers.register */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Celular de otra cuenta */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description Faltan datos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    revisarDocumentoDeCliente: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DocumentoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RevisionDocumentoResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso customers.register */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     consultarComercio: {
         parameters: {
             query?: never;
@@ -2077,6 +3007,84 @@ export interface operations {
             };
         };
     };
+    consultarMiQr: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MiQrResponse"];
+                };
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    regenerarMiQr: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MiQrResponse"];
+                };
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarMisComercios: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MiComercioResponse"][];
+                };
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     registrarComercioParaPropietario: {
         parameters: {
             query?: never;
@@ -2128,6 +3136,85 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    consultarPoliticaDeDatos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PoliticaResponse"];
+                };
+            };
+        };
+    };
+    registrarme: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegistroRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SesionResponse"];
+                };
+            };
+            /** @description Ya tiene cuenta o la anotaron */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description Datos inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    listarTiposDeDocumento: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TipoDocumentoResponse"][];
                 };
             };
         };

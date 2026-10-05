@@ -1,6 +1,22 @@
 {
   "components": {
     "schemas": {
+      "AfiliacionResponse": {
+        "properties": {
+          "cliente": {
+            "$ref": "#/components/schemas/ClienteResponse"
+          },
+          "yaEstaba": {
+            "description": "Ya era cliente: no se creó nada",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "yaEstaba",
+          "cliente"
+        ],
+        "type": "object"
+      },
       "AsignarSedesRequest": {
         "properties": {
           "sedeIds": {
@@ -108,6 +124,172 @@
         ],
         "type": "object"
       },
+      "ClavePublicaResponse": {
+        "properties": {
+          "clavePublica": {
+            "description": "Ed25519, 32 bytes en base64url",
+            "type": "string"
+          },
+          "keyId": {
+            "example": "k1",
+            "type": "string"
+          }
+        },
+        "required": [
+          "keyId",
+          "clavePublica"
+        ],
+        "type": "object"
+      },
+      "ClienteEnCajaResponse": {
+        "properties": {
+          "celular": {
+            "example": "••• 8888",
+            "nullable": true,
+            "type": "string"
+          },
+          "celularFinal": {
+            "example": "8888",
+            "nullable": true,
+            "type": "string"
+          },
+          "clienteId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "cuenta": {
+            "enum": [
+              "ACTIVA",
+              "PENDIENTE",
+              "SIN_CUENTA"
+            ],
+            "type": "string"
+          },
+          "documento": {
+            "example": "****5678",
+            "type": "string"
+          },
+          "documentoFinal": {
+            "description": "Últimos 4 dígitos, para buscar sin internet",
+            "example": "5678",
+            "type": "string"
+          },
+          "estado": {
+            "enum": [
+              "ACTIVE",
+              "BLOCKED",
+              "ENDED"
+            ],
+            "type": "string"
+          },
+          "nombre": {
+            "example": "Luz Marina Chindoy",
+            "type": "string"
+          },
+          "nombreBusqueda": {
+            "description": "Sin tildes ni mayúsculas",
+            "example": "luz marina chindoy",
+            "type": "string"
+          }
+        },
+        "required": [
+          "clienteId",
+          "nombre",
+          "nombreBusqueda",
+          "documento",
+          "documentoFinal",
+          "cuenta",
+          "estado"
+        ],
+        "type": "object"
+      },
+      "ClienteResponse": {
+        "properties": {
+          "afiliadoEn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "apellidos": {
+            "example": "Chindoy",
+            "nullable": true,
+            "type": "string"
+          },
+          "canal": {
+            "enum": [
+              "PERSONAL_QR_SCAN",
+              "ASSISTED_REGISTRATION",
+              "DATA_IMPORT"
+            ],
+            "type": "string"
+          },
+          "celular": {
+            "example": "••• 8888",
+            "nullable": true,
+            "type": "string"
+          },
+          "clienteId": {
+            "description": "Id de la afiliación: el cliente en este negocio",
+            "format": "uuid",
+            "type": "string"
+          },
+          "cuenta": {
+            "description": "ACTIVA: usa la app. PENDIENTE: espera su PIN.",
+            "enum": [
+              "ACTIVA",
+              "PENDIENTE",
+              "SIN_CUENTA"
+            ],
+            "type": "string"
+          },
+          "datosCompletos": {
+            "description": "Se ven el documento y el celular completos",
+            "type": "boolean"
+          },
+          "documento": {
+            "description": "Completo solo con customers.view_full_document",
+            "example": "****5678",
+            "type": "string"
+          },
+          "estado": {
+            "enum": [
+              "ACTIVE",
+              "BLOCKED",
+              "ENDED"
+            ],
+            "type": "string"
+          },
+          "nombre": {
+            "example": "Luz Marina Chindoy",
+            "type": "string"
+          },
+          "nombres": {
+            "example": "Luz Marina",
+            "type": "string"
+          },
+          "personaId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "tipoDocumento": {
+            "example": "CC",
+            "type": "string"
+          }
+        },
+        "required": [
+          "clienteId",
+          "personaId",
+          "nombre",
+          "nombres",
+          "tipoDocumento",
+          "documento",
+          "datosCompletos",
+          "cuenta",
+          "estado",
+          "canal",
+          "afiliadoEn"
+        ],
+        "type": "object"
+      },
       "ComercioActivoRequest": {
         "properties": {
           "comercioId": {
@@ -176,6 +358,33 @@
             "type": "string"
           }
         },
+        "type": "object"
+      },
+      "CopiaLocalResponse": {
+        "properties": {
+          "claves": {
+            "items": {
+              "$ref": "#/components/schemas/ClavePublicaResponse"
+            },
+            "type": "array"
+          },
+          "clientes": {
+            "items": {
+              "$ref": "#/components/schemas/ClienteEnCajaResponse"
+            },
+            "type": "array"
+          },
+          "version": {
+            "description": "Va también en el ETag",
+            "example": "1042.37",
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "clientes",
+          "claves"
+        ],
         "type": "object"
       },
       "CorreoResponse": {
@@ -386,6 +595,24 @@
         ],
         "type": "object"
       },
+      "DocumentoRequest": {
+        "properties": {
+          "numeroDocumento": {
+            "example": "1124500777",
+            "type": "string"
+          },
+          "tipoDocumento": {
+            "description": "Código del tipo de documento (catálogo)",
+            "example": "CC",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tipoDocumento",
+          "numeroDocumento"
+        ],
+        "type": "object"
+      },
       "DocumentoResponse": {
         "properties": {
           "numero": {
@@ -472,6 +699,40 @@
             "type": "string"
           }
         },
+        "type": "object"
+      },
+      "EnCortoResponse": {
+        "properties": {
+          "anotamos": {
+            "example": [
+              "Tu nombre",
+              "Tu celular",
+              "Tu documento"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "nuncaHacemos": {
+            "example": [
+              "Vender ni prestar tus datos"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "paraQue": {
+            "example": "Para saber cuántos almuerzos te quedan.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "anotamos",
+          "nuncaHacemos",
+          "paraQue"
+        ],
         "type": "object"
       },
       "EspacioResponse": {
@@ -689,6 +950,30 @@
         ],
         "type": "object"
       },
+      "LecturaQrResponse": {
+        "properties": {
+          "cliente": {
+            "$ref": "#/components/schemas/ClienteResponse"
+          },
+          "persona": {
+            "$ref": "#/components/schemas/PersonaPorAfiliarResponse"
+          },
+          "resultado": {
+            "enum": [
+              "PERSONA_POR_AFILIAR",
+              "CLIENTE",
+              "QR_CAMBIADO",
+              "OTRO_NEGOCIO",
+              "NO_ES_DE_VECI"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "resultado"
+        ],
+        "type": "object"
+      },
       "MapaDeSedesResponse": {
         "properties": {
           "cajeros": {
@@ -711,6 +996,42 @@
           "sedes",
           "cajeros",
           "cupo"
+        ],
+        "type": "object"
+      },
+      "MiComercioResponse": {
+        "properties": {
+          "afiliadoEn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "comercioId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "nombre": {
+            "example": "Restaurante La Vecina",
+            "type": "string"
+          },
+          "qr": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/QrEnComercioResponse"
+              }
+            ],
+            "nullable": true,
+            "type": "object"
+          },
+          "tipoNegocio": {
+            "example": "RESTAURANT",
+            "type": "string"
+          }
+        },
+        "required": [
+          "comercioId",
+          "nombre",
+          "tipoNegocio",
+          "afiliadoEn"
         ],
         "type": "object"
       },
@@ -758,6 +1079,28 @@
           "nombre",
           "estado",
           "roles"
+        ],
+        "type": "object"
+      },
+      "MiQrResponse": {
+        "properties": {
+          "emitidoEn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "token": {
+            "description": "Texto del QR: solo un token firmado, sin datos personales",
+            "type": "string"
+          },
+          "version": {
+            "example": 1,
+            "type": "number"
+          }
+        },
+        "required": [
+          "token",
+          "version",
+          "emitidoEn"
         ],
         "type": "object"
       },
@@ -877,6 +1220,46 @@
         ],
         "type": "object"
       },
+      "PersonaPorAfiliarResponse": {
+        "properties": {
+          "clienteId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "documento": {
+            "example": "****5678",
+            "type": "string"
+          },
+          "nombre": {
+            "example": "Luz Marina C.",
+            "type": "string"
+          },
+          "personaId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "personaId",
+          "nombre",
+          "documento"
+        ],
+        "type": "object"
+      },
+      "PinBienvenidaResponse": {
+        "properties": {
+          "pinBienvenida": {
+            "description": "Se muestra una sola vez. Sirve 7 días.",
+            "example": "482915",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pinBienvenida"
+        ],
+        "type": "object"
+      },
       "PinClienteResponse": {
         "properties": {
           "nombre": {
@@ -959,6 +1342,45 @@
         ],
         "type": "object"
       },
+      "PoliticaResponse": {
+        "properties": {
+          "enCorto": {
+            "$ref": "#/components/schemas/EnCortoResponse"
+          },
+          "huella": {
+            "description": "SHA-256 del contenido, en hexadecimal",
+            "type": "string"
+          },
+          "id": {
+            "description": "Se envía al aceptar",
+            "format": "uuid",
+            "type": "string"
+          },
+          "publicadaEn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "secciones": {
+            "items": {
+              "$ref": "#/components/schemas/SeccionPoliticaResponse"
+            },
+            "type": "array"
+          },
+          "version": {
+            "example": "1.0",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "publicadaEn",
+          "huella",
+          "enCorto",
+          "secciones"
+        ],
+        "type": "object"
+      },
       "PropietarioInvitadoRequest": {
         "properties": {
           "apellidos": {
@@ -987,6 +1409,23 @@
           "nombres",
           "tipoDocumento",
           "numeroDocumento"
+        ],
+        "type": "object"
+      },
+      "QrEnComercioResponse": {
+        "properties": {
+          "token": {
+            "description": "Token firmado por el negocio",
+            "type": "string"
+          },
+          "version": {
+            "example": 1,
+            "type": "number"
+          }
+        },
+        "required": [
+          "token",
+          "version"
         ],
         "type": "object"
       },
@@ -1110,6 +1549,120 @@
         ],
         "type": "object"
       },
+      "RegistroAsistidoRequest": {
+        "properties": {
+          "apellidos": {
+            "example": "Chindoy",
+            "type": "string"
+          },
+          "celular": {
+            "description": "Solo si la persona es nueva",
+            "example": "315 777 8888",
+            "type": "string"
+          },
+          "celularCompartido": {
+            "default": false,
+            "description": "El celular es de otra persona de la familia: queda solo de contacto",
+            "type": "boolean"
+          },
+          "nombres": {
+            "description": "Solo si la persona es nueva",
+            "example": "Luz Marina",
+            "type": "string"
+          },
+          "numeroDocumento": {
+            "example": "1124500777",
+            "type": "string"
+          },
+          "politicaVersionId": {
+            "description": "Versión de la política que se le leyó y aceptó (confirmada por el cajero)",
+            "format": "uuid",
+            "type": "string"
+          },
+          "tipoDocumento": {
+            "description": "Código del tipo de documento (catálogo)",
+            "example": "CC",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tipoDocumento",
+          "numeroDocumento",
+          "politicaVersionId"
+        ],
+        "type": "object"
+      },
+      "RegistroAsistidoResponse": {
+        "properties": {
+          "cliente": {
+            "$ref": "#/components/schemas/ClienteResponse"
+          },
+          "pinBienvenida": {
+            "description": "Se muestra una sola vez para dictárselo. Sirve 7 días.",
+            "example": "482915",
+            "nullable": true,
+            "type": "string"
+          },
+          "vinculado": {
+            "description": "Ya estaba en VECI y solo se afilió",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "vinculado",
+          "cliente"
+        ],
+        "type": "object"
+      },
+      "RegistroRequest": {
+        "properties": {
+          "apellidos": {
+            "example": "Chindoy",
+            "type": "string"
+          },
+          "celular": {
+            "description": "Celular como lo escribe la persona",
+            "example": "315 777 8888",
+            "type": "string"
+          },
+          "dispositivo": {
+            "$ref": "#/components/schemas/DispositivoRequest"
+          },
+          "nombres": {
+            "example": "Luz Marina",
+            "type": "string"
+          },
+          "numeroDocumento": {
+            "example": "1124500777",
+            "type": "string"
+          },
+          "pin": {
+            "example": "190573",
+            "pattern": "^\\d{6}$",
+            "type": "string"
+          },
+          "politicaVersionId": {
+            "description": "Versión de la política que la persona aceptó",
+            "format": "uuid",
+            "type": "string"
+          },
+          "tipoDocumento": {
+            "description": "Código del tipo de documento (catálogo)",
+            "example": "CC",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tipoDocumento",
+          "numeroDocumento",
+          "nombres",
+          "celular",
+          "pin",
+          "politicaVersionId",
+          "dispositivo"
+        ],
+        "type": "object"
+      },
       "RenovarSesionRequest": {
         "properties": {
           "tokenRenovacion": {
@@ -1166,6 +1719,20 @@
         ],
         "type": "object"
       },
+      "RevisionDocumentoResponse": {
+        "properties": {
+          "persona": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PersonaPorAfiliarResponse"
+              }
+            ],
+            "nullable": true,
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
       "SaludResponse": {
         "properties": {
           "baseDatos": {
@@ -1191,6 +1758,27 @@
           "estado",
           "baseDatos",
           "version"
+        ],
+        "type": "object"
+      },
+      "SeccionPoliticaResponse": {
+        "properties": {
+          "enPalabrasDeVecino": {
+            "example": "La cajera ve tu nombre y los últimos 4 números de tu documento.",
+            "type": "string"
+          },
+          "texto": {
+            "type": "string"
+          },
+          "titulo": {
+            "example": "Quién ve tus datos",
+            "type": "string"
+          }
+        },
+        "required": [
+          "titulo",
+          "enPalabrasDeVecino",
+          "texto"
         ],
         "type": "object"
       },
@@ -1365,6 +1953,41 @@
         ],
         "type": "object"
       },
+      "TipoDocumentoResponse": {
+        "properties": {
+          "codigo": {
+            "example": "CC",
+            "type": "string"
+          },
+          "nombre": {
+            "example": "Cédula de ciudadanía",
+            "type": "string"
+          },
+          "patron": {
+            "example": "^[0-9]{6,10}$",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "codigo",
+          "nombre"
+        ],
+        "type": "object"
+      },
+      "TokenQrRequest": {
+        "properties": {
+          "token": {
+            "description": "Texto leído del QR, tal cual",
+            "example": "VP1.eyJr…",
+            "type": "string"
+          }
+        },
+        "required": [
+          "token"
+        ],
+        "type": "object"
+      },
       "UsuarioResponse": {
         "properties": {
           "id": {
@@ -1399,6 +2022,505 @@
   },
   "openapi": "3.0.0",
   "paths": {
+    "/clientes": {
+      "get": {
+        "operationId": "buscarClientes",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Desde 3 letras o números",
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "example": "luz"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ClienteResponse"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso customers.search"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Muy corta"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Por nombre, celular o documento (HU-04-05)",
+        "tags": [
+          "Clientes"
+        ]
+      }
+    },
+    "/clientes/{clienteId}": {
+      "get": {
+        "operationId": "consultarCliente",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "clienteId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClienteResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso customers.search"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Ficha del cliente",
+        "tags": [
+          "Clientes"
+        ]
+      }
+    },
+    "/clientes/{clienteId}/pin-bienvenida": {
+      "post": {
+        "operationId": "darPinDeBienvenida",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "clienteId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PinBienvenidaResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso customers.register"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Ya activó su app"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "PIN nuevo para activar la app (HU-04-04)",
+        "tags": [
+          "Clientes"
+        ]
+      }
+    },
+    "/clientes/afiliaciones": {
+      "post": {
+        "operationId": "afiliarPorQr",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenQrRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AfiliacionResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso customers.affiliate"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "El QR no sirve"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Afilia con el QR personal (HU-04-03)",
+        "tags": [
+          "Clientes"
+        ]
+      }
+    },
+    "/clientes/copia-local": {
+      "get": {
+        "operationId": "bajarCopiaLocalDeClientes",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CopiaLocalResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "304": {
+            "description": "La copia del celular está al día"
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso customers.search"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Copia para buscar sin internet; 304 si no cambió (HU-04-05)",
+        "tags": [
+          "Clientes"
+        ]
+      }
+    },
+    "/clientes/qr": {
+      "post": {
+        "operationId": "leerQrDeCliente",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenQrRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LecturaQrResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso customers.affiliate"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Qué es el QR que escaneó la caja",
+        "tags": [
+          "Clientes"
+        ]
+      }
+    },
+    "/clientes/registro-asistido": {
+      "post": {
+        "operationId": "registrarClienteAsistido",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistroAsistidoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistroAsistidoResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso customers.register"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Celular de otra cuenta"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Faltan datos"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Registra a quien no tiene la app (HU-04-04)",
+        "tags": [
+          "Clientes"
+        ]
+      }
+    },
+    "/clientes/registro-asistido/revisar": {
+      "post": {
+        "operationId": "revisarDocumentoDeCliente",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevisionDocumentoResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso customers.register"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "¿Ya está en VECI? Solo datos enmascarados (HU-04-04)",
+        "tags": [
+          "Clientes"
+        ]
+      }
+    },
     "/comercio": {
       "get": {
         "operationId": "consultarComercio",
@@ -2579,6 +3701,99 @@
         ]
       }
     },
+    "/mi-qr": {
+      "get": {
+        "operationId": "consultarMiQr",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MiQrResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mi QR personal para afiliarme",
+        "tags": [
+          "Registro del cliente"
+        ]
+      }
+    },
+    "/mi-qr/regenerar": {
+      "post": {
+        "operationId": "regenerarMiQr",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MiQrResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "QR nuevo; el anterior deja de servir (HU-04-02)",
+        "tags": [
+          "Registro del cliente"
+        ]
+      }
+    },
+    "/mis-comercios": {
+      "get": {
+        "operationId": "listarMisComercios",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MiComercioResponse"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Negocios donde soy cliente, con mi QR en cada uno",
+        "tags": [
+          "Registro del cliente"
+        ]
+      }
+    },
     "/plataforma/comercios": {
       "post": {
         "operationId": "registrarComercioParaPropietario",
@@ -2639,6 +3854,105 @@
         "summary": "Administración VECI registra un negocio e invita a su dueño (HU-03-01)",
         "tags": [
           "Comercios"
+        ]
+      }
+    },
+    "/politica-de-datos": {
+      "get": {
+        "operationId": "consultarPoliticaDeDatos",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PoliticaResponse"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "summary": "Política de datos vigente",
+        "tags": [
+          "Registro del cliente"
+        ]
+      }
+    },
+    "/registro": {
+      "post": {
+        "operationId": "registrarme",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistroRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SesionResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Ya tiene cuenta o la anotaron"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Datos inválidos"
+          }
+        },
+        "summary": "El cliente crea su cuenta y entra (HU-04-01)",
+        "tags": [
+          "Registro del cliente"
+        ]
+      }
+    },
+    "/registro/tipos-documento": {
+      "get": {
+        "operationId": "listarTiposDeDocumento",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TipoDocumentoResponse"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "summary": "Documentos de personas",
+        "tags": [
+          "Registro del cliente"
         ]
       }
     },

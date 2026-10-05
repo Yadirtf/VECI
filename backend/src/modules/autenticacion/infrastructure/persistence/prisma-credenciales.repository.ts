@@ -16,6 +16,8 @@ interface FilaCredencial {
   bloqueada_hasta: Date | null;
   max_intentos: number;
   minutos_bloqueo: number;
+  horas_temporal: number | null;
+  emitida_en: Date;
 }
 
 /** identity.user_credentials. Las reglas de bloqueo salen de credential_types. */
@@ -28,7 +30,8 @@ export class PrismaCredencialesRepository implements CredencialesRepository {
       SELECT uc.id::text, uc.user_id::text AS usuario_id, ct.code AS tipo, uc.secret_hash AS hash,
              uc.must_change AS debe_cambiar, uc.failed_attempts AS intentos,
              uc.locked_until AS bloqueada_hasta, ct.max_failed_attempts AS max_intentos,
-             ct.lock_minutes AS minutos_bloqueo
+             ct.lock_minutes AS minutos_bloqueo, ct.temporary_valid_hours AS horas_temporal,
+             uc.created_at AS emitida_en
         FROM identity.user_credentials uc
         JOIN identity.credential_types ct ON ct.id = uc.credential_type_id AND ct.is_active
        WHERE uc.user_id = ${usuarioId}::uuid AND ct.code = ${tipo} AND uc.revoked_at IS NULL`;
@@ -41,7 +44,12 @@ export class PrismaCredencialesRepository implements CredencialesRepository {
       debeCambiar: fila.debe_cambiar,
       intentosFallidos: fila.intentos,
       bloqueadaHasta: fila.bloqueada_hasta,
-      reglas: { maxIntentos: fila.max_intentos, minutosBloqueo: fila.minutos_bloqueo },
+      reglas: {
+        maxIntentos: fila.max_intentos,
+        minutosBloqueo: fila.minutos_bloqueo,
+        horasTemporal: fila.horas_temporal,
+      },
+      emitidaEn: fila.emitida_en,
     });
   }
 

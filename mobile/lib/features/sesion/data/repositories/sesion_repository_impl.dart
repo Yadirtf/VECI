@@ -82,19 +82,22 @@ class SesionRepositoryImpl implements SesionRepository {
     }
   }
 
-  SesionAbierta _aSesion(SesionResponse r) => SesionAbierta(
-    tokenAcceso: r.tokenAcceso,
-    tokenRenovacion: r.tokenRenovacion,
-    venceEn: _ahora().add(Duration(seconds: r.segundosAcceso.toInt())),
-    nombre: r.usuario.nombre,
-    espacios: [
-      for (final e in r.espacios)
-        Espacio(
-          comercioId: e.comercioId,
-          nombre: e.nombre,
-          roles: e.roles,
-          invitacionPendiente: e.invitacionPendiente,
-        ),
-    ],
-  );
+  SesionAbierta _aSesion(SesionResponse r) => sesionDesdeRespuesta(r, _ahora());
 }
+
+/// La sesión que manda la API (al entrar, renovar o registrarse) como la entiende la app.
+SesionAbierta sesionDesdeRespuesta(SesionResponse r, DateTime ahora) => SesionAbierta(
+  tokenAcceso: r.tokenAcceso,
+  tokenRenovacion: r.tokenRenovacion,
+  venceEn: ahora.add(Duration(seconds: r.segundosAcceso.toInt())),
+  nombre: r.usuario.nombre,
+  espacios: [
+    for (final e in r.espacios)
+      Espacio(
+        comercioId: e.comercioId,
+        nombre: e.nombre,
+        roles: e.roles,
+        invitacionPendiente: e.invitacionPendiente,
+      ),
+  ],
+);
