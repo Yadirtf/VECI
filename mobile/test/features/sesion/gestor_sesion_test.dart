@@ -108,6 +108,30 @@ void main() {
     expect((g.estado as SesionActiva).comercioId, isNull);
   });
 
+  test('al registrar un negocio renueva la sesión y lo deja activo (HU-03-01)', () async {
+    repositorio.ingreso = IngresoConSesion(sesionDePrueba('t1', espacios: const []));
+    final g = gestor();
+    await g.entrarConPin('3100000101', '246813');
+    expect((g.estado as SesionActiva).comercioId, isNull);
+    repositorio.renovada = sesionDePrueba(
+      't2',
+      espacios: const [
+        Espacio(
+          comercioId: 'nuevo',
+          nombre: 'Panadería Sol',
+          roles: ['OWNER'],
+          invitacionPendiente: false,
+        ),
+      ],
+    );
+
+    await g.estrenarNegocio('nuevo');
+
+    expect(repositorio.renovaciones, 1);
+    expect(repositorio.elegidos, contains('nuevo'));
+    expect((g.estado as SesionActiva).comercioId, 'nuevo');
+  });
+
   test('salir avisa al servidor y olvida todo', () async {
     final g = gestor();
     final cambios = <EstadoSesion>[];

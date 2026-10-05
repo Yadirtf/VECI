@@ -3,7 +3,7 @@ import { Celular, EmitirPinTemporal } from '../../../autenticacion';
 import { CelularNoCoincide, YaEsDelEquipo } from '../../domain/errors/errores-personal';
 import { asegurarCupo } from '../../domain/rules/reglas-personal.rule';
 import { Actor, InvitacionOutput, InvitarCajeroInput } from '../dto/personal.input';
-import { Invitacion, PersonalRepository } from '../puertos/personal.repository';
+import { Invitacion, PersonalRepository, RolInvitado } from '../puertos/personal.repository';
 
 export interface DependenciasInvitar {
   personal: PersonalRepository;
@@ -19,12 +19,28 @@ export interface DependenciasInvitar {
 export class InvitarCajero {
   constructor(private readonly d: DependenciasInvitar) {}
 
-  async ejecutar(actor: Actor, entrada: InvitarCajeroInput): Promise<InvitacionOutput> {
+  ejecutar(actor: Actor, entrada: InvitarCajeroInput): Promise<InvitacionOutput> {
+    return this.invitar(actor, entrada, 'CASHIER');
+  }
+
+  /**
+   * Mismo camino para el propietario de un negocio que VECI registra a su nombre
+   * (HU-03-01): sin cupo de cajeros y con el rol de propietario.
+   */
+  propietario(actor: Actor, entrada: InvitarCajeroInput): Promise<InvitacionOutput> {
+    return this.invitar(actor, entrada, 'OWNER');
+  }
+
+  private async invitar(
+    actor: Actor,
+    entrada: InvitarCajeroInput,
+    rol: RolInvitado,
+  ): Promise<InvitacionOutput> {
     const persona = { ...entrada, celular: Celular.de(entrada.celular).valor };
-    asegurarCupo(await this.d.personal.cupoDeCajeros());
-    const { invitacion, necesitaPin } = await this.planear(actor, persona);
+    if (rol === 'CASHIER') asegurarCupo(await this.d.personal.cupoDeCajeros());
+    const { invitacion, necesitaPin } = await this.planear(actor, persona, rol);
     const { membresiaId, usuarioId } = await this.d.personal.invitar(invitacion);
-    await this.auditar(actor, membresiaId, usuarioId);
+    await this.auditar(actor, membresiaId, usuarioId, rol);
     const pinTemporal = necesitaPin
       ? await this.d.pinTemporal.ejecutar({
           usuarioId,
@@ -39,8 +55,9 @@ export class InvitarCajero {
   private async planear(
     actor: Actor,
     persona: InvitarCajeroInput,
+    rol: RolInvitado,
   ): Promise<{ invitacion: Invitacion; necesitaPin: boolean }> {
-    const base = { persona, invitadoPor: actor.usuarioId, membresiaRetirada: null };
+    const base = { rol, persona, invitadoPor: actor.usuarioId, membresiaRetirada: null };
     const existente = await this.d.personal.buscarUsuarioPorCelular(persona.celular);
     if (existente) {
       const membresia = await this.d.personal.membresiaDe(existente.usuarioId);
@@ -65,7 +82,12 @@ export class InvitarCajero {
     return { invitacion: { ...base, usuarioId: null, personaExistenteId }, necesitaPin: true };
   }
 
-  private async auditar(actor: Actor, membresiaId: string, usuarioId: string): Promise<void> {
+  private async auditar(
+    actor: Actor,
+    membresiaId: string,
+    usuarioId: string,
+    rol: RolInvitado,
+  ): Promise<void> {
     const comun = {
       tabla: 'tenancy.memberships',
       entidadId: membresiaId,
@@ -80,7 +102,7 @@ export class InvitarCajero {
     await this.d.auditoria.registrar({
       ...comun,
       accion: 'ROLE_GRANTED',
-      despues: { rol: 'CASHIER', usuarioId },
+      despues: { rol, usuarioId },
     });
   }
 }

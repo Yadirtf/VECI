@@ -44,5 +44,12 @@ void main() {
       expect(redirigir(conNegocio, Rutas.horarios), isNull);
       expect(redirigir(const SesionIniciando(), Rutas.inicio), Rutas.cargando);
     });
+
+    test('sin negocio puede registrar el suyo; al tenerlo vuelve al inicio', () {
+      final sinNegocio = SesionActiva(sesion: sesionDePrueba('t'), comercioId: null);
+      final conNegocio = SesionActiva(sesion: sesionDePrueba('t'), comercioId: 'c1');
+      expect(redirigir(sinNegocio, Rutas.registrarNegocio), isNull);
+      expect(redirigir(conNegocio, Rutas.registrarNegocio), Rutas.inicio);
+    });
   });
 }

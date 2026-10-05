@@ -22,8 +22,12 @@ export interface MembresiaExistente {
   estado: EstadoMembresia;
 }
 
+/** Rol con que entra la persona invitada: cajero (HU-02-04) o propietario (HU-03-01). */
+export type RolInvitado = 'CASHIER' | 'OWNER';
+
 /** Plan de la invitación: quién, y si hay que crear su cuenta o reactivar su membresía. */
 export interface Invitacion {
+  rol: RolInvitado;
   usuarioId: string | null;
   personaExistenteId: string | null;
   persona: PersonaNueva;
@@ -43,7 +47,7 @@ export interface PersonalRepository {
     numero: string,
   ): Promise<{ personaId: string; usuarioId: string | null } | null>;
   membresiaDe(usuarioId: string): Promise<MembresiaExistente | null>;
-  /** Crea lo que falte (persona, usuario, membresía) y el rol de cajero, en una transacción. */
+  /** Crea lo que falte (persona, usuario, membresía) y el rol invitado, en una transacción. */
   invitar(invitacion: Invitacion): Promise<{ membresiaId: string; usuarioId: string }>;
   cambiarEstado(membresiaId: string, estado: EstadoMembresia, porUsuarioId: string): Promise<void>;
 }

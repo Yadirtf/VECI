@@ -19,6 +19,7 @@ Un ADR deja escrito una decisión que cuesta cambiar: el contexto, lo que se eli
 | [0013](0013-infraestructura-y-despliegue.md) | Infraestructura: Render, Neon y GitHub Actions | Propuesta |
 | [0014](0014-proyectos-independientes-backend-web-mobile.md) | Tres proyectos independientes: backend, web y mobile | Propuesta |
 | [0015](0015-sesion-pin-temporal-y-acceso-propio.md) | Sesión con PIN, token corto validado contra la sesión y PIN temporal | Propuesta |
+| [0016](0016-alta-de-comercios-horarios-y-sedes.md) | Alta de comercios, horarios con historia y ETag, sedes por plan y diseño propio | Propuesta |
 
 ## Cómo proponer uno nuevo
 

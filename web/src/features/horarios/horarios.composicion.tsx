@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import { useClienteVeci, useComercioActivo } from '@/features/sesion';
 import { RepositorioHorariosApi } from './infrastructure/repositorio-horarios-api';
-import { HorariosSemana } from './presentation/horarios-semana';
+import { CaminoDelSol } from './presentation/camino-del-sol';
 
 /**
  * Conecta las piezas de la funcionalidad (como un *.module.ts de NestJS): la página
@@ -16,5 +16,5 @@ export function PantallaHorarios() {
     () => new RepositorioHorariosApi(cliente, comercioId),
     [cliente, comercioId],
   );
-  return <HorariosSemana repositorio={repositorio} />;
+  return <CaminoDelSol repositorio={repositorio} />;
 }

@@ -7,6 +7,8 @@ export interface DatosHorarioServicio {
   sedeId: string;
   dia: CodigoCatalogo;
   horas: RangoHoras;
+  /** En pausa (false): no cuenta para el antifraude ni se cruza con otros. */
+  activo?: boolean;
 }
 
 /**
@@ -17,7 +19,7 @@ export class HorarioServicio {
   private constructor(private readonly datos: DatosHorarioServicio) {}
 
   static crear(datos: DatosHorarioServicio): HorarioServicio {
-    return new HorarioServicio({ ...datos });
+    return new HorarioServicio({ ...datos, activo: datos.activo ?? true });
   }
 
   get id(): string {
@@ -40,10 +42,24 @@ export class HorarioServicio {
     return this.datos.horas;
   }
 
-  /** Mismo día, misma sede y horas que se cruzan. */
+  get activo(): boolean {
+    return this.datos.activo !== false;
+  }
+
+  /** Mismo horario con otras horas o en pausa. Al guardarse, recibe un id nuevo. */
+  con(cambios: { id: string; horas?: RangoHoras; activo?: boolean }): HorarioServicio {
+    return HorarioServicio.crear({ ...this.datos, ...cambios });
+  }
+
+  /** Dos horarios activos de la misma sede, el mismo día, con horas que se cruzan. */
   seCruzaCon(otro: HorarioServicio): boolean {
     return (
-      this.sedeId === otro.sedeId && this.dia.igualA(otro.dia) && this.horas.seCruzaCon(otro.horas)
+      this.id !== otro.id &&
+      this.activo &&
+      otro.activo &&
+      this.sedeId === otro.sedeId &&
+      this.dia.igualA(otro.dia) &&
+      this.horas.seCruzaCon(otro.horas)
     );
   }
 }

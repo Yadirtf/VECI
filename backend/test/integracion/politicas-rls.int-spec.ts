@@ -30,6 +30,8 @@ const TABLAS_SIN_COMERCIO = [
   'notifications.delivery_attempts',
   'notifications.push_tokens',
   'notifications.templates',
+  // Plantilla global de servicios por tipo de negocio (EP-03), sin datos de comercios.
+  'tenancy.business_type_services',
   'tenancy.tenants',
 ];
 

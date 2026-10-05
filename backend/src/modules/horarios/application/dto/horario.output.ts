@@ -8,6 +8,7 @@ export interface HorarioOutput {
   dia: string;
   horaInicio: string;
   horaFin: string;
+  activo: boolean;
 }
 
 export function aHorarioOutput(horario: HorarioServicio, servicioNombre?: string): HorarioOutput {
@@ -19,5 +20,6 @@ export function aHorarioOutput(horario: HorarioServicio, servicioNombre?: string
     dia: horario.dia.valor,
     horaInicio: horario.horas.inicio,
     horaFin: horario.horas.fin,
+    activo: horario.activo,
   };
 }

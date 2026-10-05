@@ -183,6 +183,12 @@ class ApiClient {
           return valueString == 'true' || valueString == '1';
         case 'DateTime':
           return value is DateTime ? value : DateTime.tryParse(value);
+        case 'AsignarSedesRequest':
+          return AsignarSedesRequest.fromJson(value);
+        case 'AvanceResponse':
+          return AvanceResponse.fromJson(value);
+        case 'CajeroEnSedesResponse':
+          return CajeroEnSedesResponse.fromJson(value);
         case 'CambiarEstadoCajeroRequest':
           return CambiarEstadoCajeroRequest.fromJson(value);
         case 'CambiarPinRequest':
@@ -193,18 +199,38 @@ class ApiClient {
           return ComercioActivoRequest.fromJson(value);
         case 'ComercioActivoResponse':
           return ComercioActivoResponse.fromJson(value);
+        case 'ComercioRegistradoResponse':
+          return ComercioRegistradoResponse.fromJson(value);
+        case 'ContactoResponse':
+          return ContactoResponse.fromJson(value);
         case 'CorreoResponse':
           return CorreoResponse.fromJson(value);
         case 'CorreoYContrasenaRequest':
           return CorreoYContrasenaRequest.fromJson(value);
         case 'CrearHorarioRequest':
           return CrearHorarioRequest.fromJson(value);
+        case 'CrearSedeRequest':
+          return CrearSedeRequest.fromJson(value);
+        case 'CrearServicioRequest':
+          return CrearServicioRequest.fromJson(value);
+        case 'CupoDeSedesResponse':
+          return CupoDeSedesResponse.fromJson(value);
         case 'DispositivoRequest':
           return DispositivoRequest.fromJson(value);
         case 'DispositivoResponse':
           return DispositivoResponse.fromJson(value);
+        case 'DocumentoResponse':
+          return DocumentoResponse.fromJson(value);
+        case 'EditarComercioRequest':
+          return EditarComercioRequest.fromJson(value);
+        case 'EditarHorarioRequest':
+          return EditarHorarioRequest.fromJson(value);
+        case 'EditarSedeRequest':
+          return EditarSedeRequest.fromJson(value);
         case 'EspacioResponse':
           return EspacioResponse.fromJson(value);
+        case 'EstadoHorarioRequest':
+          return EstadoHorarioRequest.fromJson(value);
         case 'HorarioResponse':
           return HorarioResponse.fromJson(value);
         case 'IngresoConContrasenaRequest':
@@ -217,14 +243,30 @@ class ApiClient {
           return InvitacionResponse.fromJson(value);
         case 'InvitarCajeroRequest':
           return InvitarCajeroRequest.fromJson(value);
+        case 'MapaDeSedesResponse':
+          return MapaDeSedesResponse.fromJson(value);
         case 'MiembroResponse':
           return MiembroResponse.fromJson(value);
+        case 'MunicipioResponse':
+          return MunicipioResponse.fromJson(value);
+        case 'PasoResponse':
+          return PasoResponse.fromJson(value);
+        case 'PerfilComercioResponse':
+          return PerfilComercioResponse.fromJson(value);
         case 'PinClienteResponse':
           return PinClienteResponse.fromJson(value);
         case 'PinNuevoRequest':
           return PinNuevoRequest.fromJson(value);
         case 'PinTemporalResponse':
           return PinTemporalResponse.fromJson(value);
+        case 'PlanResponse':
+          return PlanResponse.fromJson(value);
+        case 'PropietarioInvitadoRequest':
+          return PropietarioInvitadoRequest.fromJson(value);
+        case 'RegistrarComercioRequest':
+          return RegistrarComercioRequest.fromJson(value);
+        case 'RegistrarParaPropietarioRequest':
+          return RegistrarParaPropietarioRequest.fromJson(value);
         case 'RenovarSesionRequest':
           return RenovarSesionRequest.fromJson(value);
         case 'RespuestaErrorDto':
@@ -233,10 +275,18 @@ class ApiClient {
           return RestablecerPinClienteRequest.fromJson(value);
         case 'SaludResponse':
           return SaludResponse.fromJson(value);
+        case 'SedeResponse':
+          return SedeResponse.fromJson(value);
+        case 'ServicioResponse':
+          return ServicioResponse.fromJson(value);
+        case 'ServicioSugeridoResponse':
+          return ServicioSugeridoResponse.fromJson(value);
         case 'SesionEnDispositivoResponse':
           return SesionEnDispositivoResponse.fromJson(value);
         case 'SesionResponse':
           return SesionResponse.fromJson(value);
+        case 'TipoDeNegocioResponse':
+          return TipoDeNegocioResponse.fromJson(value);
         case 'UsuarioResponse':
           return UsuarioResponse.fromJson(value);
         default:

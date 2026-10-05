@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useAccion } from '@/shared/lib/use-accion';
 import { Aviso, Boton, Tarjeta } from '@/shared/ui';
 import type { Espacio } from '../domain/sesion';
@@ -11,6 +12,9 @@ export interface SelectorComercioProps {
   alSalir(): Promise<void>;
 }
 
+const ENLACE_REGISTRO =
+  'mt-l flex min-h-toque-boton items-center justify-center rounded-m bg-selva px-l text-subtitulo font-medio text-superficie hover:bg-selva-oscuro';
+
 /** ¿Con cuál negocio vas a trabajar? Solo aparecen los que la persona administra. */
 export function SelectorComercio({ nombre, negocios, alElegir, alSalir }: SelectorComercioProps) {
   const { ocupado, problema, ejecutar } = useAccion();
@@ -20,9 +24,13 @@ export function SelectorComercio({ nombre, negocios, alElegir, alSalir }: Select
       <Tarjeta className="mx-auto w-full max-w-md">
         <h1 className="text-titulo font-fuerte text-tinta">Hola, {nombre}</h1>
         <p className="mt-s text-cuerpo text-tinta-suave">
-          El panel es para quien administra el negocio. Para la caja, usa la app VECI en el celular.
+          ¿Tienes un negocio? Regístralo en unos minutos y empieza a vender tiqueteras. Si eres
+          cajero, usa la app VECI en el celular.
         </p>
-        <Boton variante="secundario" className="mt-l" onClick={() => void alSalir()}>
+        <Link href="/registrar" className={ENLACE_REGISTRO}>
+          Registrar mi negocio
+        </Link>
+        <Boton variante="secundario" className="mt-m" onClick={() => void alSalir()}>
           Salir
         </Boton>
       </Tarjeta>
@@ -47,6 +55,9 @@ export function SelectorComercio({ nombre, negocios, alElegir, alSalir }: Select
           </li>
         ))}
       </ul>
+      <Link href="/registrar" className="mt-l inline-block font-medio text-selva-oscuro underline">
+        Registrar otro negocio
+      </Link>
       {problema && (
         <div className="mt-m">
           <Aviso tono="error">{problema}</Aviso>

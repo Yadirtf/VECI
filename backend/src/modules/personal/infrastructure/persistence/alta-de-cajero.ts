@@ -64,7 +64,7 @@ async function crearUsuario(
   return usuarioId;
 }
 
-/** Membresía invitada (nueva o reinvitada desde Retirado) con el rol de cajero. */
+/** Membresía invitada (nueva o reinvitada desde Retirado) con el rol de la invitación. */
 export async function crearMembresia(
   tx: ClienteTransaccion,
   invitacion: Invitacion,
@@ -88,6 +88,6 @@ export async function crearMembresia(
   await tx.$executeRaw`
     INSERT INTO tenancy.membership_roles (tenant_id, membership_id, role_id, granted_by_user_id)
     SELECT core.current_tenant_id(), ${membresiaId}::uuid, r.id, ${invitacion.invitadoPor}::uuid
-      FROM identity.roles r WHERE r.code = 'CASHIER'`;
+      FROM identity.roles r WHERE r.code = ${invitacion.rol}`;
   return { membresiaId, usuarioId };
 }
