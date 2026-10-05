@@ -20,6 +20,7 @@ class FormularioConEspera extends StatefulWidget {
     required this.validar,
     required this.enviar,
     this.avisoInicial,
+    this.debajoDelBoton = const [],
   });
 
   final String titulo;
@@ -31,6 +32,9 @@ class FormularioConEspera extends StatefulWidget {
   final String? Function() validar;
   final Future<void> Function() enviar;
   final String? avisoInicial;
+
+  /// Otra salida, más discreta, debajo del botón principal (por ejemplo, crear la cuenta).
+  final List<Widget> debajoDelBoton;
 
   @override
   State<FormularioConEspera> createState() => _FormularioConEsperaState();
@@ -84,6 +88,7 @@ class _FormularioConEsperaState extends State<FormularioConEspera> {
               grande: true,
               alTocar: _ocupado ? null : _enviar,
             ),
+            ...widget.debajoDelBoton,
           ],
         ),
       ],

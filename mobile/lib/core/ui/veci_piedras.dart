@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/veci_tokens.dart';
+import '../theme/veci_tokens.dart';
 
 /// El avance como piedras para cruzar la quebrada: pisadas (maíz), la actual (selva)
 /// y las que faltan, solo contorno. No es una barra: se camina.

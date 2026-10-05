@@ -1,3 +1,4 @@
+import '../reglas/reglas_ingreso.dart';
 import 'sesion.dart';
 
 /// En qué punto está la persona: la app muestra una pantalla distinta para cada uno.
@@ -30,6 +31,10 @@ final class SesionActiva extends EstadoSesion {
 
   /// null mientras no haya elegido con cuál negocio trabaja.
   final String? comercioId;
+
+  /// No trabaja en la caja de ningún negocio (o aún no está en ninguno, como quien
+  /// acaba de crear su cuenta): su inicio es Mi QR o Tus negocios (EP-04).
+  bool get soloCliente => !sesion.espacios.any(esDeLaCaja);
 
   Espacio? get negocio {
     for (final espacio in sesion.espacios) {

@@ -1,12 +1,13 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
+import 'tables/clientes_en_caja_table.dart';
 import 'tables/horarios_locales_table.dart';
 
 part 'app_database.g.dart';
 
 /// Base local del celular (Drift sobre SQLite): la app funciona sin internet (ADR-0004).
-@DriftDatabase(tables: [HorariosLocales, MarcasSincronizacion])
+@DriftDatabase(tables: [HorariosLocales, MarcasSincronizacion, ClientesEnCaja, CopiasDeClientes])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.executor);
 
@@ -14,7 +15,7 @@ class AppDatabase extends _$AppDatabase {
   factory AppDatabase.enElCelular() => AppDatabase(driftDatabase(name: 'veci'));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -23,6 +24,11 @@ class AppDatabase extends _$AppDatabase {
       if (desde < 2) {
         await migrador.addColumn(horariosLocales, horariosLocales.activo);
         await migrador.createTable(marcasSincronizacion);
+      }
+      // v3 (EP-04): copia de clientes para buscar en la caja sin internet.
+      if (desde < 3) {
+        await migrador.createTable(clientesEnCaja);
+        await migrador.createTable(copiasDeClientes);
       }
     },
     beforeOpen: (detalles) async {

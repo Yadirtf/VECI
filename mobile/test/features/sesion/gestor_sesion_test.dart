@@ -144,4 +144,13 @@ void main() {
     await Future<void>.delayed(Duration.zero);
     expect(cambios.length, 2);
   });
+
+  test('con la sesión del registro entra de una vez, sin negocio (HU-04-01)', () async {
+    final g = gestor();
+    await g.entrarConSesionNueva(sesionDePrueba('t-registro', espacios: const []));
+    final estado = g.estado as SesionActiva;
+    expect(estado.comercioId, isNull);
+    expect(estado.soloCliente, isTrue);
+    expect(almacen.sesion?.tokenAcceso, 't-registro');
+  });
 }

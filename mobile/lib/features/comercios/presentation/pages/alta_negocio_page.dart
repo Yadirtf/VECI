@@ -7,11 +7,11 @@ import '../../../../core/error/fallo.dart';
 import '../../../../core/theme/veci_tokens.dart';
 import '../../../../core/ui/veci_aviso.dart';
 import '../../../../core/ui/veci_boton.dart';
+import '../../../../core/ui/veci_piedras.dart';
 import '../../domain/entities/alta.dart';
 import '../../domain/reglas/reglas_alta.dart';
 import '../providers/alta_providers.dart';
 import '../widgets/letrero.dart';
-import '../widgets/piedras_del_camino.dart';
 import '../widgets/preguntas_alta.dart';
 
 /// Registrar el negocio desde el celular como una conversación (HU-03-01): una

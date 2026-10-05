@@ -23,6 +23,7 @@ class InicioPage extends StatelessWidget {
     required this.variosNegocios,
     required this.alCambiarNegocio,
     required this.alSalir,
+    this.rutaCaja,
     this.ahora = DateTime.now,
   });
 
@@ -32,6 +33,9 @@ class InicioPage extends StatelessWidget {
   final bool variosNegocios;
   final Future<void> Function() alCambiarNegocio;
   final Future<void> Function() alSalir;
+
+  /// La caja de clientes (EP-04): buscar, escanear o registrar a quien sigue.
+  final String? rutaCaja;
   final DateTime Function() ahora;
 
   List<Widget> _acciones() => [
@@ -63,13 +67,7 @@ class InicioPage extends StatelessWidget {
           Expanded(child: _cuerpo(textos)),
           VeciMostrador(
             children: [
-              if (enLaCaja)
-                VeciBoton(
-                  texto: 'Ver horarios',
-                  icono: Icons.schedule,
-                  grande: true,
-                  alTocar: () => context.push(Rutas.horarios),
-                ),
+              ..._accionesPrincipales(context),
               VeciBoton(
                 texto: 'Sistema de diseño',
                 icono: Icons.palette,
@@ -81,6 +79,37 @@ class InicioPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// Cajero: atender a quien sigue y, más abajo, los horarios. Cliente: su QR.
+  List<Widget> _accionesPrincipales(BuildContext context) {
+    final rutaCaja = this.rutaCaja;
+    if (!enLaCaja) {
+      return [
+        VeciBoton(
+          texto: 'Ver mi QR',
+          icono: Icons.qr_code_2,
+          grande: true,
+          alTocar: () => context.push(Rutas.miQr),
+        ),
+      ];
+    }
+    return [
+      if (rutaCaja != null)
+        VeciBoton(
+          texto: 'Atender a quien sigue',
+          icono: Icons.person_search,
+          grande: true,
+          alTocar: () => context.push(rutaCaja),
+        ),
+      VeciBoton(
+        texto: 'Ver horarios',
+        icono: Icons.schedule,
+        grande: rutaCaja == null,
+        secundario: rutaCaja != null,
+        alTocar: () => context.push(Rutas.horarios),
+      ),
+    ];
   }
 
   Widget _cuerpo(TextTheme textos) => ListView(
