@@ -5,7 +5,7 @@ export interface CampoProps extends InputHTMLAttributes<HTMLInputElement> {
   ayuda?: string;
 }
 
-/** Campo de texto con etiqueta visible y letra grande. */
+/** Campo como renglón de cuaderno: papel claro, línea gruesa abajo y etiqueta siempre visible. */
 export function Campo({ etiqueta, ayuda, className = '', ...props }: CampoProps) {
   const id = useId();
   return (
@@ -13,7 +13,7 @@ export function Campo({ etiqueta, ayuda, className = '', ...props }: CampoProps)
       <span className="font-medio">{etiqueta}</span>
       <input
         id={id}
-        className={`min-h-toque-boton rounded-m border-2 border-borde bg-superficie px-m text-cuerpo focus:border-selva focus:outline-none ${className}`}
+        className={`min-h-toque-boton rounded-t-[var(--radius-piedra-chica)] border-0 border-b-[3px] border-tinta bg-superficie px-m text-cuerpo focus:border-b-4 focus:border-selva focus:outline-4 focus:outline-offset-2 focus:outline-maiz ${className}`}
         {...props}
       />
       {ayuda && <span className="text-pequeno text-tinta-suave">{ayuda}</span>}

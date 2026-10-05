@@ -32,6 +32,18 @@ function Selector({
   );
 }
 
+/** Banda en arco detrás del formulario de entrada, con la marca pintada como letrero. */
+const BandaDeEntrada = () => (
+  <div
+    aria-hidden="true"
+    className="arco-abajo absolute inset-x-0 top-0 -z-10 h-[42vh] bg-selva-oscuro"
+  >
+    <p className="mx-auto max-w-5xl px-m pt-m font-[family-name:var(--font-letrero)] text-grande font-fuerte text-maiz">
+      VECI
+    </p>
+  </div>
+);
+
 /** /entrar: ingreso, PIN nuevo si hace falta y elección del negocio; luego va al panel. */
 export function PantallaEntrar({ almacen }: { almacen: AlmacenSesion }) {
   const estado = useEstadoSesion(almacen);
@@ -42,7 +54,8 @@ export function PantallaEntrar({ almacen }: { almacen: AlmacenSesion }) {
   }, [listo, router]);
 
   return (
-    <main className="flex min-h-screen items-center px-m py-xl">
+    <main className="relative isolate flex min-h-screen items-center px-m py-xl">
+      <BandaDeEntrada />
       {estado.fase === 'iniciando' || listo ? (
         <div className="mx-auto">
           <Cargando />

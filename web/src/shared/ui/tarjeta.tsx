@@ -1,11 +1,13 @@
 import type { HTMLAttributes } from 'react';
 
-/** Superficie blanca con borde suave para agrupar contenido. */
-export function Tarjeta({ className = '', ...props }: HTMLAttributes<HTMLElement>) {
+export interface TarjetaProps extends HTMLAttributes<HTMLElement> {
+  /** Fila de huecos arriba, como el talonario: úsela cuando VECI le habla a la persona. */
+  perforado?: boolean;
+}
+
+/** Un papelito arrancado del talonario: dientes abajo y sombra dura, sin desenfoques. */
+export function Tarjeta({ perforado = false, className = '', ...props }: TarjetaProps) {
   return (
-    <section
-      className={`rounded-l border border-borde bg-superficie p-l shadow-sm ${className}`}
-      {...props}
-    />
+    <section className={`papelito ${perforado ? 'perforado' : ''} p-l ${className}`} {...props} />
   );
 }
