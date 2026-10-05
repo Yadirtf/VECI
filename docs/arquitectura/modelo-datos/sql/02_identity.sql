@@ -47,9 +47,11 @@ CREATE TABLE identity.credential_types (
   name           varchar(80) NOT NULL,
   max_failed_attempts smallint NOT NULL CHECK (max_failed_attempts > 0),
   lock_minutes   smallint NOT NULL CHECK (lock_minutes > 0),
-  is_active      boolean NOT NULL DEFAULT true
+  is_active      boolean NOT NULL DEFAULT true,
+  temporary_valid_hours smallint CHECK (temporary_valid_hours > 0)
 );
 COMMENT ON TABLE identity.credential_types IS 'PIN de 6 dígitos, contraseña; a futuro OTP. Las reglas de bloqueo viven aquí, no en código.';
+COMMENT ON COLUMN identity.credential_types.temporary_valid_hours IS 'Horas que sirve una credencial temporal (must_change) desde que se emite. NULL = no vence.';
 
 CREATE TABLE identity.credential_revocation_reasons (
   id   smallint PRIMARY KEY,

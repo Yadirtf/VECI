@@ -34,6 +34,14 @@ Los valores por defecto apuntan a la base local; para cambiarlos copie `.env.exa
 - `GET /horarios` responde con `ETag` y 304 si nada cambió. `POST /horarios` acepta varios `dias`; `PATCH /horarios/:id` crea la versión nueva desde hoy (el id cambia); `PATCH /horarios/:id/estado` pausa o reanuda. `GET` y `POST /servicios`.
 - `GET /sedes` trae sedes, cajeros por sede y el cupo del plan; `POST /sedes` y `PATCH /sedes/:id` (plan Pro); `PUT /sedes/cajeros/:membresiaId` con `sedeIds` (vacío = todas).
 
+### Clientes y afiliación (EP-04, [ADR-0017](../docs/arquitectura/adr/0017-clientes-qr-firmado-y-copia-local.md))
+
+- Públicas: `GET /politica-de-datos` (texto, "en corto" y huella), `GET /registro/tipos-documento` y `POST /registro`, que crea la cuenta del cliente con la versión de la política que aceptó y entra de una vez.
+- Del cliente: `GET /mi-qr` (token `VP1.…`, solo firma), `POST /mi-qr/regenerar` (el anterior deja de servir) y `GET /mis-comercios`, con el QR `V1.…` de cada negocio. Si una afiliación no tiene QR vigente, se emite ahí.
+- De la caja (`x-veci-comercio`): `POST /clientes/qr` lee cualquier QR y dice qué es; `POST /clientes/afiliaciones` afilia (idempotente); `POST /clientes/registro-asistido/revisar` y `POST /clientes/registro-asistido` registran a quien no tiene app y devuelven un PIN de bienvenida de 7 días; `GET /clientes?q=` busca desde 3 caracteres; `GET /clientes/copia-local` baja la copia enmascarada con `ETag` (304 si no cambió); `GET /clientes/:id` y `POST /clientes/:id/pin-bienvenida`.
+- El cajero ve documento y celular tapados (`****5678`); el propietario los ve completos (`customers.view_full_document`).
+- `VECI_QR_SECRETO` deriva las claves Ed25519 de VECI y de cada negocio; es obligatorio fuera de local y cambiarlo invalida los QR emitidos.
+
 ## Comandos
 
 | Comando | Qué hace |

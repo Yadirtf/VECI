@@ -5,6 +5,8 @@ export type TipoCredencial = 'PIN' | 'PASSWORD';
 export interface ReglasBloqueo {
   maxIntentos: number;
   minutosBloqueo: number;
+  /** Horas que sirve una credencial temporal; null o ausente = no vence. */
+  horasTemporal?: number | null;
 }
 
 export interface DatosCredencial {
@@ -16,6 +18,8 @@ export interface DatosCredencial {
   intentosFallidos: number;
   bloqueadaHasta: Date | null;
   reglas: ReglasBloqueo;
+  /** Cuándo se emitió: el PIN temporal vence contado desde aquí. */
+  emitidaEn?: Date;
 }
 
 /**
@@ -55,6 +59,13 @@ export class Credencial {
 
   get bloqueadaHasta(): Date | null {
     return this.datos.bloqueadaHasta;
+  }
+
+  /** PIN temporal (invitación o bienvenida) que nadie usó a tiempo (EP-04: 7 días). */
+  temporalVencida(ahora: Date): boolean {
+    const horas = this.datos.reglas.horasTemporal;
+    if (!this.datos.debeCambiar || !horas || !this.datos.emitidaEn) return false;
+    return ahora.getTime() - this.datos.emitidaEn.getTime() > horas * 3_600_000;
   }
 
   estaBloqueada(ahora: Date): boolean {

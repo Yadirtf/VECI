@@ -48,7 +48,7 @@ export class AutenticacionEnMemoria {
     debeCambiar: boolean,
   ): string {
     const id = this.id();
-    const reglas = { maxIntentos: 5, minutosBloqueo: 15 };
+    const reglas = { maxIntentos: 5, minutosBloqueo: 15, horasTemporal: 168 };
     const datos = {
       id,
       usuarioId,
@@ -58,6 +58,7 @@ export class AutenticacionEnMemoria {
       intentosFallidos: 0,
       bloqueadaHasta: null,
       reglas,
+      emitidaEn: this.ahora,
     };
     this.credenciales.push({ credencial: Credencial.desde(datos), revocada: false });
     return id;

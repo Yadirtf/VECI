@@ -9,6 +9,7 @@ import {
 } from './application/contexto/verificador-sesion.port';
 import { AUDITORIA } from './application/puertos/auditoria.port';
 import { CIFRADOR_SECRETOS } from './application/puertos/cifrador-secretos.port';
+import { FIRMADOR_QR } from './application/puertos/firmador-qr.port';
 import { FIRMADOR_TOKENS, FirmadorTokens } from './application/puertos/firmador-tokens.port';
 import { GENERADOR_IDS } from './application/puertos/generador-ids.port';
 import { GENERADOR_SECRETOS } from './application/puertos/generador-secretos.port';
@@ -29,6 +30,7 @@ import { IdentidadTokenResolvedor } from './infrastructure/identidad/identidad-t
 import { GeneradorUuidV7 } from './infrastructure/ids/uuid-v7.generador';
 import { SentryObservabilidad } from './infrastructure/observabilidad/sentry-observabilidad';
 import { PrismaService } from './infrastructure/prisma/prisma.service';
+import { FirmadorQrEd25519 } from './infrastructure/qr/firmador-qr-ed25519';
 import { TransaccionComercio } from './infrastructure/prisma/transaccion-comercio';
 import { TransaccionUsuario } from './infrastructure/prisma/transaccion-usuario';
 import { Argon2Cifrador } from './infrastructure/secretos/argon2-cifrador';
@@ -52,6 +54,7 @@ const PUERTOS = [
   GENERADOR_SECRETOS,
   CIFRADOR_SECRETOS,
   FIRMADOR_TOKENS,
+  FIRMADOR_QR,
   RELOJ,
   AUDITORIA,
 ];
@@ -71,6 +74,11 @@ const PUERTOS = [
       useFactory: (config: Configuracion, reloj: Reloj) =>
         new FirmadorHs256(config.secretoTokens, reloj),
       inject: [CONFIGURACION, RELOJ],
+    },
+    {
+      provide: FIRMADOR_QR,
+      useFactory: (config: Configuracion) => new FirmadorQrEd25519(config.secretoQr),
+      inject: [CONFIGURACION],
     },
     {
       provide: RESOLVEDOR_IDENTIDAD,

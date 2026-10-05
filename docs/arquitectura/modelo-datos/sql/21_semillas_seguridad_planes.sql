@@ -118,6 +118,11 @@ INSERT INTO notifications.notification_status_transitions VALUES (1,2),(1,3),(3,
 -- ---------------------------------------------------------------- cumplimiento y auditoría
 INSERT INTO compliance.policy_document_types VALUES
   (1,'DATA_TREATMENT_POLICY','Política de tratamiento de datos'), (2,'TERMS_OF_SERVICE','Términos de uso');
+-- Política de datos 1.0 (HU-12-01): el texto vive en la API (módulo clientes); aquí su huella SHA-256.
+INSERT INTO compliance.policy_versions (policy_document_type_id, version_label, content_url,
+                                        content_sha256, published_at, requires_reacceptance) VALUES
+  (1,'1.0','/politica-de-datos','\x3abcbb2d30940fd5a419b0bbb8d6a3195a15b652abbd49e3474c970d2e9a3347',
+   '2026-10-01 00:00:00+00',true);
 INSERT INTO compliance.consent_channels VALUES
   (1,'SELF_APP','El cliente en la app'), (2,'ASSISTED_BY_CASHIER','Confirmada por el cajero'), (3,'WEB','Web');
 INSERT INTO compliance.data_request_types VALUES

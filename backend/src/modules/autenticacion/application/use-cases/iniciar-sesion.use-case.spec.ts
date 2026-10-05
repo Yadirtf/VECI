@@ -105,6 +105,31 @@ describe('IniciarSesion (HU-02-01)', () => {
     });
   });
 
+  it('el PIN de bienvenida deja de servir a la semana (EP-04)', async () => {
+    const luz = {
+      usuarioId: 'u7',
+      personaId: 'p7',
+      nombre: 'Luz',
+      puedeEntrar: false,
+      pendienteDeActivar: true,
+    };
+    db.agregarCuenta(luz, '+573157778888', '730284', true);
+    db.ahora = new Date('2026-10-12T11:59:00Z');
+    await expect(iniciar.ejecutar(conPin('730284', '3157778888'))).resolves.toMatchObject({
+      tipo: 'CAMBIO_DE_PIN',
+    });
+    db.ahora = new Date('2026-10-12T12:01:00Z');
+    await expect(iniciar.ejecutar(conPin('730284', '3157778888'))).rejects.toMatchObject({
+      codigo: 'PIN_TEMPORAL_VENCIDO',
+    });
+    expect(db.intentos.at(-1)?.motivoFallo).toBe('USER_NOT_ALLOWED');
+  });
+
+  it('un PIN propio no vence', async () => {
+    db.ahora = new Date('2027-10-05T12:00:00Z');
+    await expect(iniciar.ejecutar(conPin('246813'))).resolves.toMatchObject({ tipo: 'SESION' });
+  });
+
   it('el paso de crear PIN no sirve desde otro dispositivo ni vencido', async () => {
     const ana = {
       usuarioId: 'u9',

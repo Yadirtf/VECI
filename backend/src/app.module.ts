@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { SentryModule } from '@sentry/nestjs/setup';
 import { AutenticacionModule } from './modules/autenticacion';
+import { ClientesModule } from './modules/clientes';
 import { ComerciosModule } from './modules/comercios';
 import { HorariosModule } from './modules/horarios';
 import { PersonalModule } from './modules/personal';
@@ -15,6 +16,7 @@ import { SharedModule } from './shared/shared.module';
     SharedModule,
     SaludModule,
     AutenticacionModule,
+    ClientesModule,
     ComerciosModule,
     HorariosModule,
     PersonalModule,

@@ -53,7 +53,8 @@ GRANT INSERT ON
   identity.login_attempts, ledger.events, ledger.movements,
   sales.sale_items, sales.sale_payments, sales.cash_closings,
   consumptions.consumptions, consumptions.consumption_overrides,
-  sync.sync_batches, sync.conflict_events, notifications.delivery_attempts, audit.audit_log
+  sync.sync_batches, sync.conflict_events, notifications.delivery_attempts, audit.audit_log,
+  tenancy.tenant_signing_keys  -- la API crea la clave del comercio al afiliar por primera vez (ADR-0017)
 TO veci_app;
 
 -- ------------------------------------------- aislamiento por comercio (genérico)
@@ -130,6 +131,10 @@ CREATE POLICY customer_self ON prepaid.package_types FOR SELECT TO veci_app
 CREATE POLICY customer_self ON tenancy.branches FOR SELECT TO veci_app
   USING (tenant_id IN (SELECT a.tenant_id FROM customers.affiliations a
                         WHERE a.person_id = core.current_person_id()));
+-- El cliente ve las claves públicas de sus comercios: su app arma y comprueba su QR (EP-04).
+CREATE POLICY customer_self ON tenancy.tenant_signing_keys FOR SELECT TO veci_app
+  USING (tenant_id IN (SELECT a.tenant_id FROM customers.affiliations a
+                        WHERE a.person_id = core.current_person_id()));
 
 -- La facturación de VECI: el comercio la lee, solo veci_platform la escribe.
 DROP POLICY tenant_isolation ON billing.subscriptions;
@@ -195,12 +200,14 @@ CREATE POLICY self_update ON identity.person_contacts FOR UPDATE TO veci_app
 -- ------------------------------------------- búsqueda global sin exponer datos
 -- Registro asistido (HU-04-04): ¿ya existe esta persona en VECI? Devuelve solo
 -- el id y datos enmascarados, nunca el registro completo de otro comercio.
+-- El documento se enmascara siempre con el mismo largo (****5678): así no se adivina
+-- cuántos dígitos tiene. Una persona sin apellido no queda con un punto suelto.
 CREATE FUNCTION customers.find_person_by_document(p_document_type core.catalog_code, p_number varchar)
 RETURNS TABLE (person_id uuid, masked_name text, masked_document text)
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path = pg_catalog, pg_temp AS $$
   SELECT p.id,
-         p.given_names || ' ' || left(coalesce(p.family_names, ''), 1) || '.',
-         repeat('*', greatest(length(p.document_number) - 4, 0)) || right(p.document_number, 4)
+         p.given_names || coalesce(' ' || left(p.family_names, 1) || '.', ''),
+         '****' || right(p.document_number, 4)
     FROM identity.people p
     JOIN core.document_types dt ON dt.id = p.document_type_id
    WHERE dt.code = p_document_type
@@ -208,6 +215,23 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = pg_catalog, pg_temp AS $$
 $$;
 REVOKE ALL ON FUNCTION customers.find_person_by_document(core.catalog_code, varchar) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION customers.find_person_by_document(core.catalog_code, varchar) TO veci_app;
+
+-- Afiliación por QR personal (HU-04-03): el cajero ve a quién va a afiliar antes de
+-- confirmar, aunque esa persona aún no sea cliente de su negocio. Solo datos enmascarados.
+CREATE FUNCTION customers.preview_personal_qr(p_qr_id uuid)
+RETURNS TABLE (person_id uuid, masked_name text, masked_document text, version integer, is_current boolean)
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = pg_catalog, pg_temp AS $$
+  SELECT p.id,
+         p.given_names || coalesce(' ' || left(p.family_names, 1) || '.', ''),
+         '****' || right(p.document_number, 4),
+         q.version,
+         q.revoked_at IS NULL
+    FROM customers.personal_qr_codes q
+    JOIN identity.people p ON p.id = q.person_id
+   WHERE q.id = p_qr_id;
+$$;
+REVOKE ALL ON FUNCTION customers.preview_personal_qr(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION customers.preview_personal_qr(uuid) TO veci_app;
 
 -- ------------------------------------------- particiones sin acceso directo
 -- Las tablas particionadas aplican RLS en la tabla madre; leer una partición por
