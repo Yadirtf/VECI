@@ -21,7 +21,12 @@ class HorariosPage extends ConsumerWidget {
       body: RefreshIndicator(
         onRefresh: () => ref.refresh(horariosSemanaProvider.future),
         child: ListView(
-          padding: const EdgeInsets.all(VeciEspacio.m),
+          padding: const EdgeInsets.fromLTRB(
+            VeciEspacio.m,
+            VeciEspacio.xl,
+            VeciEspacio.m,
+            VeciEspacio.m,
+          ),
           children: switch (estado) {
             AsyncData(:final value) => _semana(value),
             AsyncError(:final error) => _error(error, () => ref.invalidate(horariosSemanaProvider)),

@@ -7,6 +7,10 @@ import '../../../../core/router/rutas.dart';
 import '../../../../core/theme/veci_tokens.dart';
 import '../../../../core/ui/veci_aviso.dart';
 import '../../../../core/ui/veci_boton.dart';
+import '../../../../core/ui/veci_encabezado.dart';
+import '../../../../core/ui/veci_mostrador.dart';
+import '../../../../core/ui/veci_tarjeta.dart';
+import '../../domain/saludo.dart';
 
 /// Inicio con el negocio activo. Los modos Cajero y Cliente completos llegan en las
 /// siguientes épicas; aquí ya se sabe quién es y con qué negocio trabaja.
@@ -19,6 +23,7 @@ class InicioPage extends StatelessWidget {
     required this.variosNegocios,
     required this.alCambiarNegocio,
     required this.alSalir,
+    this.ahora = DateTime.now,
   });
 
   final String nombre;
@@ -27,57 +32,76 @@ class InicioPage extends StatelessWidget {
   final bool variosNegocios;
   final Future<void> Function() alCambiarNegocio;
   final Future<void> Function() alSalir;
+  final DateTime Function() ahora;
 
   List<Widget> _acciones() => [
     if (variosNegocios)
-      IconButton(
-        tooltip: 'Cambiar de negocio',
+      TextButton.icon(
+        style: TextButton.styleFrom(foregroundColor: VeciColores.crema),
         icon: const Icon(Icons.swap_horiz),
+        label: const Text('Cambiar'),
         onPressed: () => unawaited(alCambiarNegocio()),
       ),
-    TextButton(onPressed: () => unawaited(alSalir()), child: const Text('Salir')),
+    TextButton(
+      style: TextButton.styleFrom(foregroundColor: VeciColores.crema),
+      onPressed: () => unawaited(alSalir()),
+      child: const Text('Salir'),
+    ),
   ];
 
   @override
   Widget build(BuildContext context) {
     final textos = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: AppBar(title: Text(negocio), actions: _acciones()),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(VeciEspacio.l),
-          children: [
-            Text('¡Hola, $nombre!', style: textos.headlineSmall),
-            const SizedBox(height: VeciEspacio.s),
-            Text(
-              enLaCaja
-                  ? 'Tu aliado para vender y cobrar tiqueteras.'
-                  : 'Aquí vas a ver tus tiqueteras y tu QR de este negocio.',
-              style: textos.titleMedium,
-            ),
-            const SizedBox(height: VeciEspacio.l),
-            if (!enLaCaja)
-              const VeciAviso(
-                tono: TonoAviso.aviso,
-                mensaje: 'Muy pronto verás aquí tus almuerzos disponibles.',
-              ),
-            if (enLaCaja)
+      body: Column(
+        children: [
+          VeciEncabezado(
+            antetitulo: negocio,
+            titulo: '¡${saludoDelDia(ahora())}, ${primerNombre(nombre)}!',
+            acciones: _acciones(),
+          ),
+          Expanded(child: _cuerpo(textos)),
+          VeciMostrador(
+            children: [
+              if (enLaCaja)
+                VeciBoton(
+                  texto: 'Ver horarios',
+                  icono: Icons.schedule,
+                  grande: true,
+                  alTocar: () => context.push(Rutas.horarios),
+                ),
               VeciBoton(
-                texto: 'Ver horarios',
-                icono: Icons.schedule,
-                grande: true,
-                alTocar: () => context.push(Rutas.horarios),
+                texto: 'Sistema de diseño',
+                icono: Icons.palette,
+                secundario: true,
+                alTocar: () => context.push(Rutas.disenio),
               ),
-            const SizedBox(height: VeciEspacio.m),
-            VeciBoton(
-              texto: 'Sistema de diseño',
-              icono: Icons.palette,
-              secundario: true,
-              alTocar: () => context.push(Rutas.disenio),
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
   }
+
+  Widget _cuerpo(TextTheme textos) => ListView(
+    padding: const EdgeInsets.symmetric(horizontal: VeciEspacio.l),
+    children: [
+      VeciTarjeta(
+        perforado: true,
+        child: Text(
+          enLaCaja
+              ? 'Aquí estoy para ayudarte a vender y cobrar tiqueteras.'
+              : 'Aquí vas a ver tus tiqueteras y tu QR de este negocio.',
+          style: textos.titleMedium,
+        ),
+      ),
+      if (!enLaCaja) ...[
+        const SizedBox(height: VeciEspacio.l),
+        const VeciAviso(
+          tono: TonoAviso.aviso,
+          mensaje: 'Muy pronto verás aquí tus almuerzos disponibles.',
+        ),
+      ],
+    ],
+  );
 }

@@ -31,29 +31,27 @@ class _EntrarPageState extends ConsumerState<EntrarPage> {
   Widget build(BuildContext context) {
     final estado = ref.watch(estadoSesionProvider);
     return Scaffold(
-      body: SafeArea(
-        child: FormularioConEspera(
-          titulo: '¡Hola, veci!',
-          explicacion: 'Entra con tu celular y tu PIN.',
-          avisoInicial: estado is SinSesion ? estado.aviso : null,
-          textoBoton: 'Entrar',
-          validar: () => problemaConCelular(_celular.text) ?? problemaConPin(_pin.text),
-          enviar: () => ref.read(gestorSesionProvider).entrarConPin(_celular.text, _pin.text),
-          campos: [
-            TextField(
-              controller: _celular,
-              keyboardType: TextInputType.phone,
-              autofillHints: const [AutofillHints.telephoneNumberNational],
-              decoration: const InputDecoration(labelText: 'Celular', hintText: '310 000 0102'),
-            ),
-            const SizedBox(height: VeciEspacio.m),
-            CampoPin(
-              etiqueta: 'PIN',
-              controlador: _pin,
-              ayuda: 'Los 6 números con los que entras a VECI.',
-            ),
-          ],
-        ),
+      body: FormularioConEspera(
+        titulo: '¡Hola, veci!',
+        explicacion: 'Entra con tu celular y tu PIN.',
+        avisoInicial: estado is SinSesion ? estado.aviso : null,
+        textoBoton: 'Entrar',
+        validar: () => problemaConCelular(_celular.text) ?? problemaConPin(_pin.text),
+        enviar: () => ref.read(gestorSesionProvider).entrarConPin(_celular.text, _pin.text),
+        campos: [
+          TextField(
+            controller: _celular,
+            keyboardType: TextInputType.phone,
+            autofillHints: const [AutofillHints.telephoneNumberNational],
+            decoration: const InputDecoration(labelText: 'Celular', hintText: '310 000 0102'),
+          ),
+          const SizedBox(height: VeciEspacio.m),
+          CampoPin(
+            etiqueta: 'PIN',
+            controlador: _pin,
+            ayuda: 'Los 6 números con los que entras a VECI.',
+          ),
+        ],
       ),
     );
   }

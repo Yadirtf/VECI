@@ -38,23 +38,21 @@ class _PinNuevoPageState extends ConsumerState<PinNuevoPage> {
     final estado = ref.watch(estadoSesionProvider);
     final nombre = estado is CambioDePin ? estado.nombre : 'veci';
     return Scaffold(
-      body: SafeArea(
-        child: FormularioConEspera(
-          titulo: 'Hola, $nombre',
-          explicacion: 'Entraste con un PIN temporal. Crea tu PIN de 6 números; solo tú lo sabrás.',
-          textoBoton: 'Guardar mi PIN',
-          validar: _validar,
-          enviar: () => ref.read(gestorSesionProvider).crearPinNuevo(_pin.text),
-          campos: [
-            CampoPin(
-              etiqueta: 'PIN nuevo',
-              controlador: _pin,
-              ayuda: 'Evita fechas, 123456 o el mismo número repetido.',
-            ),
-            const SizedBox(height: VeciEspacio.m),
-            CampoPin(etiqueta: 'Escríbelo otra vez', controlador: _repetido),
-          ],
-        ),
+      body: FormularioConEspera(
+        titulo: 'Hola, $nombre',
+        explicacion: 'Entraste con un PIN temporal. Crea tu PIN de 6 números; solo tú lo sabrás.',
+        textoBoton: 'Guardar mi PIN',
+        validar: _validar,
+        enviar: () => ref.read(gestorSesionProvider).crearPinNuevo(_pin.text),
+        campos: [
+          CampoPin(
+            etiqueta: 'PIN nuevo',
+            controlador: _pin,
+            ayuda: 'Evita fechas, 123456 o el mismo número repetido.',
+          ),
+          const SizedBox(height: VeciEspacio.m),
+          CampoPin(etiqueta: 'Escríbelo otra vez', controlador: _repetido),
+        ],
       ),
     );
   }
