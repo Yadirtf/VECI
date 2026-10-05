@@ -22,6 +22,12 @@ Para entrar con los datos de ejemplo de la semilla: celular **310 000 0101** y P
 
 El panel nunca guarda tokens en `localStorage`. Las rutas `src/app/api/sesion/[accion]` son un pequeño servidor entre el navegador y la API (patrón BFF): guardan el token de renovación en una cookie `httpOnly` (`veci_renovacion`, solo para `/api/sesion`) y al navegador le entregan solo el token de acceso, que vive en memoria 15 minutos. Al recargar la página, el panel pide uno nuevo con esa cookie. Si dos peticiones encuentran el token vencido, se renueva una sola vez (`features/sesion/application/almacen-sesion.ts`). El negocio elegido sí se recuerda en `localStorage`, porque no es secreto.
 
+## Clientes (EP-04)
+
+- `/clientes` ("Tus clientes") es una libreta: busca mientras escribe sobre la copia de `GET /clientes/copia-local` y, desde 3 caracteres, también en la API; a la derecha, la ventanilla muestra la ficha o el registro asistido con el PIN de bienvenida para dictar (`shared/ui/pin-para-dictar.tsx`).
+- El propietario ve documento y celular completos en la ficha; en la lista y en la caja van tapados (`****5678`).
+- `/politica-de-datos` es pública e imprimible: el texto legal con su "en palabras de vecino".
+
 ## Comandos
 
 | Comando | Qué hace |

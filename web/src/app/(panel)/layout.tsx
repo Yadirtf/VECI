@@ -5,6 +5,7 @@ const MENU = [
   { href: '/negocio', texto: 'Mi negocio' },
   { href: '/horarios', texto: 'Horarios' },
   { href: '/sedes', texto: 'Sedes' },
+  { href: '/clientes', texto: 'Clientes' },
   { href: '/equipo', texto: 'Equipo' },
   { href: '/dispositivos', texto: 'Dispositivos' },
   { href: '/mi-cuenta', texto: 'Mi cuenta' },

@@ -2,12 +2,11 @@
 
 import { useCallback } from 'react';
 import { useCarga } from '@/shared/lib/use-carga';
-import { Aviso } from '@/shared/ui';
+import { Aviso, PinParaDictar } from '@/shared/ui';
 import { useAccionesEquipo } from '../application/use-acciones-equipo';
 import type { RepositorioEquipo } from '../domain/equipo';
 import { ordenarEquipo } from '../domain/reglas-equipo';
 import { FormularioInvitacion } from './formulario-invitacion';
-import { PinParaDictar } from './pin-para-dictar';
 import { TarjetaMiembro } from './tarjeta-miembro';
 
 /** Equipo del negocio: invitar cajeros, suspender, reactivar, retirar y dar PIN nuevo. */
