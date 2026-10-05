@@ -21,4 +21,15 @@ export class HorarioResponse {
 
   @ApiProperty({ example: '15:00' })
   horaFin!: string;
+
+  @ApiProperty({ description: 'false = en pausa: no cuenta para la caja' })
+  activo!: boolean;
+}
+
+export class ServicioResponse {
+  @ApiProperty({ format: 'uuid' })
+  id!: string;
+
+  @ApiProperty({ example: 'Almuerzo' })
+  nombre!: string;
 }

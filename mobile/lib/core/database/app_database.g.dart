@@ -69,6 +69,19 @@ class $HorariosLocalesTable extends HorariosLocales
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _activoMeta = const VerificationMeta('activo');
+  @override
+  late final GeneratedColumn<bool> activo = GeneratedColumn<bool>(
+    'activo',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("activo" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
   static const VerificationMeta _guardadoEnMeta = const VerificationMeta(
     'guardadoEn',
   );
@@ -88,6 +101,7 @@ class $HorariosLocalesTable extends HorariosLocales
     dia,
     horaInicio,
     horaFin,
+    activo,
     guardadoEn,
   ];
   @override
@@ -150,6 +164,12 @@ class $HorariosLocalesTable extends HorariosLocales
     } else if (isInserting) {
       context.missing(_horaFinMeta);
     }
+    if (data.containsKey('activo')) {
+      context.handle(
+        _activoMeta,
+        activo.isAcceptableOrUnknown(data['activo']!, _activoMeta),
+      );
+    }
     if (data.containsKey('guardado_en')) {
       context.handle(
         _guardadoEnMeta,
@@ -191,6 +211,10 @@ class $HorariosLocalesTable extends HorariosLocales
         DriftSqlType.string,
         data['${effectivePrefix}hora_fin'],
       )!,
+      activo: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}activo'],
+      )!,
       guardadoEn: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}guardado_en'],
@@ -211,6 +235,7 @@ class HorarioLocal extends DataClass implements Insertable<HorarioLocal> {
   final String dia;
   final String horaInicio;
   final String horaFin;
+  final bool activo;
   final DateTime guardadoEn;
   const HorarioLocal({
     required this.id,
@@ -219,6 +244,7 @@ class HorarioLocal extends DataClass implements Insertable<HorarioLocal> {
     required this.dia,
     required this.horaInicio,
     required this.horaFin,
+    required this.activo,
     required this.guardadoEn,
   });
   @override
@@ -230,6 +256,7 @@ class HorarioLocal extends DataClass implements Insertable<HorarioLocal> {
     map['dia'] = Variable<String>(dia);
     map['hora_inicio'] = Variable<String>(horaInicio);
     map['hora_fin'] = Variable<String>(horaFin);
+    map['activo'] = Variable<bool>(activo);
     map['guardado_en'] = Variable<DateTime>(guardadoEn);
     return map;
   }
@@ -242,6 +269,7 @@ class HorarioLocal extends DataClass implements Insertable<HorarioLocal> {
       dia: Value(dia),
       horaInicio: Value(horaInicio),
       horaFin: Value(horaFin),
+      activo: Value(activo),
       guardadoEn: Value(guardadoEn),
     );
   }
@@ -258,6 +286,7 @@ class HorarioLocal extends DataClass implements Insertable<HorarioLocal> {
       dia: serializer.fromJson<String>(json['dia']),
       horaInicio: serializer.fromJson<String>(json['horaInicio']),
       horaFin: serializer.fromJson<String>(json['horaFin']),
+      activo: serializer.fromJson<bool>(json['activo']),
       guardadoEn: serializer.fromJson<DateTime>(json['guardadoEn']),
     );
   }
@@ -271,6 +300,7 @@ class HorarioLocal extends DataClass implements Insertable<HorarioLocal> {
       'dia': serializer.toJson<String>(dia),
       'horaInicio': serializer.toJson<String>(horaInicio),
       'horaFin': serializer.toJson<String>(horaFin),
+      'activo': serializer.toJson<bool>(activo),
       'guardadoEn': serializer.toJson<DateTime>(guardadoEn),
     };
   }
@@ -282,6 +312,7 @@ class HorarioLocal extends DataClass implements Insertable<HorarioLocal> {
     String? dia,
     String? horaInicio,
     String? horaFin,
+    bool? activo,
     DateTime? guardadoEn,
   }) => HorarioLocal(
     id: id ?? this.id,
@@ -290,6 +321,7 @@ class HorarioLocal extends DataClass implements Insertable<HorarioLocal> {
     dia: dia ?? this.dia,
     horaInicio: horaInicio ?? this.horaInicio,
     horaFin: horaFin ?? this.horaFin,
+    activo: activo ?? this.activo,
     guardadoEn: guardadoEn ?? this.guardadoEn,
   );
   HorarioLocal copyWithCompanion(HorariosLocalesCompanion data) {
@@ -304,6 +336,7 @@ class HorarioLocal extends DataClass implements Insertable<HorarioLocal> {
           ? data.horaInicio.value
           : this.horaInicio,
       horaFin: data.horaFin.present ? data.horaFin.value : this.horaFin,
+      activo: data.activo.present ? data.activo.value : this.activo,
       guardadoEn: data.guardadoEn.present
           ? data.guardadoEn.value
           : this.guardadoEn,
@@ -319,6 +352,7 @@ class HorarioLocal extends DataClass implements Insertable<HorarioLocal> {
           ..write('dia: $dia, ')
           ..write('horaInicio: $horaInicio, ')
           ..write('horaFin: $horaFin, ')
+          ..write('activo: $activo, ')
           ..write('guardadoEn: $guardadoEn')
           ..write(')'))
         .toString();
@@ -332,6 +366,7 @@ class HorarioLocal extends DataClass implements Insertable<HorarioLocal> {
     dia,
     horaInicio,
     horaFin,
+    activo,
     guardadoEn,
   );
   @override
@@ -344,6 +379,7 @@ class HorarioLocal extends DataClass implements Insertable<HorarioLocal> {
           other.dia == this.dia &&
           other.horaInicio == this.horaInicio &&
           other.horaFin == this.horaFin &&
+          other.activo == this.activo &&
           other.guardadoEn == this.guardadoEn);
 }
 
@@ -354,6 +390,7 @@ class HorariosLocalesCompanion extends UpdateCompanion<HorarioLocal> {
   final Value<String> dia;
   final Value<String> horaInicio;
   final Value<String> horaFin;
+  final Value<bool> activo;
   final Value<DateTime> guardadoEn;
   final Value<int> rowid;
   const HorariosLocalesCompanion({
@@ -363,6 +400,7 @@ class HorariosLocalesCompanion extends UpdateCompanion<HorarioLocal> {
     this.dia = const Value.absent(),
     this.horaInicio = const Value.absent(),
     this.horaFin = const Value.absent(),
+    this.activo = const Value.absent(),
     this.guardadoEn = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -373,6 +411,7 @@ class HorariosLocalesCompanion extends UpdateCompanion<HorarioLocal> {
     required String dia,
     required String horaInicio,
     required String horaFin,
+    this.activo = const Value.absent(),
     required DateTime guardadoEn,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -389,6 +428,7 @@ class HorariosLocalesCompanion extends UpdateCompanion<HorarioLocal> {
     Expression<String>? dia,
     Expression<String>? horaInicio,
     Expression<String>? horaFin,
+    Expression<bool>? activo,
     Expression<DateTime>? guardadoEn,
     Expression<int>? rowid,
   }) {
@@ -399,6 +439,7 @@ class HorariosLocalesCompanion extends UpdateCompanion<HorarioLocal> {
       if (dia != null) 'dia': dia,
       if (horaInicio != null) 'hora_inicio': horaInicio,
       if (horaFin != null) 'hora_fin': horaFin,
+      if (activo != null) 'activo': activo,
       if (guardadoEn != null) 'guardado_en': guardadoEn,
       if (rowid != null) 'rowid': rowid,
     });
@@ -411,6 +452,7 @@ class HorariosLocalesCompanion extends UpdateCompanion<HorarioLocal> {
     Value<String>? dia,
     Value<String>? horaInicio,
     Value<String>? horaFin,
+    Value<bool>? activo,
     Value<DateTime>? guardadoEn,
     Value<int>? rowid,
   }) {
@@ -421,6 +463,7 @@ class HorariosLocalesCompanion extends UpdateCompanion<HorarioLocal> {
       dia: dia ?? this.dia,
       horaInicio: horaInicio ?? this.horaInicio,
       horaFin: horaFin ?? this.horaFin,
+      activo: activo ?? this.activo,
       guardadoEn: guardadoEn ?? this.guardadoEn,
       rowid: rowid ?? this.rowid,
     );
@@ -447,6 +490,9 @@ class HorariosLocalesCompanion extends UpdateCompanion<HorarioLocal> {
     if (horaFin.present) {
       map['hora_fin'] = Variable<String>(horaFin.value);
     }
+    if (activo.present) {
+      map['activo'] = Variable<bool>(activo.value);
+    }
     if (guardadoEn.present) {
       map['guardado_en'] = Variable<DateTime>(guardadoEn.value);
     }
@@ -465,7 +511,226 @@ class HorariosLocalesCompanion extends UpdateCompanion<HorarioLocal> {
           ..write('dia: $dia, ')
           ..write('horaInicio: $horaInicio, ')
           ..write('horaFin: $horaFin, ')
+          ..write('activo: $activo, ')
           ..write('guardadoEn: $guardadoEn, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MarcasSincronizacionTable extends MarcasSincronizacion
+    with TableInfo<$MarcasSincronizacionTable, MarcaSincronizacion> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MarcasSincronizacionTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _recursoMeta = const VerificationMeta(
+    'recurso',
+  );
+  @override
+  late final GeneratedColumn<String> recurso = GeneratedColumn<String>(
+    'recurso',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _etagMeta = const VerificationMeta('etag');
+  @override
+  late final GeneratedColumn<String> etag = GeneratedColumn<String>(
+    'etag',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [recurso, etag];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'marcas_sincronizacion';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MarcaSincronizacion> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('recurso')) {
+      context.handle(
+        _recursoMeta,
+        recurso.isAcceptableOrUnknown(data['recurso']!, _recursoMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recursoMeta);
+    }
+    if (data.containsKey('etag')) {
+      context.handle(
+        _etagMeta,
+        etag.isAcceptableOrUnknown(data['etag']!, _etagMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_etagMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {recurso};
+  @override
+  MarcaSincronizacion map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MarcaSincronizacion(
+      recurso: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recurso'],
+      )!,
+      etag: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}etag'],
+      )!,
+    );
+  }
+
+  @override
+  $MarcasSincronizacionTable createAlias(String alias) {
+    return $MarcasSincronizacionTable(attachedDatabase, alias);
+  }
+}
+
+class MarcaSincronizacion extends DataClass
+    implements Insertable<MarcaSincronizacion> {
+  final String recurso;
+  final String etag;
+  const MarcaSincronizacion({required this.recurso, required this.etag});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['recurso'] = Variable<String>(recurso);
+    map['etag'] = Variable<String>(etag);
+    return map;
+  }
+
+  MarcasSincronizacionCompanion toCompanion(bool nullToAbsent) {
+    return MarcasSincronizacionCompanion(
+      recurso: Value(recurso),
+      etag: Value(etag),
+    );
+  }
+
+  factory MarcaSincronizacion.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MarcaSincronizacion(
+      recurso: serializer.fromJson<String>(json['recurso']),
+      etag: serializer.fromJson<String>(json['etag']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'recurso': serializer.toJson<String>(recurso),
+      'etag': serializer.toJson<String>(etag),
+    };
+  }
+
+  MarcaSincronizacion copyWith({String? recurso, String? etag}) =>
+      MarcaSincronizacion(
+        recurso: recurso ?? this.recurso,
+        etag: etag ?? this.etag,
+      );
+  MarcaSincronizacion copyWithCompanion(MarcasSincronizacionCompanion data) {
+    return MarcaSincronizacion(
+      recurso: data.recurso.present ? data.recurso.value : this.recurso,
+      etag: data.etag.present ? data.etag.value : this.etag,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MarcaSincronizacion(')
+          ..write('recurso: $recurso, ')
+          ..write('etag: $etag')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(recurso, etag);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MarcaSincronizacion &&
+          other.recurso == this.recurso &&
+          other.etag == this.etag);
+}
+
+class MarcasSincronizacionCompanion
+    extends UpdateCompanion<MarcaSincronizacion> {
+  final Value<String> recurso;
+  final Value<String> etag;
+  final Value<int> rowid;
+  const MarcasSincronizacionCompanion({
+    this.recurso = const Value.absent(),
+    this.etag = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MarcasSincronizacionCompanion.insert({
+    required String recurso,
+    required String etag,
+    this.rowid = const Value.absent(),
+  }) : recurso = Value(recurso),
+       etag = Value(etag);
+  static Insertable<MarcaSincronizacion> custom({
+    Expression<String>? recurso,
+    Expression<String>? etag,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (recurso != null) 'recurso': recurso,
+      if (etag != null) 'etag': etag,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MarcasSincronizacionCompanion copyWith({
+    Value<String>? recurso,
+    Value<String>? etag,
+    Value<int>? rowid,
+  }) {
+    return MarcasSincronizacionCompanion(
+      recurso: recurso ?? this.recurso,
+      etag: etag ?? this.etag,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (recurso.present) {
+      map['recurso'] = Variable<String>(recurso.value);
+    }
+    if (etag.present) {
+      map['etag'] = Variable<String>(etag.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MarcasSincronizacionCompanion(')
+          ..write('recurso: $recurso, ')
+          ..write('etag: $etag, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -478,11 +743,16 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $HorariosLocalesTable horariosLocales = $HorariosLocalesTable(
     this,
   );
+  late final $MarcasSincronizacionTable marcasSincronizacion =
+      $MarcasSincronizacionTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [horariosLocales];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    horariosLocales,
+    marcasSincronizacion,
+  ];
   @override
   DriftDatabaseOptions get options =>
       const DriftDatabaseOptions(storeDateTimeAsText: true);
@@ -496,6 +766,7 @@ typedef $$HorariosLocalesTableCreateCompanionBuilder =
       required String dia,
       required String horaInicio,
       required String horaFin,
+      Value<bool> activo,
       required DateTime guardadoEn,
       Value<int> rowid,
     });
@@ -507,6 +778,7 @@ typedef $$HorariosLocalesTableUpdateCompanionBuilder =
       Value<String> dia,
       Value<String> horaInicio,
       Value<String> horaFin,
+      Value<bool> activo,
       Value<DateTime> guardadoEn,
       Value<int> rowid,
     });
@@ -547,6 +819,11 @@ class $$HorariosLocalesTableFilterComposer
 
   ColumnFilters<String> get horaFin => $composableBuilder(
     column: $table.horaFin,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get activo => $composableBuilder(
+    column: $table.activo,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -595,6 +872,11 @@ class $$HorariosLocalesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get activo => $composableBuilder(
+    column: $table.activo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get guardadoEn => $composableBuilder(
     column: $table.guardadoEn,
     builder: (column) => ColumnOrderings(column),
@@ -631,6 +913,9 @@ class $$HorariosLocalesTableAnnotationComposer
 
   GeneratedColumn<String> get horaFin =>
       $composableBuilder(column: $table.horaFin, builder: (column) => column);
+
+  GeneratedColumn<bool> get activo =>
+      $composableBuilder(column: $table.activo, builder: (column) => column);
 
   GeneratedColumn<DateTime> get guardadoEn => $composableBuilder(
     column: $table.guardadoEn,
@@ -677,6 +962,7 @@ class $$HorariosLocalesTableTableManager
                 Value<String> dia = const Value.absent(),
                 Value<String> horaInicio = const Value.absent(),
                 Value<String> horaFin = const Value.absent(),
+                Value<bool> activo = const Value.absent(),
                 Value<DateTime> guardadoEn = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => HorariosLocalesCompanion(
@@ -686,6 +972,7 @@ class $$HorariosLocalesTableTableManager
                 dia: dia,
                 horaInicio: horaInicio,
                 horaFin: horaFin,
+                activo: activo,
                 guardadoEn: guardadoEn,
                 rowid: rowid,
               ),
@@ -697,6 +984,7 @@ class $$HorariosLocalesTableTableManager
                 required String dia,
                 required String horaInicio,
                 required String horaFin,
+                Value<bool> activo = const Value.absent(),
                 required DateTime guardadoEn,
                 Value<int> rowid = const Value.absent(),
               }) => HorariosLocalesCompanion.insert(
@@ -706,6 +994,7 @@ class $$HorariosLocalesTableTableManager
                 dia: dia,
                 horaInicio: horaInicio,
                 horaFin: horaFin,
+                activo: activo,
                 guardadoEn: guardadoEn,
                 rowid: rowid,
               ),
@@ -743,10 +1032,182 @@ typedef $$HorariosLocalesTableProcessedTableManager =
       HorarioLocal,
       PrefetchHooks Function()
     >;
+typedef $$MarcasSincronizacionTableCreateCompanionBuilder =
+    MarcasSincronizacionCompanion Function({
+      required String recurso,
+      required String etag,
+      Value<int> rowid,
+    });
+typedef $$MarcasSincronizacionTableUpdateCompanionBuilder =
+    MarcasSincronizacionCompanion Function({
+      Value<String> recurso,
+      Value<String> etag,
+      Value<int> rowid,
+    });
+
+class $$MarcasSincronizacionTableFilterComposer
+    extends Composer<_$AppDatabase, $MarcasSincronizacionTable> {
+  $$MarcasSincronizacionTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get recurso => $composableBuilder(
+    column: $table.recurso,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get etag => $composableBuilder(
+    column: $table.etag,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MarcasSincronizacionTableOrderingComposer
+    extends Composer<_$AppDatabase, $MarcasSincronizacionTable> {
+  $$MarcasSincronizacionTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get recurso => $composableBuilder(
+    column: $table.recurso,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get etag => $composableBuilder(
+    column: $table.etag,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MarcasSincronizacionTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MarcasSincronizacionTable> {
+  $$MarcasSincronizacionTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get recurso =>
+      $composableBuilder(column: $table.recurso, builder: (column) => column);
+
+  GeneratedColumn<String> get etag =>
+      $composableBuilder(column: $table.etag, builder: (column) => column);
+}
+
+class $$MarcasSincronizacionTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MarcasSincronizacionTable,
+          MarcaSincronizacion,
+          $$MarcasSincronizacionTableFilterComposer,
+          $$MarcasSincronizacionTableOrderingComposer,
+          $$MarcasSincronizacionTableAnnotationComposer,
+          $$MarcasSincronizacionTableCreateCompanionBuilder,
+          $$MarcasSincronizacionTableUpdateCompanionBuilder,
+          (
+            MarcaSincronizacion,
+            BaseReferences<
+              _$AppDatabase,
+              $MarcasSincronizacionTable,
+              MarcaSincronizacion
+            >,
+          ),
+          MarcaSincronizacion,
+          PrefetchHooks Function()
+        > {
+  $$MarcasSincronizacionTableTableManager(
+    _$AppDatabase db,
+    $MarcasSincronizacionTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MarcasSincronizacionTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MarcasSincronizacionTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$MarcasSincronizacionTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> recurso = const Value.absent(),
+                Value<String> etag = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MarcasSincronizacionCompanion(
+                recurso: recurso,
+                etag: etag,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String recurso,
+                required String etag,
+                Value<int> rowid = const Value.absent(),
+              }) => MarcasSincronizacionCompanion.insert(
+                recurso: recurso,
+                etag: etag,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$MarcasSincronizacionTable, MarcaSincronizacion>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $MarcasSincronizacionTable,
+                    MarcaSincronizacion
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MarcasSincronizacionTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MarcasSincronizacionTable,
+      MarcaSincronizacion,
+      $$MarcasSincronizacionTableFilterComposer,
+      $$MarcasSincronizacionTableOrderingComposer,
+      $$MarcasSincronizacionTableAnnotationComposer,
+      $$MarcasSincronizacionTableCreateCompanionBuilder,
+      $$MarcasSincronizacionTableUpdateCompanionBuilder,
+      (
+        MarcaSincronizacion,
+        BaseReferences<
+          _$AppDatabase,
+          $MarcasSincronizacionTable,
+          MarcaSincronizacion
+        >,
+      ),
+      MarcaSincronizacion,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
   $$HorariosLocalesTableTableManager get horariosLocales =>
       $$HorariosLocalesTableTableManager(_db, _db.horariosLocales);
+  $$MarcasSincronizacionTableTableManager get marcasSincronizacion =>
+      $$MarcasSincronizacionTableTableManager(_db, _db.marcasSincronizacion);
 }

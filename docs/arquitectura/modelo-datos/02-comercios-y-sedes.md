@@ -34,6 +34,7 @@ erDiagram
 | Tabla | Qué guarda | Reglas clave |
 | --- | --- | --- |
 | `business_types` | Restaurante, cafetería, panadería, colegio, tienda, otro. | Nuevo sector = nueva fila (RF-COM-04, RNF-ESC-02). |
+| `business_type_services` | Plantilla: servicios con que nace cada tipo de negocio y su horario sugerido. | Al registrar un comercio se copian sus servicios; las horas las confirma el dueño ([ADR-0016](../adr/0016-alta-de-comercios-horarios-y-sedes.md)). |
 | `tenants` | Comercio: nombre, documento (NIT o cédula), tipo, estado, moneda, zona horaria, logo. | `slug` único para el enlace público. El estado es administrativo (alta, activo, suspendido, cerrado); el estado de pago vive en `billing.subscriptions`. |
 | `tenant_contacts` | Teléfonos y correos del comercio. | Uno principal por tipo. |
 | `branches` | Sede con municipio (DIVIPOLA) y dirección. | Una sola sede principal por comercio; nace con el comercio (HU-03-01). |
@@ -49,4 +50,8 @@ erDiagram
 
 ## Alta de un comercio (HU-03-01)
 
-En una sola transacción: `tenants` (estado `ONBOARDING`) → `branches` (principal) → `memberships` + `membership_roles` (propietario) → `tenant_signing_keys` → `billing.subscriptions` (plan `TRIAL`). Al terminar la configuración, el comercio pasa a `ACTIVE`.
+En una sola transacción: `tenants` (estado `ONBOARDING`) → `tenant_contacts` → `branches` (principal) → `services` (de la plantilla del tipo) → `memberships` + `membership_roles` (propietario) → `billing.subscriptions` (plan `TRIAL`, por la política `tenant_starts_trial`). Si registra Administración VECI, el propietario llega por invitación con PIN temporal. Cuando el dueño tiene horarios y lo abre, el comercio pasa a `ACTIVE` ([ADR-0016](../adr/0016-alta-de-comercios-horarios-y-sedes.md)). La clave de firma de QR se crea con EP-04.
+
+## Horarios vigentes (HU-03-02)
+
+Editar un horario cierra la vigencia del anterior en la fecha local del negocio (`tenancy.current_local_date()`) y crea uno nuevo desde hoy; pausar cambia `is_active`. Un horario está vigente si `tenancy.still_valid(valid_during)`: no terminó antes de hoy, aunque su fecha UTC por defecto empiece mañana. La caja los baja con `ETag` (la mayor `sync_version`).

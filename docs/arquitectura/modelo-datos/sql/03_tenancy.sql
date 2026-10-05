@@ -16,6 +16,15 @@ CREATE TABLE tenancy.business_types (
 );
 COMMENT ON TABLE tenancy.business_types IS 'Restaurante, cafetería, panadería, colegio, tienda... Nuevo sector = nueva fila (RF-COM-04, RNF-ESC-02).';
 
+CREATE TABLE tenancy.business_type_services (
+  business_type_id smallint NOT NULL REFERENCES tenancy.business_types (id),
+  name             varchar(60) NOT NULL,
+  suggested_hours  core.time_range NOT NULL CHECK (NOT isempty(suggested_hours)),
+  sort_order       smallint NOT NULL DEFAULT 0,
+  PRIMARY KEY (business_type_id, name)
+);
+COMMENT ON TABLE tenancy.business_type_services IS 'Servicios con que nace un comercio según su tipo, con su horario sugerido (HU-03-01, RNF-ESC-02).';
+
 CREATE TABLE tenancy.tenant_statuses (
   id                smallint PRIMARY KEY,
   code              core.catalog_code NOT NULL UNIQUE,
@@ -141,6 +150,23 @@ CREATE TABLE tenancy.tenant_signing_keys (
 COMMENT ON TABLE tenancy.tenant_signing_keys IS 'Claves para firmar QR. La pública baja al celular del cajero; la privada vive en el gestor de secretos (solo su referencia).';
 CREATE UNIQUE INDEX tenant_signing_keys_active_ux
   ON tenancy.tenant_signing_keys (tenant_id) WHERE retired_at IS NULL;
+
+-- "Hoy" para el comercio activo según su zona horaria (EP-03): los horarios vigentes
+-- y los cambios de horario se cortan en la fecha del negocio, no en la del servidor.
+CREATE FUNCTION tenancy.current_local_date() RETURNS date
+LANGUAGE sql STABLE AS $$
+  SELECT (now() AT TIME ZONE t.time_zone)::date
+    FROM tenancy.tenants t
+   WHERE t.id = core.current_tenant_id();
+$$;
+
+-- Un horario sigue en pie si no ha terminado antes de hoy (fecha del negocio). Cuenta
+-- también el que empieza mañana: la fecha por defecto de valid_during es la del
+-- servidor (UTC), que en la noche de Colombia ya va un día adelante.
+CREATE FUNCTION tenancy.still_valid(validity daterange) RETURNS boolean
+LANGUAGE sql STABLE AS $$
+  SELECT validity && daterange(tenancy.current_local_date(), NULL, '[)');
+$$;
 
 -- ----------------------------------------------------------------- sedes
 CREATE TABLE tenancy.branches (

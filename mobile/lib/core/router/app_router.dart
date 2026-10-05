@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/comercios/presentation/pages/alta_negocio_page.dart';
 import '../../features/horarios/presentation/pages/horarios_page.dart';
 import '../../features/inicio/presentation/pages/inicio_page.dart';
 import '../../features/inicio/presentation/pages/muestrario_page.dart';
@@ -31,6 +32,7 @@ GoRouter crearRouter(GestorSesion gestor) => GoRouter(
     GoRoute(path: Rutas.entrar, builder: (_, _) => const EntrarPage()),
     GoRoute(path: Rutas.pinNuevo, builder: (_, _) => const PinNuevoPage()),
     GoRoute(path: Rutas.negocio, builder: (_, _) => const ElegirNegocioPage()),
+    GoRoute(path: Rutas.registrarNegocio, builder: (_, _) => const AltaNegocioPage()),
     GoRoute(path: Rutas.inicio, builder: (_, _) => _inicio(gestor)),
     GoRoute(path: Rutas.horarios, builder: (_, _) => const HorariosPage()),
     GoRoute(path: Rutas.disenio, builder: (_, _) => const MuestrarioPage()),

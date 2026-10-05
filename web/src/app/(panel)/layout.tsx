@@ -2,7 +2,9 @@ import type { ReactNode } from 'react';
 import { Panel } from '@/features/sesion';
 
 const MENU = [
+  { href: '/negocio', texto: 'Mi negocio' },
   { href: '/horarios', texto: 'Horarios' },
+  { href: '/sedes', texto: 'Sedes' },
   { href: '/equipo', texto: 'Equipo' },
   { href: '/dispositivos', texto: 'Dispositivos' },
   { href: '/mi-cuenta', texto: 'Mi cuenta' },

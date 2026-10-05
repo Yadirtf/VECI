@@ -78,6 +78,27 @@ export function PantallaEntrar({ almacen }: { almacen: AlmacenSesion }) {
   );
 }
 
+/** Solo pide sesión abierta: sirve para registrar un negocio antes de tener uno. */
+export function GuardiaSesion(p: {
+  almacen: AlmacenSesion;
+  children: (nombre: string) => ReactNode;
+}) {
+  const estado = useEstadoSesion(p.almacen);
+  const router = useRouter();
+  const fuera = estado.fase === 'sin-sesion' || estado.fase === 'cambio-de-pin';
+  useEffect(() => {
+    if (fuera) router.replace('/entrar');
+  }, [fuera, router]);
+  if (estado.fase !== 'activa') {
+    return (
+      <main className="flex min-h-screen items-center justify-center px-m">
+        <Cargando />
+      </main>
+    );
+  }
+  return <>{p.children(estado.sesion.usuario.nombre)}</>;
+}
+
 /** Envuelve el panel: sin sesión manda a /entrar; sin negocio pregunta cuál. */
 export function GuardiaPanel(p: {
   almacen: AlmacenSesion;

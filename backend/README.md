@@ -27,6 +27,13 @@ Los valores por defecto apuntan a la base local; para cambiarlos copie `.env.exa
 - En desarrollo y pruebas, la cabecera `x-veci-usuario` con el id de un usuario demo sigue sirviendo para probar sin entrar; en staging y producción se ignora.
 - `VECI_TOKENS_SECRETO` firma los tokens y es obligatorio fuera de local.
 
+### Comercios, horarios y sedes (EP-03, [ADR-0016](../docs/arquitectura/adr/0016-alta-de-comercios-horarios-y-sedes.md))
+
+- `GET /comercios/tipos` y `/comercios/municipios` dan los catálogos; `POST /comercios` registra el negocio de quien tiene sesión (sede principal, servicios de la plantilla, Prueba y propietario). `POST /plataforma/comercios` lo hace Administración VECI e invita al propietario con PIN temporal.
+- `GET /comercio` trae el perfil y el camino de apertura; `PATCH /comercio` cambia datos; `POST /comercio/abrir` lo abre cuando tiene horarios.
+- `GET /horarios` responde con `ETag` y 304 si nada cambió. `POST /horarios` acepta varios `dias`; `PATCH /horarios/:id` crea la versión nueva desde hoy (el id cambia); `PATCH /horarios/:id/estado` pausa o reanuda. `GET` y `POST /servicios`.
+- `GET /sedes` trae sedes, cajeros por sede y el cupo del plan; `POST /sedes` y `PATCH /sedes/:id` (plan Pro); `PUT /sedes/cajeros/:membresiaId` con `sedeIds` (vacío = todas).
+
 ## Comandos
 
 | Comando | Qué hace |

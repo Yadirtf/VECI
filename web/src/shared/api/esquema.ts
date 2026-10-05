@@ -4,6 +4,92 @@
  */
 
 export interface paths {
+    "/comercio": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Datos, plan y camino para abrir */
+        get: operations["consultarComercio"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Cambia los datos del negocio */
+        patch: operations["editarComercio"];
+        trace?: never;
+    };
+    "/comercio/abrir": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Abre el negocio para vender */
+        post: operations["abrirComercio"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/comercios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Registra un negocio propio (HU-03-01) */
+        post: operations["registrarComercio"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/comercios/municipios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Municipios donde opera VECI */
+        get: operations["listarMunicipios"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/comercios/tipos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Tipos de negocio y servicios */
+        get: operations["listarTiposDeNegocio"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/cuenta/comercio-activo": {
         parameters: {
             query?: never;
@@ -184,8 +270,59 @@ export interface paths {
         /** Horarios vigentes del negocio */
         get: operations["listarHorarios"];
         put?: never;
-        /** Agrega un horario de servicio */
+        /** Agrega un horario en uno o varios días */
         post: operations["crearHorario"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/horarios/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Cambia las horas desde hoy (devuelve el horario con su id nuevo) */
+        patch: operations["editarHorario"];
+        trace?: never;
+    };
+    "/horarios/{id}/estado": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Pone en pausa o reanuda */
+        patch: operations["cambiarEstadoHorario"];
+        trace?: never;
+    };
+    "/plataforma/comercios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Administración VECI registra un negocio e invita a su dueño (HU-03-01) */
+        post: operations["registrarComercioParaPropietario"];
         delete?: never;
         options?: never;
         head?: never;
@@ -203,6 +340,76 @@ export interface paths {
         get: operations["consultarSalud"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sedes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sedes, cajeros por sede y cupo del plan */
+        get: operations["listarSedes"];
+        put?: never;
+        /** Abre otra sede (plan Pro, HU-03-03) */
+        post: operations["crearSede"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sedes/{sedeId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Cambia, desactiva o reabre una sede */
+        patch: operations["editarSede"];
+        trace?: never;
+    };
+    "/sedes/cajeros/{membresiaId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Sedes donde trabaja un cajero */
+        put: operations["asignarSedesACajero"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/servicios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Servicios del negocio */
+        get: operations["listarServicios"];
+        put?: never;
+        /** Agrega un servicio (cena, onces...) */
+        post: operations["crearServicio"];
         delete?: never;
         options?: never;
         head?: never;
@@ -315,6 +522,26 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AsignarSedesRequest: {
+            /** @description Vacío = trabaja en todas las sedes */
+            sedeIds: string[];
+        };
+        AvanceResponse: {
+            /** @example 1 */
+            cajeros: number;
+            /** @example 2 */
+            serviciosConHorario: number;
+            /** @example 0 */
+            tiqueteras: number;
+        };
+        CajeroEnSedesResponse: {
+            /** Format: uuid */
+            membresiaId: string;
+            /** @example Jhon Mutumbajoy */
+            nombre: string;
+            /** @description Vacío = trabaja en todas */
+            sedeIds: string[];
+        };
         CambiarEstadoCajeroRequest: {
             /** @enum {string} */
             accion: "SUSPENDER" | "REACTIVAR" | "RETIRAR";
@@ -340,6 +567,22 @@ export interface components {
              */
             permisos: string[];
         };
+        ComercioRegistradoResponse: {
+            /** Format: uuid */
+            comercioId: string;
+            /**
+             * @description Solo al registrar a nombre de otra persona sin PIN propio. Se muestra una vez.
+             * @example 482915
+             */
+            pinTemporal?: string | null;
+            /** @example restaurante-la-vecina */
+            slug: string;
+        };
+        ContactoResponse: {
+            /** @example +573100000101 */
+            celular?: string | null;
+            correo?: string | null;
+        };
         CorreoResponse: {
             /** @example marta@lavecina.co */
             correo: string;
@@ -354,10 +597,13 @@ export interface components {
         };
         CrearHorarioRequest: {
             /**
-             * @description Código del día (catálogo de días)
-             * @example MONDAY
+             * @description Códigos de los días (catálogo de días). Varios copian el horario.
+             * @example [
+             *       "MONDAY",
+             *       "TUESDAY"
+             *     ]
              */
-            dia: string;
+            dias: string[];
             /** @example 15:00 */
             horaFin: string;
             /** @example 11:30 */
@@ -372,6 +618,26 @@ export interface components {
              * @description Servicio (desayuno, almuerzo...)
              */
             servicioId: string;
+        };
+        CrearSedeRequest: {
+            /** @example Calle 8 # 5-20 */
+            direccion?: string | null;
+            /** @example 86001 */
+            municipioId?: number | null;
+            /** @example Sede del parque */
+            nombre: string;
+        };
+        CrearServicioRequest: {
+            /** @example Cena */
+            nombre: string;
+        };
+        CupoDeSedesResponse: {
+            /** @description null = sin límite */
+            limite?: number | null;
+            /** @example 1 */
+            ocupadas: number;
+            /** @description El plan permite varias sedes (plan Pro) */
+            variasSedes: boolean;
         };
         DispositivoRequest: {
             /**
@@ -401,6 +667,41 @@ export interface components {
             /** Format: date-time */
             ultimaVez: string;
         };
+        DocumentoResponse: {
+            /**
+             * @description El NIT incluye el dígito de verificación
+             * @example 9001234567
+             */
+            numero: string;
+            /** @enum {string} */
+            tipo: "NIT" | "CC";
+        };
+        EditarComercioRequest: {
+            /** @example 310 000 0101 */
+            celular?: string;
+            /** @description null lo quita */
+            correo?: string | null;
+            /** @description null lo quita */
+            logoUrl?: string | null;
+            /** @example Restaurante La Vecina */
+            nombre?: string;
+            /** @example RESTAURANT */
+            tipoNegocio?: string;
+        };
+        EditarHorarioRequest: {
+            /** @example 15:00 */
+            horaFin: string;
+            /** @example 11:30 */
+            horaInicio: string;
+        };
+        EditarSedeRequest: {
+            /** @description false desactiva la sede; true la reabre */
+            activa?: boolean;
+            direccion?: string | null;
+            municipioId?: number | null;
+            /** @example Sede del parque */
+            nombre?: string;
+        };
         EspacioResponse: {
             /** Format: uuid */
             comercioId: string;
@@ -421,7 +722,13 @@ export interface components {
              */
             tipoNegocio: string;
         };
+        EstadoHorarioRequest: {
+            /** @description false lo pone en pausa; true lo reanuda */
+            activo: boolean;
+        };
         HorarioResponse: {
+            /** @description false = en pausa: no cuenta para la caja */
+            activo: boolean;
             /** @example MONDAY */
             dia: string;
             /** @example 15:00 */
@@ -487,6 +794,11 @@ export interface components {
              */
             tipoDocumento: string;
         };
+        MapaDeSedesResponse: {
+            cajeros: components["schemas"]["CajeroEnSedesResponse"][];
+            cupo: components["schemas"]["CupoDeSedesResponse"];
+            sedes: components["schemas"]["SedeResponse"][];
+        };
         MiembroResponse: {
             /** @example +573100000102 */
             celular?: string | null;
@@ -504,6 +816,40 @@ export interface components {
             roles: string[];
             /** Format: uuid */
             usuarioId: string;
+        };
+        MunicipioResponse: {
+            /** @example 86001 */
+            id: number;
+            /** @example Mocoa */
+            nombre: string;
+        };
+        PasoResponse: {
+            /** @enum {string} */
+            codigo: "DATOS" | "HORARIOS" | "EQUIPO" | "TIQUETERAS";
+            listo: boolean;
+            /** @description Si falta, impide abrir el negocio */
+            obligatorio: boolean;
+        };
+        PerfilComercioResponse: {
+            /** @description Ya vende y registra consumos */
+            abierto: boolean;
+            avance: components["schemas"]["AvanceResponse"];
+            camino: components["schemas"]["PasoResponse"][];
+            /** Format: uuid */
+            comercioId: string;
+            contacto: components["schemas"]["ContactoResponse"];
+            documento: components["schemas"]["DocumentoResponse"];
+            /** @example ONBOARDING */
+            estado: string;
+            logoUrl?: string | null;
+            /** @example Restaurante La Vecina */
+            nombre: string;
+            plan?: components["schemas"]["PlanResponse"] | null;
+            puedeAbrir: boolean;
+            /** @example la-vecina */
+            slug: string;
+            /** @example RESTAURANT */
+            tipoNegocio: string;
         };
         PinClienteResponse: {
             /**
@@ -530,6 +876,90 @@ export interface components {
              * @example 482915
              */
             pinTemporal: string;
+        };
+        PlanResponse: {
+            /** @example TRIAL */
+            codigo: string;
+            /** @example TRIAL */
+            estado: string;
+            /** @example Prueba */
+            nombre: string;
+            /**
+             * @description Fecha local del negocio
+             * @example 2026-11-05
+             */
+            venceEl: string;
+        };
+        PropietarioInvitadoRequest: {
+            /** @example Chindoy */
+            apellidos?: string;
+            /** @example 312 456 7890 */
+            celular: string;
+            /** @example Rosa Elena */
+            nombres: string;
+            /** @example 1124500777 */
+            numeroDocumento: string;
+            /** @example CC */
+            tipoDocumento: string;
+        };
+        RegistrarComercioRequest: {
+            /** @example 310 000 0101 */
+            celular: string;
+            /** @example hola@lavecina.co */
+            correo?: string | null;
+            /** @example Barrio San Agustín */
+            direccion?: string | null;
+            /** @example https://lavecina.co/logo.png */
+            logoUrl?: string | null;
+            /**
+             * @description Municipio (DIVIPOLA) de la sede principal
+             * @example 86001
+             */
+            municipioId?: number | null;
+            /** @example Restaurante La Vecina */
+            nombre: string;
+            /**
+             * @description NIT con o sin dígito de verificación
+             * @example 900123456
+             */
+            numeroDocumento: string;
+            /** @enum {string} */
+            tipoDocumento: "NIT" | "CC";
+            /**
+             * @description Código del tipo de negocio (catálogo)
+             * @example RESTAURANT
+             */
+            tipoNegocio: string;
+        };
+        RegistrarParaPropietarioRequest: {
+            /** @example 310 000 0101 */
+            celular: string;
+            /** @example hola@lavecina.co */
+            correo?: string | null;
+            /** @example Barrio San Agustín */
+            direccion?: string | null;
+            /** @example https://lavecina.co/logo.png */
+            logoUrl?: string | null;
+            /**
+             * @description Municipio (DIVIPOLA) de la sede principal
+             * @example 86001
+             */
+            municipioId?: number | null;
+            /** @example Restaurante La Vecina */
+            nombre: string;
+            /**
+             * @description NIT con o sin dígito de verificación
+             * @example 900123456
+             */
+            numeroDocumento: string;
+            propietario: components["schemas"]["PropietarioInvitadoRequest"];
+            /** @enum {string} */
+            tipoDocumento: "NIT" | "CC";
+            /**
+             * @description Código del tipo de negocio (catálogo)
+             * @example RESTAURANT
+             */
+            tipoNegocio: string;
         };
         RenovarSesionRequest: {
             tokenRenovacion: string;
@@ -561,6 +991,34 @@ export interface components {
             /** @example 0.1.0+abc1234 */
             version: string;
         };
+        SedeResponse: {
+            activa: boolean;
+            direccion?: string | null;
+            /** @example ACTIVE */
+            estado: string;
+            /** @example Mocoa */
+            municipio?: string | null;
+            municipioId?: number | null;
+            /** @example Principal */
+            nombre: string;
+            principal: boolean;
+            /** Format: uuid */
+            sedeId: string;
+        };
+        ServicioResponse: {
+            /** Format: uuid */
+            id: string;
+            /** @example Almuerzo */
+            nombre: string;
+        };
+        ServicioSugeridoResponse: {
+            /** @example 15:00 */
+            horaFin: string;
+            /** @example 11:30 */
+            horaInicio: string;
+            /** @example Almuerzo */
+            nombre: string;
+        };
         SesionEnDispositivoResponse: {
             /** Format: date-time */
             abiertaDesde: string;
@@ -583,6 +1041,13 @@ export interface components {
             tokenRenovacion: string;
             usuario: components["schemas"]["UsuarioResponse"];
         };
+        TipoDeNegocioResponse: {
+            /** @example RESTAURANT */
+            codigo: string;
+            /** @example Restaurante */
+            nombre: string;
+            servicios: components["schemas"]["ServicioSugeridoResponse"][];
+        };
         UsuarioResponse: {
             /** Format: uuid */
             id: string;
@@ -598,6 +1063,269 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    consultarComercio: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerfilComercioResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /**
+             * @description Requiere el permiso tenancy.view_tenant
+             *
+             *     El usuario no trabaja en ese negocio o su rol no alcanza
+             */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    editarComercio: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EditarComercioRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerfilComercioResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /**
+             * @description Requiere el permiso tenancy.manage_tenant
+             *
+             *     El usuario no trabaja en ese negocio o su rol no alcanza
+             */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Datos inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    abrirComercio: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerfilComercioResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /**
+             * @description Requiere el permiso tenancy.manage_tenant
+             *
+             *     El usuario no trabaja en ese negocio o su rol no alcanza
+             */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Ya estaba abierto */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description Falta un horario */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    registrarComercio: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegistrarComercioRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ComercioRegistradoResponse"];
+                };
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Datos inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    listarMunicipios: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MunicipioResponse"][];
+                };
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarTiposDeNegocio: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TipoDeNegocioResponse"][];
+                };
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     elegirComercio: {
         parameters: {
             query?: never;
@@ -1097,6 +1825,8 @@ export interface operations {
             header: {
                 /** @description Id del negocio activo */
                 "x-veci-comercio": string;
+                /** @description ETag de la copia local */
+                "If-None-Match"?: string;
             };
             path?: never;
             cookie?: never;
@@ -1110,6 +1840,13 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HorarioResponse"][];
                 };
+            };
+            /** @description La copia local está al día */
+            304: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Falta el negocio activo */
             400: {
@@ -1155,7 +1892,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["HorarioResponse"];
+                    "application/json": components["schemas"]["HorarioResponse"][];
                 };
             };
             /** @description Falta el negocio activo */
@@ -1208,6 +1945,193 @@ export interface operations {
             };
         };
     };
+    editarHorario: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EditarHorarioRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HorarioResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso tenancy.manage_schedules */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description Se cruza con otro horario */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    cambiarEstadoHorario: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EstadoHorarioRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HorarioResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso tenancy.manage_schedules */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description Al reanudar se cruza con otro */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    registrarComercioParaPropietario: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegistrarParaPropietarioRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ComercioRegistradoResponse"];
+                };
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso platform.manage_tenants */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El celular es de otra persona */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description Datos inválidos */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
     consultarSalud: {
         parameters: {
             query?: never;
@@ -1231,6 +2155,325 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SaludResponse"];
+                };
+            };
+        };
+    };
+    listarSedes: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MapaDeSedesResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso tenancy.view_tenant */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    crearSede: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrearSedeRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SedeResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso tenancy.manage_branches */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El plan no lo permite */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    editarSede: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path: {
+                sedeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EditarSedeRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SedeResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso tenancy.manage_branches */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description La principal no se cierra */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    asignarSedesACajero: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path: {
+                membresiaId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AsignarSedesRequest"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso tenancy.manage_branches, tenancy.manage_staff */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    listarServicios: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServicioResponse"][];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso tenancy.view_tenant */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    crearServicio: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrearServicioRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServicioResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso tenancy.manage_schedules */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Ya existe con ese nombre */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
                 };
             };
         };

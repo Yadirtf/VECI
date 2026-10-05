@@ -1,6 +1,68 @@
 {
   "components": {
     "schemas": {
+      "AsignarSedesRequest": {
+        "properties": {
+          "sedeIds": {
+            "description": "Vacío = trabaja en todas las sedes",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "sedeIds"
+        ],
+        "type": "object"
+      },
+      "AvanceResponse": {
+        "properties": {
+          "cajeros": {
+            "example": 1,
+            "type": "number"
+          },
+          "serviciosConHorario": {
+            "example": 2,
+            "type": "number"
+          },
+          "tiqueteras": {
+            "example": 0,
+            "type": "number"
+          }
+        },
+        "required": [
+          "serviciosConHorario",
+          "cajeros",
+          "tiqueteras"
+        ],
+        "type": "object"
+      },
+      "CajeroEnSedesResponse": {
+        "properties": {
+          "membresiaId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "nombre": {
+            "example": "Jhon Mutumbajoy",
+            "type": "string"
+          },
+          "sedeIds": {
+            "description": "Vacío = trabaja en todas",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "membresiaId",
+          "nombre",
+          "sedeIds"
+        ],
+        "type": "object"
+      },
       "CambiarEstadoCajeroRequest": {
         "properties": {
           "accion": {
@@ -79,6 +141,43 @@
         ],
         "type": "object"
       },
+      "ComercioRegistradoResponse": {
+        "properties": {
+          "comercioId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "pinTemporal": {
+            "description": "Solo al registrar a nombre de otra persona sin PIN propio. Se muestra una vez.",
+            "example": "482915",
+            "nullable": true,
+            "type": "string"
+          },
+          "slug": {
+            "example": "restaurante-la-vecina",
+            "type": "string"
+          }
+        },
+        "required": [
+          "comercioId",
+          "slug"
+        ],
+        "type": "object"
+      },
+      "ContactoResponse": {
+        "properties": {
+          "celular": {
+            "example": "+573100000101",
+            "nullable": true,
+            "type": "string"
+          },
+          "correo": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "CorreoResponse": {
         "properties": {
           "correo": {
@@ -117,10 +216,16 @@
       },
       "CrearHorarioRequest": {
         "properties": {
-          "dia": {
-            "description": "Código del día (catálogo de días)",
-            "example": "MONDAY",
-            "type": "string"
+          "dias": {
+            "description": "Códigos de los días (catálogo de días). Varios copian el horario.",
+            "example": [
+              "MONDAY",
+              "TUESDAY"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
           },
           "horaFin": {
             "example": "15:00",
@@ -146,9 +251,65 @@
         "required": [
           "servicioId",
           "sedeId",
-          "dia",
+          "dias",
           "horaInicio",
           "horaFin"
+        ],
+        "type": "object"
+      },
+      "CrearSedeRequest": {
+        "properties": {
+          "direccion": {
+            "example": "Calle 8 # 5-20",
+            "nullable": true,
+            "type": "string"
+          },
+          "municipioId": {
+            "example": 86001,
+            "nullable": true,
+            "type": "number"
+          },
+          "nombre": {
+            "example": "Sede del parque",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nombre"
+        ],
+        "type": "object"
+      },
+      "CrearServicioRequest": {
+        "properties": {
+          "nombre": {
+            "example": "Cena",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nombre"
+        ],
+        "type": "object"
+      },
+      "CupoDeSedesResponse": {
+        "properties": {
+          "limite": {
+            "description": "null = sin límite",
+            "nullable": true,
+            "type": "number"
+          },
+          "ocupadas": {
+            "example": 1,
+            "type": "number"
+          },
+          "variasSedes": {
+            "description": "El plan permite varias sedes (plan Pro)",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ocupadas",
+          "variasSedes"
         ],
         "type": "object"
       },
@@ -225,6 +386,94 @@
         ],
         "type": "object"
       },
+      "DocumentoResponse": {
+        "properties": {
+          "numero": {
+            "description": "El NIT incluye el dígito de verificación",
+            "example": "9001234567",
+            "type": "string"
+          },
+          "tipo": {
+            "enum": [
+              "NIT",
+              "CC"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "tipo",
+          "numero"
+        ],
+        "type": "object"
+      },
+      "EditarComercioRequest": {
+        "properties": {
+          "celular": {
+            "example": "310 000 0101",
+            "type": "string"
+          },
+          "correo": {
+            "description": "null lo quita",
+            "nullable": true,
+            "type": "string"
+          },
+          "logoUrl": {
+            "description": "null lo quita",
+            "nullable": true,
+            "type": "string"
+          },
+          "nombre": {
+            "example": "Restaurante La Vecina",
+            "type": "string"
+          },
+          "tipoNegocio": {
+            "example": "RESTAURANT",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "EditarHorarioRequest": {
+        "properties": {
+          "horaFin": {
+            "example": "15:00",
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "type": "string"
+          },
+          "horaInicio": {
+            "example": "11:30",
+            "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "horaInicio",
+          "horaFin"
+        ],
+        "type": "object"
+      },
+      "EditarSedeRequest": {
+        "properties": {
+          "activa": {
+            "description": "false desactiva la sede; true la reabre",
+            "type": "boolean"
+          },
+          "direccion": {
+            "nullable": true,
+            "type": "string"
+          },
+          "municipioId": {
+            "nullable": true,
+            "type": "number"
+          },
+          "nombre": {
+            "example": "Sede del parque",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "EspacioResponse": {
         "properties": {
           "comercioId": {
@@ -264,8 +513,24 @@
         ],
         "type": "object"
       },
+      "EstadoHorarioRequest": {
+        "properties": {
+          "activo": {
+            "description": "false lo pone en pausa; true lo reanuda",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "activo"
+        ],
+        "type": "object"
+      },
       "HorarioResponse": {
         "properties": {
+          "activo": {
+            "description": "false = en pausa: no cuenta para la caja",
+            "type": "boolean"
+          },
           "dia": {
             "example": "MONDAY",
             "type": "string"
@@ -301,7 +566,8 @@
           "sedeId",
           "dia",
           "horaInicio",
-          "horaFin"
+          "horaFin",
+          "activo"
         ],
         "type": "object"
       },
@@ -423,6 +689,31 @@
         ],
         "type": "object"
       },
+      "MapaDeSedesResponse": {
+        "properties": {
+          "cajeros": {
+            "items": {
+              "$ref": "#/components/schemas/CajeroEnSedesResponse"
+            },
+            "type": "array"
+          },
+          "cupo": {
+            "$ref": "#/components/schemas/CupoDeSedesResponse"
+          },
+          "sedes": {
+            "items": {
+              "$ref": "#/components/schemas/SedeResponse"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "sedes",
+          "cajeros",
+          "cupo"
+        ],
+        "type": "object"
+      },
       "MiembroResponse": {
         "properties": {
           "celular": {
@@ -467,6 +758,122 @@
           "nombre",
           "estado",
           "roles"
+        ],
+        "type": "object"
+      },
+      "MunicipioResponse": {
+        "properties": {
+          "id": {
+            "example": 86001,
+            "type": "number"
+          },
+          "nombre": {
+            "example": "Mocoa",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nombre"
+        ],
+        "type": "object"
+      },
+      "PasoResponse": {
+        "properties": {
+          "codigo": {
+            "enum": [
+              "DATOS",
+              "HORARIOS",
+              "EQUIPO",
+              "TIQUETERAS"
+            ],
+            "type": "string"
+          },
+          "listo": {
+            "type": "boolean"
+          },
+          "obligatorio": {
+            "description": "Si falta, impide abrir el negocio",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "codigo",
+          "listo",
+          "obligatorio"
+        ],
+        "type": "object"
+      },
+      "PerfilComercioResponse": {
+        "properties": {
+          "abierto": {
+            "description": "Ya vende y registra consumos",
+            "type": "boolean"
+          },
+          "avance": {
+            "$ref": "#/components/schemas/AvanceResponse"
+          },
+          "camino": {
+            "items": {
+              "$ref": "#/components/schemas/PasoResponse"
+            },
+            "type": "array"
+          },
+          "comercioId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "contacto": {
+            "$ref": "#/components/schemas/ContactoResponse"
+          },
+          "documento": {
+            "$ref": "#/components/schemas/DocumentoResponse"
+          },
+          "estado": {
+            "example": "ONBOARDING",
+            "type": "string"
+          },
+          "logoUrl": {
+            "nullable": true,
+            "type": "string"
+          },
+          "nombre": {
+            "example": "Restaurante La Vecina",
+            "type": "string"
+          },
+          "plan": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PlanResponse"
+              }
+            ],
+            "nullable": true,
+            "type": "object"
+          },
+          "puedeAbrir": {
+            "type": "boolean"
+          },
+          "slug": {
+            "example": "la-vecina",
+            "type": "string"
+          },
+          "tipoNegocio": {
+            "example": "RESTAURANT",
+            "type": "string"
+          }
+        },
+        "required": [
+          "comercioId",
+          "nombre",
+          "slug",
+          "tipoNegocio",
+          "documento",
+          "contacto",
+          "estado",
+          "abierto",
+          "avance",
+          "camino",
+          "puedeAbrir"
         ],
         "type": "object"
       },
@@ -521,6 +928,185 @@
         },
         "required": [
           "pinTemporal"
+        ],
+        "type": "object"
+      },
+      "PlanResponse": {
+        "properties": {
+          "codigo": {
+            "example": "TRIAL",
+            "type": "string"
+          },
+          "estado": {
+            "example": "TRIAL",
+            "type": "string"
+          },
+          "nombre": {
+            "example": "Prueba",
+            "type": "string"
+          },
+          "venceEl": {
+            "description": "Fecha local del negocio",
+            "example": "2026-11-05",
+            "type": "string"
+          }
+        },
+        "required": [
+          "codigo",
+          "nombre",
+          "estado",
+          "venceEl"
+        ],
+        "type": "object"
+      },
+      "PropietarioInvitadoRequest": {
+        "properties": {
+          "apellidos": {
+            "example": "Chindoy",
+            "type": "string"
+          },
+          "celular": {
+            "example": "312 456 7890",
+            "type": "string"
+          },
+          "nombres": {
+            "example": "Rosa Elena",
+            "type": "string"
+          },
+          "numeroDocumento": {
+            "example": "1124500777",
+            "type": "string"
+          },
+          "tipoDocumento": {
+            "example": "CC",
+            "type": "string"
+          }
+        },
+        "required": [
+          "celular",
+          "nombres",
+          "tipoDocumento",
+          "numeroDocumento"
+        ],
+        "type": "object"
+      },
+      "RegistrarComercioRequest": {
+        "properties": {
+          "celular": {
+            "example": "310 000 0101",
+            "type": "string"
+          },
+          "correo": {
+            "example": "hola@lavecina.co",
+            "nullable": true,
+            "type": "string"
+          },
+          "direccion": {
+            "example": "Barrio San Agustín",
+            "nullable": true,
+            "type": "string"
+          },
+          "logoUrl": {
+            "example": "https://lavecina.co/logo.png",
+            "nullable": true,
+            "type": "string"
+          },
+          "municipioId": {
+            "description": "Municipio (DIVIPOLA) de la sede principal",
+            "example": 86001,
+            "nullable": true,
+            "type": "number"
+          },
+          "nombre": {
+            "example": "Restaurante La Vecina",
+            "type": "string"
+          },
+          "numeroDocumento": {
+            "description": "NIT con o sin dígito de verificación",
+            "example": "900123456",
+            "type": "string"
+          },
+          "tipoDocumento": {
+            "enum": [
+              "NIT",
+              "CC"
+            ],
+            "type": "string"
+          },
+          "tipoNegocio": {
+            "description": "Código del tipo de negocio (catálogo)",
+            "example": "RESTAURANT",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nombre",
+          "tipoNegocio",
+          "tipoDocumento",
+          "numeroDocumento",
+          "celular"
+        ],
+        "type": "object"
+      },
+      "RegistrarParaPropietarioRequest": {
+        "properties": {
+          "celular": {
+            "example": "310 000 0101",
+            "type": "string"
+          },
+          "correo": {
+            "example": "hola@lavecina.co",
+            "nullable": true,
+            "type": "string"
+          },
+          "direccion": {
+            "example": "Barrio San Agustín",
+            "nullable": true,
+            "type": "string"
+          },
+          "logoUrl": {
+            "example": "https://lavecina.co/logo.png",
+            "nullable": true,
+            "type": "string"
+          },
+          "municipioId": {
+            "description": "Municipio (DIVIPOLA) de la sede principal",
+            "example": 86001,
+            "nullable": true,
+            "type": "number"
+          },
+          "nombre": {
+            "example": "Restaurante La Vecina",
+            "type": "string"
+          },
+          "numeroDocumento": {
+            "description": "NIT con o sin dígito de verificación",
+            "example": "900123456",
+            "type": "string"
+          },
+          "propietario": {
+            "$ref": "#/components/schemas/PropietarioInvitadoRequest"
+          },
+          "tipoDocumento": {
+            "enum": [
+              "NIT",
+              "CC"
+            ],
+            "type": "string"
+          },
+          "tipoNegocio": {
+            "description": "Código del tipo de negocio (catálogo)",
+            "example": "RESTAURANT",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nombre",
+          "tipoNegocio",
+          "tipoDocumento",
+          "numeroDocumento",
+          "celular",
+          "propietario"
         ],
         "type": "object"
       },
@@ -608,6 +1194,88 @@
         ],
         "type": "object"
       },
+      "SedeResponse": {
+        "properties": {
+          "activa": {
+            "type": "boolean"
+          },
+          "direccion": {
+            "nullable": true,
+            "type": "string"
+          },
+          "estado": {
+            "example": "ACTIVE",
+            "type": "string"
+          },
+          "municipio": {
+            "example": "Mocoa",
+            "nullable": true,
+            "type": "string"
+          },
+          "municipioId": {
+            "nullable": true,
+            "type": "number"
+          },
+          "nombre": {
+            "example": "Principal",
+            "type": "string"
+          },
+          "principal": {
+            "type": "boolean"
+          },
+          "sedeId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sedeId",
+          "nombre",
+          "principal",
+          "estado",
+          "activa"
+        ],
+        "type": "object"
+      },
+      "ServicioResponse": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "nombre": {
+            "example": "Almuerzo",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nombre"
+        ],
+        "type": "object"
+      },
+      "ServicioSugeridoResponse": {
+        "properties": {
+          "horaFin": {
+            "example": "15:00",
+            "type": "string"
+          },
+          "horaInicio": {
+            "example": "11:30",
+            "type": "string"
+          },
+          "nombre": {
+            "example": "Almuerzo",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nombre",
+          "horaInicio",
+          "horaFin"
+        ],
+        "type": "object"
+      },
       "SesionEnDispositivoResponse": {
         "properties": {
           "abiertaDesde": {
@@ -673,6 +1341,30 @@
         ],
         "type": "object"
       },
+      "TipoDeNegocioResponse": {
+        "properties": {
+          "codigo": {
+            "example": "RESTAURANT",
+            "type": "string"
+          },
+          "nombre": {
+            "example": "Restaurante",
+            "type": "string"
+          },
+          "servicios": {
+            "items": {
+              "$ref": "#/components/schemas/ServicioSugeridoResponse"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "codigo",
+          "nombre",
+          "servicios"
+        ],
+        "type": "object"
+      },
       "UsuarioResponse": {
         "properties": {
           "id": {
@@ -707,6 +1399,298 @@
   },
   "openapi": "3.0.0",
   "paths": {
+    "/comercio": {
+      "get": {
+        "operationId": "consultarComercio",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PerfilComercioResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso tenancy.view_tenant\n\nEl usuario no trabaja en ese negocio o su rol no alcanza"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Datos, plan y camino para abrir",
+        "tags": [
+          "Comercios"
+        ]
+      },
+      "patch": {
+        "operationId": "editarComercio",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditarComercioRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PerfilComercioResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso tenancy.manage_tenant\n\nEl usuario no trabaja en ese negocio o su rol no alcanza"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Datos inválidos"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cambia los datos del negocio",
+        "tags": [
+          "Comercios"
+        ]
+      }
+    },
+    "/comercio/abrir": {
+      "post": {
+        "operationId": "abrirComercio",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PerfilComercioResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso tenancy.manage_tenant\n\nEl usuario no trabaja en ese negocio o su rol no alcanza"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Ya estaba abierto"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Falta un horario"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Abre el negocio para vender",
+        "tags": [
+          "Comercios"
+        ]
+      }
+    },
+    "/comercios": {
+      "post": {
+        "operationId": "registrarComercio",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrarComercioRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComercioRegistradoResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Datos inválidos"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Registra un negocio propio (HU-03-01)",
+        "tags": [
+          "Comercios"
+        ]
+      }
+    },
+    "/comercios/municipios": {
+      "get": {
+        "operationId": "listarMunicipios",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MunicipioResponse"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Municipios donde opera VECI",
+        "tags": [
+          "Comercios"
+        ]
+      }
+    },
+    "/comercios/tipos": {
+      "get": {
+        "operationId": "listarTiposDeNegocio",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TipoDeNegocioResponse"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Tipos de negocio y servicios",
+        "tags": [
+          "Comercios"
+        ]
+      }
+    },
     "/cuenta/comercio-activo": {
       "post": {
         "operationId": "elegirComercio",
@@ -1291,6 +2275,15 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "description": "ETag de la copia local",
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -1306,6 +2299,9 @@
               }
             },
             "description": ""
+          },
+          "304": {
+            "description": "La copia local está al día"
           },
           "400": {
             "description": "Falta el negocio activo"
@@ -1355,7 +2351,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HorarioResponse"
+                  "items": {
+                    "$ref": "#/components/schemas/HorarioResponse"
+                  },
+                  "type": "array"
                 }
               }
             },
@@ -1406,9 +2405,240 @@
             "bearer": []
           }
         ],
-        "summary": "Agrega un horario de servicio",
+        "summary": "Agrega un horario en uno o varios días",
         "tags": [
           "Horarios de servicio"
+        ]
+      }
+    },
+    "/horarios/{id}": {
+      "patch": {
+        "operationId": "editarHorario",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditarHorarioRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HorarioResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso tenancy.manage_schedules"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Se cruza con otro horario"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cambia las horas desde hoy (devuelve el horario con su id nuevo)",
+        "tags": [
+          "Horarios de servicio"
+        ]
+      }
+    },
+    "/horarios/{id}/estado": {
+      "patch": {
+        "operationId": "cambiarEstadoHorario",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EstadoHorarioRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HorarioResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso tenancy.manage_schedules"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Al reanudar se cruza con otro"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Pone en pausa o reanuda",
+        "tags": [
+          "Horarios de servicio"
+        ]
+      }
+    },
+    "/plataforma/comercios": {
+      "post": {
+        "operationId": "registrarComercioParaPropietario",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrarParaPropietarioRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComercioRegistradoResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso platform.manage_tenants"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "El celular es de otra persona"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Datos inválidos"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Administración VECI registra un negocio e invita a su dueño (HU-03-01)",
+        "tags": [
+          "Comercios"
         ]
       }
     },
@@ -1441,6 +2671,380 @@
         "summary": "Estado de la API y la base",
         "tags": [
           "Salud"
+        ]
+      }
+    },
+    "/sedes": {
+      "get": {
+        "operationId": "listarSedes",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MapaDeSedesResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso tenancy.view_tenant"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Sedes, cajeros por sede y cupo del plan",
+        "tags": [
+          "Sedes"
+        ]
+      },
+      "post": {
+        "operationId": "crearSede",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrearSedeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SedeResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso tenancy.manage_branches"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "El plan no lo permite"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Abre otra sede (plan Pro, HU-03-03)",
+        "tags": [
+          "Sedes"
+        ]
+      }
+    },
+    "/sedes/{sedeId}": {
+      "patch": {
+        "operationId": "editarSede",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "sedeId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditarSedeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SedeResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso tenancy.manage_branches"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "La principal no se cierra"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cambia, desactiva o reabre una sede",
+        "tags": [
+          "Sedes"
+        ]
+      }
+    },
+    "/sedes/cajeros/{membresiaId}": {
+      "put": {
+        "operationId": "asignarSedesACajero",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "membresiaId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AsignarSedesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso tenancy.manage_branches, tenancy.manage_staff"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Sedes donde trabaja un cajero",
+        "tags": [
+          "Sedes"
+        ]
+      }
+    },
+    "/servicios": {
+      "get": {
+        "operationId": "listarServicios",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ServicioResponse"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso tenancy.view_tenant"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Servicios del negocio",
+        "tags": [
+          "Horarios de servicio"
+        ]
+      },
+      "post": {
+        "operationId": "crearServicio",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrearServicioRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServicioResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso tenancy.manage_schedules"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Ya existe con ese nombre"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Agrega un servicio (cena, onces...)",
+        "tags": [
+          "Horarios de servicio"
         ]
       }
     },

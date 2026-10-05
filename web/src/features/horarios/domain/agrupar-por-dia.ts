@@ -1,7 +1,7 @@
 import type { Horario } from './horario';
 
 /** Nombres de los días en el orden de la semana colombiana (lunes primero). */
-const DIAS: ReadonlyArray<[codigo: string, nombre: string]> = [
+export const DIAS: ReadonlyArray<[codigo: string, nombre: string]> = [
   ['MONDAY', 'Lunes'],
   ['TUESDAY', 'Martes'],
   ['WEDNESDAY', 'Miércoles'],

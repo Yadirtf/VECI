@@ -1723,15 +1723,29 @@ model branches {
   @@schema("tenancy")
 }
 
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model business_type_services {
+  business_type_id Int                       @db.SmallInt
+  name             String                    @db.VarChar(60)
+  suggested_hours  Unsupported("time_range")
+  sort_order       Int                       @default(0) @db.SmallInt
+  business_types   business_types            @relation(fields: [business_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([business_type_id, name])
+  @@schema("tenancy")
+}
+
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model business_types {
-  id          Int       @id @db.SmallInt
-  code        String    @unique @db.VarChar(40)
-  name        String    @db.VarChar(80)
-  description String?
-  sort_order  Int       @default(0) @db.SmallInt
-  is_active   Boolean   @default(true)
-  tenants     tenants[]
+  id                     Int                      @id @db.SmallInt
+  code                   String                   @unique @db.VarChar(40)
+  name                   String                   @db.VarChar(80)
+  description            String?
+  sort_order             Int                      @default(0) @db.SmallInt
+  is_active              Boolean                  @default(true)
+  business_type_services business_type_services[]
+  tenants                tenants[]
 
   @@schema("tenancy")
 }

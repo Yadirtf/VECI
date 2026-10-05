@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/di/core_providers.dart';
 import '../../../../core/error/fallo.dart';
 import '../../../../core/theme/veci_tokens.dart';
 import '../../../../core/ui/veci_aviso.dart';
@@ -8,6 +9,7 @@ import '../../../../core/ui/veci_boton.dart';
 import '../../domain/entities/horarios_semana.dart';
 import '../providers/horarios_controller.dart';
 import '../widgets/dia_horarios_card.dart';
+import '../widgets/ya_es_hora.dart';
 
 /// Horarios de servicio de la semana. Funciona sin internet con lo último guardado.
 class HorariosPage extends ConsumerWidget {
@@ -16,8 +18,9 @@ class HorariosPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final estado = ref.watch(horariosSemanaProvider);
+    final reloj = ref.watch(relojProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Horarios de servicio')),
+      appBar: AppBar(title: const Text('¿Ya es hora?')),
       body: RefreshIndicator(
         onRefresh: () => ref.refresh(horariosSemanaProvider.future),
         child: ListView(
@@ -28,7 +31,7 @@ class HorariosPage extends ConsumerWidget {
             VeciEspacio.m,
           ),
           children: switch (estado) {
-            AsyncData(:final value) => _semana(value),
+            AsyncData(:final value) => _semana(value, reloj),
             AsyncError(:final error) => _error(error, () => ref.invalidate(horariosSemanaProvider)),
             _ => const [Center(child: CircularProgressIndicator())],
           },
@@ -37,12 +40,20 @@ class HorariosPage extends ConsumerWidget {
     );
   }
 
-  List<Widget> _semana(HorariosSemana semana) => [
-    if (semana.desdeCelular)
+  List<Widget> _semana(HorariosSemana semana, DateTime Function() reloj) => [
+    if (semana.desdeCelular) ...[
       const VeciAviso(
         tono: TonoAviso.aviso,
         mensaje: 'Estás sin internet. Te mostramos los horarios que guardamos en tu celular.',
       ),
+      const SizedBox(height: VeciEspacio.m),
+    ],
+    YaEsHora(horarios: [for (final dia in semana.dias) ...dia.horarios], reloj: reloj),
+    const SizedBox(height: VeciEspacio.l),
+    const Text(
+      'La semana',
+      style: TextStyle(fontSize: VeciTexto.titulo, fontWeight: VeciPeso.fuerte),
+    ),
     if (semana.dias.isEmpty)
       const VeciAviso(
         tono: TonoAviso.aviso,

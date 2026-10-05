@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/sesion_providers.dart';
+import '../../../../core/router/rutas.dart';
 import '../../../../core/theme/veci_tokens.dart';
 import '../../../../core/ui/veci_aviso.dart';
 import '../../domain/entities/estado_sesion.dart';
@@ -61,13 +63,23 @@ class _ElegirNegocioPageState extends ConsumerState<ElegirNegocioPage> {
           const SizedBox(height: VeciEspacio.l),
           if (_problema != null) VeciAviso(tono: TonoAviso.error, mensaje: _problema!),
           for (final espacio in sesion?.espacios ?? const <Espacio>[]) _tarjeta(espacio),
+          const SizedBox(height: VeciEspacio.m),
+          OutlinedButton.icon(
+            onPressed: () => context.push(Rutas.registrarNegocio),
+            icon: const Icon(Icons.storefront),
+            label: Text(
+              (sesion?.espacios.isEmpty ?? true)
+                  ? 'Registrar mi negocio'
+                  : 'Registrar otro negocio',
+            ),
+          ),
         ],
       ),
     );
   }
 
   String _explicacion(SesionAbierta? sesion) => (sesion?.espacios.isEmpty ?? true)
-      ? 'Aún no estás en ningún negocio. Pídele al negocio que te invite o te asocie.'
+      ? 'Aún no estás en ningún negocio. Pídele al negocio que te invite, o registra el tuyo.'
       : '¿Con cuál negocio vas a trabajar?';
 
   Widget _tarjeta(Espacio espacio) => Card(

@@ -11,11 +11,15 @@ import 'package:veci/features/horarios/domain/entities/horario.dart';
 class _RemotoFalso implements HorariosRemoteDatasource {
   List<Horario> horarios = [];
   Fallo? fallo;
+  String version = '"h1"';
+  final etagsRecibidas = <String?>[];
 
   @override
-  Future<List<Horario>> listar() async {
+  Future<RespuestaHorarios> listar({String? etag}) async {
+    etagsRecibidas.add(etag);
     if (fallo != null) throw fallo!;
-    return horarios;
+    if (etag == version) return RespuestaHorarios(horarios: null, etag: etag);
+    return RespuestaHorarios(horarios: horarios, etag: version);
   }
 }
 
@@ -51,6 +55,32 @@ void main() {
 
     expect(resultado.desdeCelular, isFalse);
     expect(await HorariosLocalDatasource(db).leer(), hasLength(1));
+  });
+
+  test('con la ETag guardada no vuelve a bajar lo que no cambió', () async {
+    remoto.horarios = [_almuerzo];
+    await repositorio.obtener();
+    remoto.horarios = [];
+
+    final resultado = await repositorio.obtener();
+
+    expect(remoto.etagsRecibidas, [null, '"h1"']);
+    expect(resultado.horarios.single.servicioNombre, 'Almuerzo');
+    expect(resultado.desdeCelular, isFalse);
+  });
+
+  test('cuando el dueño cambia algo baja la versión nueva y la guarda', () async {
+    remoto.horarios = [_almuerzo];
+    await repositorio.obtener();
+    remoto
+      ..version = '"h2"'
+      ..horarios = [_almuerzo.copiaEnPausa()];
+
+    final resultado = await repositorio.obtener();
+
+    expect(resultado.horarios.single.activo, isFalse);
+    expect((await HorariosLocalDatasource(db).leer()).single.activo, isFalse);
+    expect(await HorariosLocalDatasource(db).etag(), '"h2"');
   });
 
   test('sin internet devuelve lo último guardado', () async {
@@ -94,4 +124,16 @@ void main() {
     }
     expect(alertas, [3]);
   });
+}
+
+extension on Horario {
+  Horario copiaEnPausa() => Horario(
+    id: id,
+    servicioNombre: servicioNombre,
+    sedeId: sedeId,
+    dia: dia,
+    horaInicio: horaInicio,
+    horaFin: horaFin,
+    activo: false,
+  );
 }

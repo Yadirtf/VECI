@@ -26,3 +26,6 @@ final clienteApiProvider = Provider<ApiClient>(
 final vigilanteSincronizacionProvider = Provider<VigilanteSincronizacion>(
   (ref) => VigilanteSincronizacion(alertar: SentryVeci.alertarSincronizacion),
 );
+
+/// Hora del celular; las pruebas la fijan para que "¿ya es hora?" sea predecible.
+final relojProvider = Provider<DateTime Function()>((ref) => DateTime.now);

@@ -13,15 +13,15 @@ part of veci_api;
 class CrearHorarioRequest {
   /// Returns a new [CrearHorarioRequest] instance.
   CrearHorarioRequest({
-    required this.dia,
+    this.dias = const [],
     required this.horaFin,
     required this.horaInicio,
     required this.sedeId,
     required this.servicioId,
   });
 
-  /// Código del día (catálogo de días)
-  String dia;
+  /// Códigos de los días (catálogo de días). Varios copian el horario.
+  List<String> dias;
 
   String horaFin;
 
@@ -35,7 +35,7 @@ class CrearHorarioRequest {
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is CrearHorarioRequest &&
-    other.dia == dia &&
+    _deepEquality.equals(other.dias, dias) &&
     other.horaFin == horaFin &&
     other.horaInicio == horaInicio &&
     other.sedeId == sedeId &&
@@ -44,18 +44,18 @@ class CrearHorarioRequest {
   @override
   int get hashCode =>
     // ignore: unnecessary_parenthesis
-    (dia.hashCode) +
+    (dias.hashCode) +
     (horaFin.hashCode) +
     (horaInicio.hashCode) +
     (sedeId.hashCode) +
     (servicioId.hashCode);
 
   @override
-  String toString() => 'CrearHorarioRequest[dia=$dia, horaFin=$horaFin, horaInicio=$horaInicio, sedeId=$sedeId, servicioId=$servicioId]';
+  String toString() => 'CrearHorarioRequest[dias=$dias, horaFin=$horaFin, horaInicio=$horaInicio, sedeId=$sedeId, servicioId=$servicioId]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
-      json[r'dia'] = this.dia;
+      json[r'dias'] = this.dias;
       json[r'horaFin'] = this.horaFin;
       json[r'horaInicio'] = this.horaInicio;
       json[r'sedeId'] = this.sedeId;
@@ -74,8 +74,8 @@ class CrearHorarioRequest {
       // Note 1: the values aren't checked for validity beyond being non-null.
       // Note 2: this code is stripped in release mode!
       assert(() {
-        assert(json.containsKey(r'dia'), 'Required key "CrearHorarioRequest[dia]" is missing from JSON.');
-        assert(json[r'dia'] != null, 'Required key "CrearHorarioRequest[dia]" has a null value in JSON.');
+        assert(json.containsKey(r'dias'), 'Required key "CrearHorarioRequest[dias]" is missing from JSON.');
+        assert(json[r'dias'] != null, 'Required key "CrearHorarioRequest[dias]" has a null value in JSON.');
         assert(json.containsKey(r'horaFin'), 'Required key "CrearHorarioRequest[horaFin]" is missing from JSON.');
         assert(json[r'horaFin'] != null, 'Required key "CrearHorarioRequest[horaFin]" has a null value in JSON.');
         assert(json.containsKey(r'horaInicio'), 'Required key "CrearHorarioRequest[horaInicio]" is missing from JSON.');
@@ -88,7 +88,9 @@ class CrearHorarioRequest {
       }());
 
       return CrearHorarioRequest(
-        dia: mapValueOfType<String>(json, r'dia')!,
+        dias: json[r'dias'] is Iterable
+            ? (json[r'dias'] as Iterable).cast<String>().toList(growable: false)
+            : const [],
         horaFin: mapValueOfType<String>(json, r'horaFin')!,
         horaInicio: mapValueOfType<String>(json, r'horaInicio')!,
         sedeId: mapValueOfType<String>(json, r'sedeId')!,
@@ -140,7 +142,7 @@ class CrearHorarioRequest {
 
   /// The list of required keys that must be present in a JSON.
   static const requiredKeys = <String>{
-    'dia',
+    'dias',
     'horaFin',
     'horaInicio',
     'sedeId',

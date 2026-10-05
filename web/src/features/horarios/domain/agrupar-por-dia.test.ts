@@ -3,11 +3,13 @@ import type { Horario } from './horario';
 
 const horario = (dia: string, horaInicio: string, servicioNombre = 'Almuerzo'): Horario => ({
   id: `${dia}-${horaInicio}`,
+  servicioId: servicioNombre,
   servicioNombre,
   sedeId: 'principal',
   dia,
   horaInicio,
   horaFin: '23:00',
+  activo: true,
 });
 
 describe('agruparPorDia', () => {

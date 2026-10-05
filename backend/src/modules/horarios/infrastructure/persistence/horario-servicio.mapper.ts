@@ -11,6 +11,7 @@ export interface FilaHorario {
   inicio: string;
   fin: string;
   servicio: string;
+  activo: boolean;
 }
 
 export function aHorarioServicio(fila: FilaHorario): HorarioServicio {
@@ -20,5 +21,6 @@ export function aHorarioServicio(fila: FilaHorario): HorarioServicio {
     sedeId: fila.branch_id,
     dia: CodigoCatalogo.de(fila.dia),
     horas: RangoHoras.de(fila.inicio, fila.fin),
+    activo: fila.activo,
   });
 }

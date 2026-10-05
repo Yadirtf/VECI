@@ -25,7 +25,16 @@ class DiaHorariosCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: VeciEspacio.xs),
               child: Row(
                 children: [
-                  Expanded(child: Text(horario.servicioNombre, style: textos.titleMedium)),
+                  Expanded(
+                    child: Text(
+                      horario.activo
+                          ? horario.servicioNombre
+                          : '${horario.servicioNombre} (en pausa)',
+                      style: textos.titleMedium?.copyWith(
+                        color: horario.activo ? null : VeciColores.tintaSuave,
+                      ),
+                    ),
+                  ),
                   Text(
                     '${horaLegible(horario.horaInicio)} – ${horaLegible(horario.horaFin)}',
                     style: const TextStyle(color: VeciColores.tintaSuave),
