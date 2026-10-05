@@ -1014,7 +1014,8 @@
           "municipioId": {
             "description": "Municipio (DIVIPOLA) de la sede principal",
             "example": 86001,
-            "type": "object"
+            "nullable": true,
+            "type": "number"
           },
           "nombre": {
             "example": "Restaurante La Vecina",
@@ -1071,7 +1072,8 @@
           "municipioId": {
             "description": "Municipio (DIVIPOLA) de la sede principal",
             "example": 86001,
-            "type": "object"
+            "nullable": true,
+            "type": "number"
           },
           "nombre": {
             "example": "Restaurante La Vecina",

@@ -34,7 +34,7 @@ export const CONSULTA_PERFIL = Prisma.sql`
          p.code AS plan_codigo, p.name AS plan_nombre, ss.code AS plan_estado,
          to_char(s.current_period_ends_at AT TIME ZONE t.time_zone, 'YYYY-MM-DD') AS plan_vence,
          (SELECT count(DISTINCT sch.service_id)::int FROM tenancy.service_schedules sch
-           WHERE sch.is_active AND sch.valid_during @> tenancy.current_local_date()) AS servicios_con_horario,
+           WHERE sch.is_active AND tenancy.still_valid(sch.valid_during)) AS servicios_con_horario,
          (SELECT count(*)::int FROM tenancy.memberships m
             JOIN tenancy.membership_statuses ms ON ms.id = m.membership_status_id
             JOIN tenancy.membership_roles mr ON mr.membership_id = m.id AND mr.revoked_at IS NULL

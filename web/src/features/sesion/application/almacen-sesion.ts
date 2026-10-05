@@ -64,6 +64,15 @@ export class AlmacenSesion {
     this.cambiar({ ...this.actual, comercioId });
   }
 
+  /**
+   * Recién registrado un negocio (HU-03-01): trae otra vez la lista de negocios,
+   * que ya lo incluye como propietario, y lo deja activo.
+   */
+  async estrenarNegocio(comercioId: string): Promise<void> {
+    await this.renovar();
+    await this.elegirComercio(comercioId);
+  }
+
   /** Vuelve a la lista de negocios sin cerrar la sesión. */
   cambiarDeNegocio(): void {
     if (this.actual.fase !== 'activa') return;

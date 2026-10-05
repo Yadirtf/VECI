@@ -9,7 +9,7 @@ import { useEstadoSesion } from './application/use-sesion';
 import { preferenciasNavegador } from './infrastructure/preferencias-navegador';
 import { RepositorioSesionBff } from './infrastructure/repositorio-sesion-bff';
 import type { MarcoPanelProps } from './presentation/marco-panel';
-import { GuardiaPanel, PantallaEntrar } from './presentation/pantallas-sesion';
+import { GuardiaPanel, GuardiaSesion, PantallaEntrar } from './presentation/pantallas-sesion';
 
 interface PiezasSesion {
   almacen: AlmacenSesion;
@@ -55,6 +55,17 @@ export function useComercioActivo(): string {
   const estado = useEstadoSesion(usePiezas().almacen);
   if (estado.fase !== 'activa' || !estado.comercioId) throw new Error('Sin negocio activo');
   return estado.comercioId;
+}
+
+/** Para registrar un negocio nuevo y dejarlo activo al terminar. */
+export function useEstrenarNegocio(): (comercioId: string) => Promise<void> {
+  const { almacen } = usePiezas();
+  return (comercioId) => almacen.estrenarNegocio(comercioId);
+}
+
+/** Exige sesión abierta (con o sin negocio elegido); sin sesión manda a /entrar. */
+export function ConSesion({ children }: { children: (nombre: string) => ReactNode }) {
+  return <GuardiaSesion almacen={usePiezas().almacen}>{children}</GuardiaSesion>;
 }
 
 export function Entrar() {

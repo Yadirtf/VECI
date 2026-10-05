@@ -26,7 +26,8 @@ const VIOLACION_UNICA = '23505';
  * Horarios en tenancy.service_schedules. Las horas son un rango propio de
  * PostgreSQL (core.time_range) que Prisma no modela, por eso se usa SQL tipado.
  * Todas las consultas corren con el comercio activo fijado: RLS filtra el resto.
- * "Hoy" es la fecha local del negocio (tenancy.current_local_date).
+ * "Hoy" es la fecha local del negocio (tenancy.current_local_date); un horario que
+ * empieza mañana por la fecha UTC del servidor también cuenta (tenancy.still_valid).
  */
 @Injectable()
 export class PrismaHorarioServicioRepository implements HorarioServicioRepository {
@@ -86,8 +87,10 @@ export class PrismaHorarioServicioRepository implements HorarioServicioRepositor
     return this.conCruces(async (tx) => {
       const cerrados = await tx.$executeRaw`
         UPDATE tenancy.service_schedules
-           SET valid_during = daterange(lower(valid_during), tenancy.current_local_date(), '[)')
-         WHERE id = ${anteriorId}::uuid AND valid_during @> tenancy.current_local_date()`;
+           SET valid_during = daterange(
+                 LEAST(lower(valid_during), tenancy.current_local_date()),
+                 tenancy.current_local_date(), '[)')
+         WHERE id = ${anteriorId}::uuid AND tenancy.still_valid(valid_during)`;
       if (cerrados === 0) throw new HorarioNoEncontrado();
       await this.insertarTodos(tx, [nuevo]);
     });
@@ -97,7 +100,7 @@ export class PrismaHorarioServicioRepository implements HorarioServicioRepositor
     return this.conCruces(async (tx) => {
       const cambiados = await tx.$executeRaw`
         UPDATE tenancy.service_schedules SET is_active = ${activo}
-         WHERE id = ${id}::uuid AND valid_during @> tenancy.current_local_date()`;
+         WHERE id = ${id}::uuid AND tenancy.still_valid(valid_during)`;
       if (cambiados === 0) throw new HorarioNoEncontrado();
     });
   }
@@ -164,7 +167,7 @@ export class PrismaHorarioServicioRepository implements HorarioServicioRepositor
         FROM tenancy.service_schedules ss
         JOIN tenancy.services s ON s.id = ss.service_id
         JOIN core.weekdays w ON w.id = ss.weekday_id
-       WHERE ss.valid_during @> tenancy.current_local_date() AND ${filtro}
+       WHERE tenancy.still_valid(ss.valid_during) AND ${filtro}
        ORDER BY ss.branch_id, w.id, lower(ss.hours)`;
   }
 }

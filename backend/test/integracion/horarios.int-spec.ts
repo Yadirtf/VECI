@@ -127,6 +127,27 @@ describe('API de horarios con comercio activo', () => {
       .expect(404);
   });
 
+  it('cuenta el horario que la fecha UTC del servidor dejó empezando mañana', async () => {
+    const servidor = app.getHttpServer();
+    const cabeceras = comoUsuario(a.usuarioId, a.comercioId);
+    const { rows } = await dueno.query<{ id: string }>(
+      `INSERT INTO tenancy.service_schedules (tenant_id, service_id, branch_id, weekday_id, hours, valid_during)
+       SELECT $1, $2, $3, w.id, core.time_range('06:00'::time, '09:00'::time, '[)'), daterange(current_date + 1, NULL, '[)')
+         FROM core.weekdays w WHERE w.code = 'TUESDAY' RETURNING id::text`,
+      [a.comercioId, a.servicioId, a.sedeId],
+    );
+    const lista = await request(servidor).get('/horarios').set(cabeceras).expect(200);
+    expect(lista.body.map((h: { id: string }) => h.id)).toContain(rows[0].id);
+    await request(servidor)
+      .patch(`/horarios/${rows[0].id}`)
+      .set(cabeceras)
+      .send({ horaInicio: '06:30', horaFin: '09:00' })
+      .expect(200);
+    const despues = await request(servidor).get('/horarios').set(cabeceras).expect(200);
+    const martes = despues.body.filter((h: { dia: string }) => h.dia === 'TUESDAY');
+    expect(martes.map((h: { horaInicio: string }) => h.horaInicio)).toEqual(['06:30']);
+  });
+
   it('valida el formato de la petición', async () => {
     await request(app.getHttpServer())
       .post('/horarios')

@@ -160,6 +160,14 @@ LANGUAGE sql STABLE AS $$
    WHERE t.id = core.current_tenant_id();
 $$;
 
+-- Un horario sigue en pie si no ha terminado antes de hoy (fecha del negocio). Cuenta
+-- también el que empieza mañana: la fecha por defecto de valid_during es la del
+-- servidor (UTC), que en la noche de Colombia ya va un día adelante.
+CREATE FUNCTION tenancy.still_valid(validity daterange) RETURNS boolean
+LANGUAGE sql STABLE AS $$
+  SELECT validity && daterange(tenancy.current_local_date(), NULL, '[)');
+$$;
+
 -- ----------------------------------------------------------------- sedes
 CREATE TABLE tenancy.branches (
   id                uuid PRIMARY KEY DEFAULT core.uuid_v7(),

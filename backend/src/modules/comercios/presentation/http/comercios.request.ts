@@ -50,7 +50,12 @@ export class RegistrarComercioRequest {
   @MaxLength(500)
   logoUrl?: string | null;
 
-  @ApiPropertyOptional({ example: 86001, description: 'Municipio (DIVIPOLA) de la sede principal' })
+  @ApiPropertyOptional({
+    example: 86001,
+    nullable: true,
+    type: Number,
+    description: 'Municipio (DIVIPOLA) de la sede principal',
+  })
   @IsOptional()
   @IsInt()
   municipioId?: number | null;
