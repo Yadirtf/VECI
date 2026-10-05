@@ -1,6 +1,6 @@
 # VECI · Backlog del producto
 
-Versión 1.4 · 4 de octubre de 2026 · Ing. Yadir
+Versión 1.7 · 5 de octubre de 2026 · Ing. Yadir
 
 Este backlog convierte el [Documento de Requerimientos y Recomendaciones Tecnológicas](requerimientos-y-recomendaciones-tecnologicas.md) en épicas e historias de usuario listas para implementar por fases. Tiene **16 épicas** y **81 historias**; cada historia apunta a los requerimientos (RF/RNF) que cumple.
 
@@ -409,8 +409,8 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] El tipo de negocio sale de un catálogo configurable (restaurante, cafetería, panadería, colegio, tienda).
-- [ ] Al crearlo se crean su sede principal, su plan de Prueba y la membresía del propietario.
+- [x] El tipo de negocio sale de un catálogo configurable (restaurante, cafetería, panadería, colegio, tienda).
+- [x] Al crearlo se crean su sede principal, su plan de Prueba y la membresía del propietario.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -422,9 +422,9 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] Creo, edito y desactivo horarios con hora de inicio y fin por día de la semana.
-- [ ] Los horarios no pueden solaparse dentro de un mismo día.
-- [ ] Los cambios llegan a la app del cajero en la siguiente sincronización.
+- [x] Creo, edito y desactivo horarios con hora de inicio y fin por día de la semana.
+- [x] Los horarios no pueden solaparse dentro de un mismo día.
+- [x] Los cambios llegan a la app del cajero en la siguiente sincronización.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -436,13 +436,15 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] Creo sedes y asigno cajeros a una o varias.
+- [x] Creo sedes y asigno cajeros a una o varias.
 - [ ] Consumos y reportes se filtran por sede.
-- [ ] Solo disponible en el plan Pro.
+- [x] Solo disponible en el plan Pro.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
 | Debería | 5 | F2 | — | HU-03-01, HU-11-01 | RF-COM-03 |
+
+*Nota:* El filtro por sede queda listo en los datos (los consumos y horarios llevan `branch_id`); la pantalla se hace con los consumos (EP-06) y los reportes (EP-10).
 
 ### EP-04 · Clientes y afiliación por QR
 
@@ -1430,3 +1432,4 @@ Cada requerimiento del documento y las historias que lo cumplen. Un requerimient
 | 1.4 | 2026-10-04 | HU-00-04: prueba de concepto de escaneo offline en poc/escaneo-offline, resultados en docs/arquitectura/poc y ADR-0011. Falta la medición en el Android de 2 GB. |
 | 1.5 | 2026-10-04 | EP-01 implementada (PR #102). El repositorio se reorganiza en tres proyectos independientes, backend/, web/ y mobile/, más docs/ (ADR-0014); la prueba de concepto pasa a docs/arquitectura/poc/escaneo-offline. |
 | 1.6 | 2026-10-04 | Guía de mejor solución (SSoT) en la definición de listo. EP-02 implementada (PR #106): ingreso con PIN y correo, bloqueo, tokens con renovación, roles y permisos por comercio, equipo, PIN temporal, dispositivos y cierre remoto en API, panel y app (ADR-0015). HU-02-06 se adelanta de la Fase 2. |
+| 1.7 | 2026-10-05 | EP-03 implementada: alta de negocios por el dueño (conversación) y por Administración VECI (PIN temporal del propietario), horarios editables con historia, pausa y ETag para la caja, y sedes del plan Pro con cajeros por sede (ADR-0016). HU-03-03 se adelanta de la Fase 2; su filtro por sede en consumos y reportes queda para EP-06 y EP-10. |
