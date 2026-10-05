@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 
 export interface MarcoPanelProps {
@@ -13,17 +14,22 @@ export interface MarcoPanelProps {
   children: ReactNode;
 }
 
-/** Encabezado del panel con el negocio activo, el menú y la salida. */
+const activa = (ruta: string, href: string) => ruta === href || ruta.startsWith(`${href}/`);
+
+/** Encabezado en arco ("aquí estás") con el negocio activo y el menú en ventanillas. */
 export function MarcoPanel(p: MarcoPanelProps) {
   return (
     <div className="min-h-screen">
-      <header className="bg-selva-oscuro text-superficie">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-m px-m py-s">
-          <div>
-            <Link href="/" className="text-titulo font-fuerte">
+      <header className="arco-abajo bg-selva-oscuro pb-l text-crema">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-end justify-between gap-m px-m pt-m">
+          <div className="flex flex-col">
+            <Link
+              href="/"
+              className="font-[family-name:var(--font-letrero)] text-grande leading-none font-fuerte text-maiz"
+            >
               VECI
             </Link>
-            <span className="ml-m text-cuerpo">{p.negocio}</span>
+            <span className="text-subtitulo font-medio">{p.negocio}</span>
           </div>
           <div className="flex items-center gap-m text-cuerpo">
             <span>Hola, {p.nombre}</span>
@@ -37,18 +43,38 @@ export function MarcoPanel(p: MarcoPanelProps) {
             </button>
           </div>
         </div>
-        <nav
-          aria-label="Menú del panel"
-          className="mx-auto flex max-w-5xl flex-wrap gap-l px-m pb-m text-subtitulo"
-        >
-          {p.menu.map((item) => (
-            <Link key={item.href} href={item.href} className="font-medio hover:underline">
-              {item.texto}
-            </Link>
-          ))}
-        </nav>
+        <Menu menu={p.menu} />
       </header>
       <main className="mx-auto flex max-w-5xl flex-col gap-l px-m py-xl">{p.children}</main>
     </div>
+  );
+}
+
+/** Menú en ventanillas: la de la página actual queda abierta, del color del fondo. */
+function Menu({ menu }: { menu: MarcoPanelProps['menu'] }) {
+  const ruta = usePathname() ?? '/';
+  return (
+    <nav
+      aria-label="Menú del panel"
+      className="mx-auto mt-m flex max-w-5xl flex-wrap gap-s px-m text-subtitulo"
+    >
+      {menu.map((item) => {
+        const aqui = activa(ruta, item.href);
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            aria-current={aqui ? 'page' : undefined}
+            className={`ventanilla inline-flex min-h-toque-minimo items-center px-l font-medio focus-visible:outline-4 focus-visible:outline-maiz ${
+              aqui
+                ? 'bg-crema text-selva-oscuro'
+                : 'shadow-[inset_0_0_0_2px_var(--color-selva)] hover:bg-selva'
+            }`}
+          >
+            {item.texto}
+          </Link>
+        );
+      })}
+    </nav>
   );
 }

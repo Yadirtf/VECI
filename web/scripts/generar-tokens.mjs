@@ -13,6 +13,7 @@ const tokens = JSON.parse(readFileSync(join(WEB, '..', 'docs', 'diseno', 'tokens
 
 const kebab = (nombre) => nombre.replace(/[A-Z]/g, (letra) => `-${letra.toLowerCase()}`);
 const rem = (px) => `${px / 16}rem`;
+const valores = (grupo) => Object.entries(grupo).filter(([n]) => !n.startsWith('$'));
 
 function generarCss() {
   const lineas = [
@@ -22,6 +23,7 @@ function generarCss() {
     ...Object.entries(tokens.radio).map(([n, v]) => `  --radius-${kebab(n)}: ${v}px;`),
     ...Object.entries(tokens.espacio).map(([n, v]) => `  --spacing-${kebab(n)}: ${rem(v)};`),
     ...Object.entries(tokens.toque).map(([n, v]) => `  --spacing-toque-${kebab(n)}: ${rem(v)};`),
+    ...valores(tokens.forma).map(([n, v]) => `  --forma-${kebab(n)}: ${v}px;`),
   ];
   return `/* ${AVISO} */\n@theme {\n${lineas.join('\n')}\n}\n`;
 }

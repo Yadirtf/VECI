@@ -50,7 +50,12 @@ class _ElegirNegocioPageState extends ConsumerState<ElegirNegocioPage> {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(VeciEspacio.l),
+        padding: const EdgeInsets.fromLTRB(
+          VeciEspacio.l,
+          VeciEspacio.xl,
+          VeciEspacio.l,
+          VeciEspacio.l,
+        ),
         children: [
           Text('Hola, ${sesion?.nombre ?? 'veci'}', style: textos.headlineSmall),
           const SizedBox(height: VeciEspacio.s),

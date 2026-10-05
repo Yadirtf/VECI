@@ -39,6 +39,7 @@ String _generarDart(Map<String, dynamic> tokens) {
     _clase('VeciEspacio', 'double', tokens['espacio'], numero),
     _clase('VeciRadio', 'double', tokens['radio'], numero),
     _clase('VeciToque', 'double', tokens['toque'], numero),
+    _clase('VeciForma', 'double', tokens['forma'], numero),
   ].join('\n');
 }
 

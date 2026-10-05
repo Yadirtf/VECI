@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-/// PIN de 6 números: teclado numérico, oculto y sin letras.
+import '../../../../core/ui/veci_pin.dart';
+
+/// PIN de 6 números: teclado numérico, oculto y con casillas que se perforan.
 class CampoPin extends StatelessWidget {
   const CampoPin({
     super.key,
@@ -17,13 +18,6 @@ class CampoPin extends StatelessWidget {
   final VoidCallback? alTerminar;
 
   @override
-  Widget build(BuildContext context) => TextField(
-    controller: controlador,
-    obscureText: true,
-    keyboardType: TextInputType.number,
-    maxLength: 6,
-    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-    decoration: InputDecoration(labelText: etiqueta, helperText: ayuda, counterText: ''),
-    onSubmitted: (_) => alTerminar?.call(),
-  );
+  Widget build(BuildContext context) =>
+      VeciPin(etiqueta: etiqueta, controlador: controlador, ayuda: ayuda, alTerminar: alTerminar);
 }
