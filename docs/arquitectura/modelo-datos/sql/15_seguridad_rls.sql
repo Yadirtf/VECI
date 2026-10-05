@@ -138,6 +138,15 @@ CREATE POLICY tenant_reads ON billing.subscriptions FOR SELECT TO veci_app
   USING (tenant_id = core.current_tenant_id());
 CREATE POLICY tenant_reads ON billing.subscription_payments FOR SELECT TO veci_app
   USING (tenant_id = core.current_tenant_id());
+-- Al registrarse (HU-03-01), el comercio abre su propia suscripción, pero solo a un
+-- plan de prueba y en el estado inicial. Los cambios de plan siguen siendo de veci_platform.
+GRANT INSERT ON billing.subscriptions TO veci_app;
+CREATE POLICY tenant_starts_trial ON billing.subscriptions FOR INSERT TO veci_app
+  WITH CHECK (tenant_id = core.current_tenant_id()
+              AND plan_id IN (SELECT p.id FROM billing.plans p
+                               WHERE p.trial_days IS NOT NULL AND p.is_active)
+              AND subscription_status_id IN (SELECT s.id FROM billing.subscription_statuses s
+                                              WHERE s.is_initial));
 
 -- ------------------------------------------- tablas con tenant_id opcional
 ALTER TABLE prepaid.consumption_units ENABLE ROW LEVEL SECURITY;

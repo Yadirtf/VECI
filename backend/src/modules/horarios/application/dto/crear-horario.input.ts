@@ -1,8 +1,13 @@
 export interface CrearHorarioInput {
   servicioId: string;
   sedeId: string;
-  /** Código del día en el catálogo core.weekdays, por ejemplo MONDAY. */
-  dia: string;
+  /** Códigos del catálogo core.weekdays (MONDAY...). Varios días copian el mismo horario. */
+  dias: string[];
+  horaInicio: string;
+  horaFin: string;
+}
+
+export interface EditarHorarioInput {
   horaInicio: string;
   horaFin: string;
 }

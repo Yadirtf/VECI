@@ -61,7 +61,7 @@ export class PersonalEnMemoria implements PersonalRepository {
       nombre: invitacion.persona.nombres,
       celular: invitacion.persona.celular,
       estado: 'INVITED',
-      roles: ['CASHIER'],
+      roles: [invitacion.rol],
     });
     return { membresiaId, usuarioId };
   }

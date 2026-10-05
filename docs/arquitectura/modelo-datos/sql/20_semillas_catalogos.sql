@@ -89,6 +89,18 @@ INSERT INTO tenancy.business_types (id, code, name, sort_order, is_active) VALUE
   (1,'RESTAURANT','Restaurante',1,true), (2,'CAFETERIA','Cafetería',2,true), (3,'BAKERY','Panadería',3,true),
   (4,'SCHOOL','Colegio',4,true), (5,'STORE','Tienda de barrio',5,true), (6,'OTHER','Otro',99,true);
 
+-- Servicios con que nace cada tipo de negocio y su horario sugerido (HU-03-01).
+INSERT INTO tenancy.business_type_services (business_type_id, name, suggested_hours, sort_order)
+SELECT bt.id, v.nombre, v.horas::core.time_range, v.orden
+  FROM (VALUES ('RESTAURANT','Desayuno','[06:30,09:30)',1), ('RESTAURANT','Almuerzo','[11:30,15:00)',2),
+               ('RESTAURANT','Cena','[18:00,21:00)',3),
+               ('CAFETERIA','Desayuno','[07:00,10:00)',1), ('CAFETERIA','Onces','[15:00,18:00)',2),
+               ('BAKERY','Pan de la mañana','[06:00,10:00)',1), ('BAKERY','Pan de la tarde','[16:00,19:00)',2),
+               ('SCHOOL','Refrigerio','[09:30,10:00)',1), ('SCHOOL','Almuerzo','[12:00,13:00)',2),
+               ('STORE','Atención','[07:00,20:00)',1),
+               ('OTHER','Atención','[08:00,18:00)',1)) AS v (tipo, nombre, horas, orden)
+  JOIN tenancy.business_types bt ON bt.code = v.tipo;
+
 INSERT INTO tenancy.tenant_statuses (id, code, name, allows_operations, is_initial, is_terminal) VALUES
   (1,'ONBOARDING','En configuración',false,true,false), (2,'ACTIVE','Activo',true,false,false),
   (3,'SUSPENDED','Suspendido por VECI',false,false,false), (4,'CLOSED','Cerrado',false,false,true);

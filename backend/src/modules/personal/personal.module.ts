@@ -62,5 +62,6 @@ import { PersonalController } from './presentation/http/personal.controller';
       inject: [DISPOSITIVOS_REPOSITORY, AUDITORIA],
     },
   ],
+  exports: [InvitarCajero],
 })
 export class PersonalModule {}

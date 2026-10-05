@@ -21,7 +21,7 @@ describe('API de horarios con comercio activo', () => {
   const horario = (c: ComercioDePrueba, horaInicio: string, horaFin: string) => ({
     servicioId: c.servicioId,
     sedeId: c.sedeId,
-    dia: 'MONDAY',
+    dias: ['MONDAY'],
     horaInicio,
     horaFin,
   });
@@ -81,6 +81,50 @@ describe('API de horarios con comercio activo', () => {
       .set(comoUsuario(b.usuarioId, b.comercioId))
       .expect(200);
     expect(respuesta.body).toEqual([]);
+  });
+
+  it('edita desde hoy, pausa y avisa a la caja con la ETag', async () => {
+    const servidor = app.getHttpServer();
+    const cabeceras = comoUsuario(b.usuarioId, b.comercioId);
+    const [creado] = (
+      await request(servidor)
+        .post('/horarios')
+        .set(cabeceras)
+        .send(horario(b, '18:00', '21:00'))
+        .expect(201)
+    ).body;
+    const primera = await request(servidor).get('/horarios').set(cabeceras).expect(200);
+    const etag = primera.headers.etag as string;
+    await request(servidor)
+      .get('/horarios')
+      .set({ ...cabeceras, 'if-none-match': etag })
+      .expect(304);
+
+    const editado = (
+      await request(servidor)
+        .patch(`/horarios/${creado.id}`)
+        .set(cabeceras)
+        .send({ horaInicio: '18:30', horaFin: '21:30' })
+        .expect(200)
+    ).body;
+    expect(editado.id).not.toBe(creado.id);
+    const despues = await request(servidor)
+      .get('/horarios')
+      .set({ ...cabeceras, 'if-none-match': etag })
+      .expect(200);
+    expect(despues.body.map((h: { horaInicio: string }) => h.horaInicio)).toEqual(['18:30']);
+
+    const pausado = await request(servidor)
+      .patch(`/horarios/${editado.id}/estado`)
+      .set(cabeceras)
+      .send({ activo: false })
+      .expect(200);
+    expect(pausado.body.activo).toBe(false);
+    await request(servidor)
+      .patch(`/horarios/${creado.id}`)
+      .set(cabeceras)
+      .send({ horaInicio: '18:00', horaFin: '19:00' })
+      .expect(404);
   });
 
   it('valida el formato de la petición', async () => {
