@@ -5,6 +5,7 @@ import '../datasources/horarios_local_datasource.dart';
 import '../datasources/horarios_remote_datasource.dart';
 
 /// Primero el API; si no hay internet, lo último guardado en el celular (sección 5.3.4).
+/// Con la ETag guardada el servidor responde 304 cuando nada cambió y no se baja otra vez.
 /// El resto de la app no sabe si hubo conexión: solo recibe el resultado.
 /// Quedarse sin señal es normal; que el servidor falle una y otra vez se avisa (HU-01-07).
 class HorariosRepositoryImpl implements HorariosRepository {
@@ -19,9 +20,13 @@ class HorariosRepositoryImpl implements HorariosRepository {
   @override
   Future<ResultadoHorarios> obtener() async {
     try {
-      final horarios = await _remoto.listar();
-      await _local.reemplazar(horarios, _reloj());
+      final guardados = await _local.leer();
+      // Sin copia local se piden completos aunque haya una marca vieja.
+      final respuesta = await _remoto.listar(etag: guardados.isEmpty ? null : await _local.etag());
       _vigilante?.registrarExito();
+      if (respuesta.sinCambios) return ResultadoHorarios(horarios: guardados, desdeCelular: false);
+      final horarios = respuesta.horarios!;
+      await _local.reemplazar(horarios, _reloj(), etag: respuesta.etag);
       return ResultadoHorarios(horarios: horarios, desdeCelular: false);
     } on SinConexion {
       return _desdeCelular(const SinConexion());

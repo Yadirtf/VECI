@@ -13,6 +13,7 @@ part of veci_api;
 class HorarioResponse {
   /// Returns a new [HorarioResponse] instance.
   HorarioResponse({
+    required this.activo,
     required this.dia,
     required this.horaFin,
     required this.horaInicio,
@@ -21,6 +22,9 @@ class HorarioResponse {
     required this.servicioId,
     this.servicioNombre,
   });
+
+  /// false = en pausa: no cuenta para la caja
+  bool activo;
 
   String dia;
 
@@ -44,6 +48,7 @@ class HorarioResponse {
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is HorarioResponse &&
+    other.activo == activo &&
     other.dia == dia &&
     other.horaFin == horaFin &&
     other.horaInicio == horaInicio &&
@@ -55,6 +60,7 @@ class HorarioResponse {
   @override
   int get hashCode =>
     // ignore: unnecessary_parenthesis
+    (activo.hashCode) +
     (dia.hashCode) +
     (horaFin.hashCode) +
     (horaInicio.hashCode) +
@@ -64,10 +70,11 @@ class HorarioResponse {
     (servicioNombre == null ? 0 : servicioNombre!.hashCode);
 
   @override
-  String toString() => 'HorarioResponse[dia=$dia, horaFin=$horaFin, horaInicio=$horaInicio, id=$id, sedeId=$sedeId, servicioId=$servicioId, servicioNombre=$servicioNombre]';
+  String toString() => 'HorarioResponse[activo=$activo, dia=$dia, horaFin=$horaFin, horaInicio=$horaInicio, id=$id, sedeId=$sedeId, servicioId=$servicioId, servicioNombre=$servicioNombre]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
+      json[r'activo'] = this.activo;
       json[r'dia'] = this.dia;
       json[r'horaFin'] = this.horaFin;
       json[r'horaInicio'] = this.horaInicio;
@@ -93,6 +100,8 @@ class HorarioResponse {
       // Note 1: the values aren't checked for validity beyond being non-null.
       // Note 2: this code is stripped in release mode!
       assert(() {
+        assert(json.containsKey(r'activo'), 'Required key "HorarioResponse[activo]" is missing from JSON.');
+        assert(json[r'activo'] != null, 'Required key "HorarioResponse[activo]" has a null value in JSON.');
         assert(json.containsKey(r'dia'), 'Required key "HorarioResponse[dia]" is missing from JSON.');
         assert(json[r'dia'] != null, 'Required key "HorarioResponse[dia]" has a null value in JSON.');
         assert(json.containsKey(r'horaFin'), 'Required key "HorarioResponse[horaFin]" is missing from JSON.');
@@ -109,6 +118,7 @@ class HorarioResponse {
       }());
 
       return HorarioResponse(
+        activo: mapValueOfType<bool>(json, r'activo')!,
         dia: mapValueOfType<String>(json, r'dia')!,
         horaFin: mapValueOfType<String>(json, r'horaFin')!,
         horaInicio: mapValueOfType<String>(json, r'horaInicio')!,
@@ -163,6 +173,7 @@ class HorarioResponse {
 
   /// The list of required keys that must be present in a JSON.
   static const requiredKeys = <String>{
+    'activo',
     'dia',
     'horaFin',
     'horaInicio',

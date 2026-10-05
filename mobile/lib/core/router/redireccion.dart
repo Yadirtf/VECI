@@ -7,6 +7,8 @@ String? redirigir(EstadoSesion estado, String ubicacion) {
     SesionIniciando() => Rutas.cargando,
     SinSesion() => Rutas.entrar,
     CambioDePin() => Rutas.pinNuevo,
+    // Sin negocio puede elegir uno o registrar el suyo (HU-03-01).
+    SesionActiva(comercioId: null) when ubicacion == Rutas.registrarNegocio => null,
     SesionActiva(comercioId: null) => Rutas.negocio,
     SesionActiva() => Rutas.deIngreso.contains(ubicacion) ? Rutas.inicio : null,
   };

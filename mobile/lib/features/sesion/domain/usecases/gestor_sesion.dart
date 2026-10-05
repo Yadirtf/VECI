@@ -64,6 +64,12 @@ class GestorSesion {
     _cambiar(SesionActiva(sesion: actual.sesion, comercioId: comercioId));
   }
 
+  /// Tras registrar un negocio: renueva la sesión para traerlo en la lista y lo deja activo.
+  Future<void> estrenarNegocio(String comercioId) async {
+    await renovar();
+    await elegirComercio(comercioId);
+  }
+
   Future<void> cambiarDeNegocio() async {
     final actual = _estado;
     if (actual is! SesionActiva) return;

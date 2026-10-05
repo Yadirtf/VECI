@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' show Value;
 import 'package:veci_api/api.dart';
 
 import '../../../../core/database/app_database.dart';
@@ -12,6 +13,7 @@ abstract final class HorarioModel {
     dia: respuesta.dia,
     horaInicio: respuesta.horaInicio,
     horaFin: respuesta.horaFin,
+    activo: respuesta.activo,
   );
 
   static Horario desdeFila(HorarioLocal fila) => Horario(
@@ -21,6 +23,7 @@ abstract final class HorarioModel {
     dia: fila.dia,
     horaInicio: fila.horaInicio,
     horaFin: fila.horaFin,
+    activo: fila.activo,
   );
 
   static HorariosLocalesCompanion aFila(Horario horario, DateTime guardadoEn) =>
@@ -31,6 +34,7 @@ abstract final class HorarioModel {
         dia: horario.dia,
         horaInicio: horario.horaInicio,
         horaFin: horario.horaFin,
+        activo: Value(horario.activo),
         guardadoEn: guardadoEn,
       );
 }
