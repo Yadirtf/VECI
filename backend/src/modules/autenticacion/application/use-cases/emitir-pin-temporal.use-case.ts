@@ -1,7 +1,9 @@
 import { Auditoria } from '../../../../shared/application/puertos/auditoria.port';
 import { CifradorSecretos } from '../../../../shared/application/puertos/cifrador-secretos.port';
 import { GeneradorSecretos } from '../../../../shared/application/puertos/generador-secretos.port';
+import { asegurarPinTemporalPermitido } from '../../domain/rules/alcance-de-cuenta.rule';
 import { esPinFacilDeAdivinar } from '../../domain/rules/pin-facil-de-adivinar.rule';
+import { AlcanceDeCuentas } from '../puertos/alcance-de-cuentas.port';
 import { CredencialesRepository } from '../puertos/credenciales.repository';
 import { SesionesRepository } from '../puertos/sesiones.repository';
 
@@ -11,6 +13,7 @@ export interface DependenciasPinTemporal {
   cifrador: CifradorSecretos;
   secretos: GeneradorSecretos;
   auditoria: Auditoria;
+  alcance: AlcanceDeCuentas;
 }
 
 /** Para qué se entrega el PIN temporal. */
@@ -28,12 +31,15 @@ export interface PinTemporalInput {
  * Un solo mecanismo para invitar cajeros y restablecer PIN (HU-02-04, HU-02-05):
  * VECI genera 6 dígitos que se muestran una vez a quien los entrega. Al entrar
  * con ellos, la persona debe crear su PIN propio. Un restablecimiento cierra las
- * sesiones abiertas y queda en auditoría.
+ * sesiones abiertas y queda en auditoría. Quien recibe el PIN recibe la cuenta
+ * entera, así que un negocio no lo entrega si la cuenta llega a otro negocio o a VECI.
  */
 export class EmitirPinTemporal {
   constructor(private readonly d: DependenciasPinTemporal) {}
 
   async ejecutar(entrada: PinTemporalInput): Promise<string> {
+    const alcance = await this.d.alcance.de(entrada.usuarioId, entrada.comercioId);
+    asegurarPinTemporalPermitido(alcance, entrada.comercioId !== null);
     const pin = this.generar();
     const esRestablecimiento = entrada.motivo !== 'INVITACION';
     const credencialId = await this.d.credenciales.reemplazar({

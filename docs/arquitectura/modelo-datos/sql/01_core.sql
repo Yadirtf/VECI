@@ -40,9 +40,11 @@ CREATE TABLE core.municipalities (
   id            integer PRIMARY KEY,
   department_id smallint NOT NULL REFERENCES core.departments (id),
   official_code varchar(10) NOT NULL UNIQUE,
-  name          varchar(80) NOT NULL
+  name          varchar(80) NOT NULL,
+  is_served     boolean NOT NULL DEFAULT false
 );
 COMMENT ON TABLE core.municipalities IS 'Municipios (DIVIPOLA). Base de la expansión a Puerto Asís, Sibundoy, etc.';
+COMMENT ON COLUMN core.municipalities.is_served IS 'VECI recibe solicitudes de negocios de este municipio (cobertura).';
 
 CREATE TABLE core.holidays (
   country_id   smallint NOT NULL REFERENCES core.countries (id),

@@ -70,9 +70,12 @@ describe('Sesiones por dispositivo (HU-02-01, HU-02-06)', () => {
     });
   });
 
+  const soloAqui = { otrosNegociosComoPersonal: 0, esEquipoVeci: false };
+  const alcance = { de: jest.fn(async () => soloAqui) };
+
   it('un PIN restablecido cierra las sesiones, obliga a cambiarlo y queda en auditoría', async () => {
     const { base } = db.piezas();
-    const emitir = new EmitirPinTemporal({ ...base, auditoria: db.bitacora });
+    const emitir = new EmitirPinTemporal({ ...base, auditoria: db.bitacora, alcance });
     db.secretos.digitos = jest.fn().mockReturnValueOnce('123456').mockReturnValue('730284');
     const pin = await emitir.ejecutar({
       usuarioId: 'u2',
@@ -94,7 +97,7 @@ describe('Sesiones por dispositivo (HU-02-01, HU-02-06)', () => {
 
   it('una invitación entrega PIN temporal sin cerrar sesiones ni auditar restablecimiento', async () => {
     const { base } = db.piezas();
-    const emitir = new EmitirPinTemporal({ ...base, auditoria: db.bitacora });
+    const emitir = new EmitirPinTemporal({ ...base, auditoria: db.bitacora, alcance });
     await emitir.ejecutar({
       usuarioId: 'u2',
       motivo: 'INVITACION',
@@ -103,5 +106,22 @@ describe('Sesiones por dispositivo (HU-02-01, HU-02-06)', () => {
     });
     expect([...db.sesiones.values()][0].cerrada).toBe(false);
     expect(db.auditoria).toEqual([]);
+  });
+
+  it('no entrega PIN temporal de una cuenta que también trabaja en otro negocio', async () => {
+    const { base } = db.piezas();
+    alcance.de.mockResolvedValueOnce({ ...soloAqui, otrosNegociosComoPersonal: 1 });
+    const emitir = new EmitirPinTemporal({ ...base, auditoria: db.bitacora, alcance });
+    await expect(
+      emitir.ejecutar({
+        usuarioId: 'u2',
+        motivo: 'RESET_BY_OWNER',
+        porUsuarioId: 'u1',
+        comercioId: 'c1',
+      }),
+    ).rejects.toMatchObject({ codigo: 'PIN_TEMPORAL_NO_PERMITIDO' });
+    expect(alcance.de).toHaveBeenLastCalledWith('u2', 'c1');
+    expect(db.vigente('u2', 'PIN')?.debeCambiar).toBeFalsy();
+    expect([...db.sesiones.values()][0].cerrada).toBe(false);
   });
 });

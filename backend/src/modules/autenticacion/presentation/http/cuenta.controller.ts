@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Post, Put } from '@nestjs/common';
 import {
   ApiConflictResponse,
   ApiForbiddenResponse,
@@ -9,6 +9,10 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Identidad } from '../../../../shared/application/contexto/identidad';
+import {
+  VERIFICADOR_PLATAFORMA,
+  VerificadorPlataforma,
+} from '../../../../shared/application/contexto/verificador-plataforma.port';
 import { IdentidadActual } from '../../../../shared/presentation/http/decoradores/identidad-actual.decorator';
 import { RequiereSesion } from '../../../../shared/presentation/http/decoradores/requiere-sesion.decorator';
 import { RespuestaErrorDto } from '../../../../shared/presentation/http/respuesta-error.dto';
@@ -32,6 +36,7 @@ export class CuentaController {
     private readonly activar: ActivarComercio,
     private readonly cambiarPin: CambiarPin,
     private readonly definirCorreo: DefinirCorreoYContrasena,
+    @Inject(VERIFICADOR_PLATAFORMA) private readonly plataforma: VerificadorPlataforma,
   ) {}
 
   @Get('espacios')
@@ -42,6 +47,16 @@ export class CuentaController {
   @ApiOkResponse({ type: EspacioResponse, isArray: true })
   espacios(@IdentidadActual() identidad: Identidad): Promise<EspacioResponse[]> {
     return this.consultar.deUsuario(identidad.usuarioId);
+  }
+
+  @Get('permisos-de-plataforma')
+  @ApiOperation({
+    operationId: 'listarMisPermisosDePlataforma',
+    summary: 'Qué puedo hacer en la consola VECI (vacío si no soy del equipo VECI)',
+  })
+  @ApiOkResponse({ type: String, isArray: true })
+  async permisosDePlataforma(@IdentidadActual() identidad: Identidad): Promise<string[]> {
+    return [...(await this.plataforma.permisosDePlataforma(identidad.usuarioId))].sort();
   }
 
   @Post('comercio-activo')

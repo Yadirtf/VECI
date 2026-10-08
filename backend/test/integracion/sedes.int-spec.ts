@@ -6,6 +6,7 @@ import { AppModule } from '../../src/app.module';
 import { configurarAplicacion } from '../../src/app.setup';
 import { conectarDueno, urlApp } from '../soporte/base-de-datos';
 import { celularAleatorio } from '../soporte/acceso';
+import { crearEquipoVeci, registrarNegocio } from '../soporte/negocios';
 import { crearUsuario } from '../soporte/personas';
 
 // HU-03-03 por HTTP: varias sedes solo con el plan Pro, y cajeros por sede.
@@ -13,6 +14,7 @@ describe('Sedes del negocio', () => {
   let app: INestApplication;
   let dueno: Client;
   let usuarioId: string;
+  let adminId: string;
 
   const negocio = () => ({
     nombre: 'Restaurante La Prueba',
@@ -33,6 +35,7 @@ describe('Sedes del negocio', () => {
     process.env.DATABASE_APP_URL = urlApp();
     dueno = await conectarDueno();
     usuarioId = await crearUsuario(dueno);
+    adminId = await crearEquipoVeci(dueno);
     const modulo = await Test.createTestingModule({ imports: [AppModule] }).compile();
     app = modulo.createNestApplication({ logger: false });
     configurarAplicacion(app);
@@ -45,13 +48,7 @@ describe('Sedes del negocio', () => {
   });
 
   it('en el plan de prueba no se abre otra sede', async () => {
-    const { comercioId } = (
-      await request(servidor())
-        .post('/comercios')
-        .set(comoUsuario(usuarioId))
-        .send(negocio())
-        .expect(201)
-    ).body;
+    const { comercioId } = (await registrarNegocio(servidor(), adminId, usuarioId, negocio())).body;
     const respuesta = await request(servidor())
       .post('/sedes')
       .set(enComercio(comercioId))
@@ -61,13 +58,7 @@ describe('Sedes del negocio', () => {
   });
 
   it('con el plan Pro abre sedes y asigna cajeros', async () => {
-    const { comercioId } = (
-      await request(servidor())
-        .post('/comercios')
-        .set(comoUsuario(usuarioId))
-        .send(negocio())
-        .expect(201)
-    ).body;
+    const { comercioId } = (await registrarNegocio(servidor(), adminId, usuarioId, negocio())).body;
     await dueno.query(
       `UPDATE billing.subscriptions SET plan_id = (SELECT id FROM billing.plans WHERE code = 'PRO')
         WHERE tenant_id = $1`,

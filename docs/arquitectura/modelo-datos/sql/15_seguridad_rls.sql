@@ -46,7 +46,7 @@ GRANT INSERT, UPDATE ON
   prepaid.consumption_units, prepaid.package_types, prepaid.packages,
   sales.sales, sync.inbound_events, sync.device_checkpoints, sync.conflicts,
   notifications.push_tokens, notifications.notifications,
-  compliance.consents, compliance.data_requests
+  compliance.consents, compliance.data_requests, tenancy.business_applications
 TO veci_app;
 
 GRANT INSERT ON
@@ -174,6 +174,40 @@ CREATE POLICY tenant_reads ON audit.audit_log FOR SELECT TO veci_app
 CREATE POLICY app_appends ON audit.audit_log FOR INSERT TO veci_app
   WITH CHECK (tenant_id IS NULL OR tenant_id = core.current_tenant_id());
 
+-- ------------------------------------------- solicitudes para registrar un negocio
+-- ¿El usuario de la sesión tiene este permiso por un rol de plataforma vigente?
+-- Lo usan las políticas de la consola VECI: la base no confía solo en el guard.
+CREATE FUNCTION identity.current_user_has_platform_permission(p_permission text) RETURNS boolean
+LANGUAGE sql STABLE AS $$
+  SELECT EXISTS (
+    SELECT 1
+      FROM identity.user_platform_roles upr
+      JOIN identity.roles r ON r.id = upr.role_id AND r.is_active
+      JOIN identity.role_permissions rp ON rp.role_id = r.id
+      JOIN identity.permissions p ON p.id = rp.permission_id AND p.code = p_permission
+      JOIN identity.users u ON u.id = upr.user_id
+      JOIN identity.user_statuses us ON us.id = u.user_status_id AND us.allows_login
+     WHERE upr.user_id = core.current_user_id() AND upr.revoked_at IS NULL);
+$$;
+
+ALTER TABLE tenancy.business_applications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tenancy.business_applications FORCE ROW LEVEL SECURITY;
+-- La persona ve y radica solo las suyas, siempre en el estado inicial y sin revisión.
+CREATE POLICY applicant_self ON tenancy.business_applications FOR SELECT TO veci_app
+  USING (applicant_user_id = core.current_user_id());
+CREATE POLICY applicant_submits ON tenancy.business_applications FOR INSERT TO veci_app
+  WITH CHECK (applicant_user_id = core.current_user_id()
+              AND reviewed_by_user_id IS NULL AND tenant_id IS NULL
+              AND business_application_status_id IN (SELECT s.id FROM tenancy.business_application_statuses s
+                                                      WHERE s.is_initial));
+-- Solo Administración VECI (platform.manage_tenants) las lee todas y las decide a su nombre.
+CREATE POLICY platform_reviews ON tenancy.business_applications FOR SELECT TO veci_app
+  USING (identity.current_user_has_platform_permission('platform.manage_tenants'));
+CREATE POLICY platform_decides ON tenancy.business_applications FOR UPDATE TO veci_app
+  USING (identity.current_user_has_platform_permission('platform.manage_tenants'))
+  WITH CHECK (identity.current_user_has_platform_permission('platform.manage_tenants')
+              AND reviewed_by_user_id = core.current_user_id());
+
 -- ------------------------------------------- datos personales (globales)
 -- Un comercio solo ve a las personas afiliadas a él o que trabajan en él;
 -- la persona se ve a sí misma. No se usa FORCE: las funciones SECURITY DEFINER
@@ -186,6 +220,11 @@ CREATE POLICY visible_people ON identity.people FOR SELECT TO veci_app
     OR id IN (SELECT u.person_id FROM identity.users u
                 JOIN tenancy.memberships m ON m.user_id = u.id)
   );
+-- Administración VECI ve el nombre de quien pide registrar un negocio, y de nadie más.
+CREATE POLICY platform_sees_applicants ON identity.people FOR SELECT TO veci_app
+  USING (identity.current_user_has_platform_permission('platform.manage_tenants')
+         AND id IN (SELECT u.person_id FROM identity.users u
+                      JOIN tenancy.business_applications b ON b.applicant_user_id = u.id));
 CREATE POLICY register_people ON identity.people FOR INSERT TO veci_app WITH CHECK (true);
 CREATE POLICY self_update ON identity.people FOR UPDATE TO veci_app
   USING (id = core.current_person_id()) WITH CHECK (id = core.current_person_id());

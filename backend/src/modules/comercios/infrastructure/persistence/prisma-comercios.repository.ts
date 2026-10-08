@@ -62,7 +62,7 @@ export class PrismaComerciosRepository implements ComerciosRepository {
 
   municipios(): Promise<Municipio[]> {
     return this.prisma.$queryRaw<Municipio[]>`
-      SELECT id, name AS nombre FROM core.municipalities ORDER BY name`;
+      SELECT id, name AS nombre FROM core.municipalities WHERE is_served ORDER BY name`;
   }
 
   registrar(alta: AltaDeComercio): Promise<string> {

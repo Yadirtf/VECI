@@ -1743,61 +1743,15 @@
         ],
         "type": "object"
       },
-      "RegistrarComercioRequest": {
+      "RechazoSolicitudRequest": {
         "properties": {
-          "celular": {
-            "example": "310 000 0101",
-            "type": "string"
-          },
-          "correo": {
-            "example": "hola@lavecina.co",
-            "nullable": true,
-            "type": "string"
-          },
-          "direccion": {
-            "example": "Barrio San Agustín",
-            "nullable": true,
-            "type": "string"
-          },
-          "logoUrl": {
-            "example": "https://lavecina.co/logo.png",
-            "nullable": true,
-            "type": "string"
-          },
-          "municipioId": {
-            "description": "Municipio (DIVIPOLA) de la sede principal",
-            "example": 86001,
-            "nullable": true,
-            "type": "number"
-          },
-          "nombre": {
-            "example": "Restaurante La Vecina",
-            "type": "string"
-          },
-          "numeroDocumento": {
-            "description": "NIT con o sin dígito de verificación",
-            "example": "900123456",
-            "type": "string"
-          },
-          "tipoDocumento": {
-            "enum": [
-              "NIT",
-              "CC"
-            ],
-            "type": "string"
-          },
-          "tipoNegocio": {
-            "description": "Código del tipo de negocio (catálogo)",
-            "example": "RESTAURANT",
+          "motivo": {
+            "example": "El NIT no corresponde al negocio. Revísalo y vuelve a pedirlo.",
             "type": "string"
           }
         },
         "required": [
-          "nombre",
-          "tipoNegocio",
-          "tipoDocumento",
-          "numeroDocumento",
-          "celular"
+          "motivo"
         ],
         "type": "object"
       },
@@ -2273,6 +2227,182 @@
           "segundosAcceso",
           "usuario",
           "espacios"
+        ],
+        "type": "object"
+      },
+      "SolicitanteResponse": {
+        "properties": {
+          "celular": {
+            "example": "+573124567890",
+            "nullable": true,
+            "type": "string"
+          },
+          "nombre": {
+            "example": "Rosa Elena Chindoy",
+            "type": "string"
+          },
+          "usuarioId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "usuarioId",
+          "nombre"
+        ],
+        "type": "object"
+      },
+      "SolicitarRegistroRequest": {
+        "properties": {
+          "celular": {
+            "example": "310 000 0101",
+            "type": "string"
+          },
+          "correo": {
+            "example": "hola@lavecina.co",
+            "nullable": true,
+            "type": "string"
+          },
+          "direccion": {
+            "example": "Barrio San Agustín",
+            "nullable": true,
+            "type": "string"
+          },
+          "logoUrl": {
+            "example": "https://lavecina.co/logo.png",
+            "nullable": true,
+            "type": "string"
+          },
+          "municipioId": {
+            "description": "Municipio (DIVIPOLA) donde queda el negocio",
+            "example": 86001,
+            "type": "number"
+          },
+          "nombre": {
+            "example": "Restaurante La Vecina",
+            "type": "string"
+          },
+          "numeroDocumento": {
+            "description": "NIT con o sin dígito de verificación",
+            "example": "900123456",
+            "type": "string"
+          },
+          "tipoDocumento": {
+            "enum": [
+              "NIT",
+              "CC"
+            ],
+            "type": "string"
+          },
+          "tipoNegocio": {
+            "description": "Código del tipo de negocio (catálogo)",
+            "example": "RESTAURANT",
+            "type": "string"
+          }
+        },
+        "required": [
+          "nombre",
+          "tipoNegocio",
+          "tipoDocumento",
+          "numeroDocumento",
+          "celular",
+          "municipioId"
+        ],
+        "type": "object"
+      },
+      "SolicitudResponse": {
+        "properties": {
+          "celular": {
+            "example": "+573100000101",
+            "type": "string"
+          },
+          "comercioId": {
+            "description": "El negocio que nació al aprobarla",
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "correo": {
+            "nullable": true,
+            "type": "string"
+          },
+          "direccion": {
+            "nullable": true,
+            "type": "string"
+          },
+          "estado": {
+            "enum": [
+              "PENDING",
+              "APPROVED",
+              "REJECTED"
+            ],
+            "type": "string"
+          },
+          "logoUrl": {
+            "nullable": true,
+            "type": "string"
+          },
+          "municipio": {
+            "example": "Mocoa",
+            "type": "string"
+          },
+          "municipioId": {
+            "example": 86001,
+            "type": "number"
+          },
+          "nombre": {
+            "example": "Restaurante La Vecina",
+            "type": "string"
+          },
+          "nota": {
+            "description": "Por qué se rechazó, en palabras para la persona",
+            "nullable": true,
+            "type": "string"
+          },
+          "numeroDocumento": {
+            "example": "9001234567",
+            "type": "string"
+          },
+          "radicadaEn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "revisadaEn": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "solicitante": {
+            "$ref": "#/components/schemas/SolicitanteResponse"
+          },
+          "solicitudId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "tipoDocumento": {
+            "enum": [
+              "NIT",
+              "CC"
+            ],
+            "type": "string"
+          },
+          "tipoNegocio": {
+            "example": "RESTAURANT",
+            "type": "string"
+          }
+        },
+        "required": [
+          "solicitudId",
+          "estado",
+          "nombre",
+          "tipoNegocio",
+          "tipoDocumento",
+          "numeroDocumento",
+          "celular",
+          "municipioId",
+          "municipio",
+          "solicitante",
+          "radicadaEn"
         ],
         "type": "object"
       },
@@ -3420,56 +3550,6 @@
         ]
       }
     },
-    "/comercios": {
-      "post": {
-        "operationId": "registrarComercio",
-        "parameters": [],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RegistrarComercioRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ComercioRegistradoResponse"
-                }
-              }
-            },
-            "description": ""
-          },
-          "401": {
-            "description": "Sin sesión o sesión cerrada"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RespuestaErrorDto"
-                }
-              }
-            },
-            "description": "Datos inválidos"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Registra un negocio propio (HU-03-01)",
-        "tags": [
-          "Comercios"
-        ]
-      }
-    },
     "/comercios/municipios": {
       "get": {
         "operationId": "listarMunicipios",
@@ -3674,6 +3754,39 @@
           }
         ],
         "summary": "Comercios donde trabajo o soy cliente",
+        "tags": [
+          "Mi cuenta"
+        ]
+      }
+    },
+    "/cuenta/permisos-de-plataforma": {
+      "get": {
+        "operationId": "listarMisPermisosDePlataforma",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Qué puedo hacer en la consola VECI (vacío si no soy del equipo VECI)",
         "tags": [
           "Mi cuenta"
         ]
@@ -4613,6 +4726,183 @@
         ]
       }
     },
+    "/plataforma/solicitudes-de-negocio": {
+      "get": {
+        "operationId": "listarSolicitudesDeNegocio",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "estado",
+            "required": false,
+            "schema": {
+              "enum": [
+                "PENDING",
+                "APPROVED",
+                "REJECTED"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SolicitudResponse"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso platform.manage_tenants"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Solicitudes por revisar",
+        "tags": [
+          "Solicitudes de negocio"
+        ]
+      }
+    },
+    "/plataforma/solicitudes-de-negocio/{solicitudId}/aprobacion": {
+      "post": {
+        "operationId": "aprobarSolicitudDeNegocio",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "solicitudId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComercioRegistradoResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso platform.manage_tenants"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Ya fue revisada"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Aprueba: nace el negocio con quien lo pidió como propietaria",
+        "tags": [
+          "Solicitudes de negocio"
+        ]
+      }
+    },
+    "/plataforma/solicitudes-de-negocio/{solicitudId}/rechazo": {
+      "post": {
+        "operationId": "rechazarSolicitudDeNegocio",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "solicitudId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RechazoSolicitudRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso platform.manage_tenants"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Ya fue revisada"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Rechaza y dice por qué",
+        "tags": [
+          "Solicitudes de negocio"
+        ]
+      }
+    },
     "/politica-de-datos": {
       "get": {
         "operationId": "consultarPoliticaDeDatos",
@@ -5326,6 +5616,90 @@
         "summary": "Cierra la sesión en este dispositivo",
         "tags": [
           "Sesiones"
+        ]
+      }
+    },
+    "/solicitudes-de-negocio": {
+      "get": {
+        "operationId": "listarMisSolicitudesDeNegocio",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SolicitudResponse"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mis solicitudes",
+        "tags": [
+          "Solicitudes de negocio"
+        ]
+      },
+      "post": {
+        "operationId": "solicitarRegistroDeNegocio",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SolicitarRegistroRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Ya tiene una en revisión"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Datos inválidos o municipio sin cobertura"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Pide registrar mi negocio",
+        "tags": [
+          "Solicitudes de negocio"
         ]
       }
     },

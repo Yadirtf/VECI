@@ -13,6 +13,10 @@ import { GENERADOR_IDS, GeneradorIds } from '../../shared/application/puertos/ge
 import { GENERADOR_SECRETOS } from '../../shared/application/puertos/generador-secretos.port';
 import { Reloj, RELOJ } from '../../shared/application/puertos/reloj.port';
 import { CONFIGURACION, Configuracion } from '../../shared/infrastructure/config/configuracion';
+import {
+  ALCANCE_DE_CUENTAS,
+  AlcanceDeCuentas,
+} from './application/puertos/alcance-de-cuentas.port';
 import { CREDENCIALES_REPOSITORY } from './application/puertos/credenciales.repository';
 import { CUENTAS_REPOSITORY } from './application/puertos/cuentas.repository';
 import { ESPACIOS_REPOSITORY, EspaciosRepository } from './application/puertos/espacios.repository';
@@ -138,7 +142,8 @@ export const PROVEEDORES_AUTENTICACION: FactoryProvider[] = [
   ),
   fabrica(
     EmitirPinTemporal,
-    (p, auditoria: Auditoria) => new EmitirPinTemporal({ ...p, auditoria }),
-    [AUDITORIA],
+    (p, auditoria: Auditoria, alcance: AlcanceDeCuentas) =>
+      new EmitirPinTemporal({ ...p, auditoria, alcance }),
+    [AUDITORIA, ALCANCE_DE_CUENTAS],
   ),
 ];
