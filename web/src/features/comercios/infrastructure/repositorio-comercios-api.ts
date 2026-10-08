@@ -8,6 +8,7 @@ import type {
   Municipio,
   Perfil,
   RepositorioComercios,
+  Solicitud,
   TipoDeNegocio,
 } from '../domain/comercio';
 
@@ -54,10 +55,26 @@ export class RepositorioComerciosApi implements RepositorioComercios {
     return data;
   }
 
-  async registrar(datos: DatosAlta): Promise<{ comercioId: string }> {
-    const { data, error } = await this.cliente.POST('/comercios', { body: datos });
+  async solicitar(datos: DatosAlta): Promise<void> {
+    if (datos.municipioId === null) throw new Error('¿En qué municipio queda tu negocio?');
+    const { error } = await this.cliente.POST('/solicitudes-de-negocio', {
+      body: { ...datos, municipioId: datos.municipioId },
+    });
+    if (error) throw falla(error);
+  }
+
+  async misSolicitudes(): Promise<Solicitud[]> {
+    const { data, error } = await this.cliente.GET('/solicitudes-de-negocio');
     if (!data) throw falla(error);
-    return { comercioId: data.comercioId };
+    return data.map((s) => ({
+      solicitudId: s.solicitudId,
+      estado: s.estado,
+      nombre: s.nombre,
+      municipio: s.municipio,
+      nota: s.nota ?? null,
+      comercioId: s.comercioId ?? null,
+      radicadaEn: s.radicadaEn,
+    }));
   }
 
   async perfil(): Promise<Perfil> {

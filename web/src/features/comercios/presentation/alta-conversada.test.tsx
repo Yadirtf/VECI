@@ -14,7 +14,7 @@ const repositorio = {
     },
   ]),
   municipios: vi.fn(async () => [{ id: 86001, nombre: 'Mocoa' }]),
-  registrar: vi.fn(async () => ({ comercioId: 'c1' })),
+  solicitar: vi.fn(async () => undefined),
 } as unknown as RepositorioComercios;
 
 const sinMemoria: AlmacenBorrador = { leer: () => null, guardar: () => undefined };
@@ -26,15 +26,15 @@ const seguir = () => fireEvent.click(screen.getByRole('button', { name: 'Seguir'
 const escribir = (etiqueta: RegExp, valor: string) =>
   fireEvent.change(screen.getByLabelText(etiqueta), { target: { value: valor } });
 
-function Alta({ alRegistrar }: { alRegistrar(id: string): Promise<void> }) {
+function Alta({ alEnviar }: { alEnviar(): void }) {
   const alta = useAlta(repositorio, sinMemoria);
-  return <AltaConversada alta={alta} cargarCatalogos={catalogos} alRegistrar={alRegistrar} />;
+  return <AltaConversada alta={alta} cargarCatalogos={catalogos} alEnviar={alEnviar} />;
 }
 
 describe('AltaConversada', () => {
-  it('pregunta una cosa a la vez, pone el dígito del NIT y registra el negocio', async () => {
-    const alRegistrar = vi.fn(async () => undefined);
-    render(<Alta alRegistrar={alRegistrar} />);
+  it('pregunta una cosa a la vez, pone el dígito del NIT y envía la solicitud', async () => {
+    const alEnviar = vi.fn();
+    render(<Alta alEnviar={alEnviar} />);
     await screen.findByLabelText(/Nombre como lo conoce/);
     escribir(/Nombre como lo conoce/, 'Restaurante La Vecina');
     seguir();
@@ -47,15 +47,22 @@ describe('AltaConversada', () => {
     escribir(/Celular del negocio/, '310 000 0101');
     seguir();
     seguir();
-    fireEvent.click(screen.getByRole('button', { name: 'Abrir mi negocio en VECI' }));
-    await waitFor(() => expect(alRegistrar).toHaveBeenCalledWith('c1'));
-    expect(repositorio.registrar).toHaveBeenCalledWith(
-      expect.objectContaining({ numeroDocumento: '8001972684', celular: '3100000101' }),
+    expect(screen.getByRole('status')).toHaveTextContent('Por ahora VECI atiende en Mocoa');
+    fireEvent.click(screen.getByRole('button', { name: 'Mocoa' }));
+    seguir();
+    fireEvent.click(screen.getByRole('button', { name: 'Enviar solicitud a VECI' }));
+    await waitFor(() => expect(alEnviar).toHaveBeenCalled());
+    expect(repositorio.solicitar).toHaveBeenCalledWith(
+      expect.objectContaining({
+        numeroDocumento: '8001972684',
+        celular: '3100000101',
+        municipioId: 86001,
+      }),
     );
   });
 
   it('no deja seguir sin nombre y dice qué falta', async () => {
-    render(<Alta alRegistrar={vi.fn()} />);
+    render(<Alta alEnviar={vi.fn()} />);
     await screen.findByLabelText(/Nombre como lo conoce/);
     seguir();
     expect(screen.getByRole('status')).toHaveTextContent('Mínimo 3 letras');

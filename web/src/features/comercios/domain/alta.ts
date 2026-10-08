@@ -70,6 +70,8 @@ export function problemaEnPaso(paso: PasoAlta, b: BorradorAlta): string | null {
       return problemaDocumento(b);
     case 'CONTACTO':
       return problemaContacto(b);
+    case 'LUGAR':
+      return b.municipioId ? null : '¿En qué municipio queda? Por ahora VECI atiende en Mocoa.';
     default:
       return null;
   }

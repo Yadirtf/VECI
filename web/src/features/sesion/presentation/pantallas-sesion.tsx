@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Aviso } from '@/shared/ui';
 import type { AlmacenSesion } from '../application/almacen-sesion';
 import { useEstadoSesion } from '../application/use-sesion';
@@ -10,6 +10,9 @@ import { FormularioIngreso } from './formulario-ingreso';
 import { MarcoPanel, type MarcoPanelProps } from './marco-panel';
 import { PasoPinNuevo } from './paso-pin-nuevo';
 import { SelectorComercio } from './selector-comercio';
+
+/** Revisar solicitudes de negocio en la consola VECI (ADR-0019). */
+const PERMISO_CONSOLA = 'platform.manage_tenants';
 
 const Cargando = () => <Aviso tono="aviso">Un momento, veci…</Aviso>;
 
@@ -22,10 +25,22 @@ function Selector({
   nombre: string;
   espacios: Parameters<typeof negociosDelPanel>[0];
 }) {
+  const [esEquipoVeci, setEsEquipoVeci] = useState(false);
+  useEffect(() => {
+    let vigente = true;
+    almacen
+      .permisosDePlataforma()
+      .then((permisos) => vigente && setEsEquipoVeci(permisos.includes(PERMISO_CONSOLA)))
+      .catch(() => undefined);
+    return () => {
+      vigente = false;
+    };
+  }, [almacen]);
   return (
     <SelectorComercio
       nombre={nombre}
       negocios={negociosDelPanel(espacios)}
+      esEquipoVeci={esEquipoVeci}
       alElegir={(id) => almacen.elegirComercio(id)}
       alSalir={() => almacen.salir()}
     />

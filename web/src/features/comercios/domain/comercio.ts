@@ -27,6 +27,18 @@ export interface DatosAlta {
   direccion: string | null;
 }
 
+/** Pedido de registro que revisa Administración VECI (ADR-0019). */
+export interface Solicitud {
+  solicitudId: string;
+  estado: 'PENDING' | 'APPROVED' | 'REJECTED';
+  nombre: string;
+  municipio: string;
+  /** Por qué se rechazó. */
+  nota: string | null;
+  comercioId: string | null;
+  radicadaEn: string;
+}
+
 export type CodigoPaso = 'DATOS' | 'HORARIOS' | 'EQUIPO' | 'TIQUETERAS';
 
 export interface Perfil {
@@ -55,7 +67,9 @@ export interface CambiosPerfil {
 export interface RepositorioComercios {
   tipos(): Promise<TipoDeNegocio[]>;
   municipios(): Promise<Municipio[]>;
-  registrar(datos: DatosAlta): Promise<{ comercioId: string }>;
+  /** Pide a VECI registrar el negocio; nace cuando Administración VECI lo aprueba. */
+  solicitar(datos: DatosAlta): Promise<void>;
+  misSolicitudes(): Promise<Solicitud[]>;
   perfil(): Promise<Perfil>;
   editar(cambios: CambiosPerfil): Promise<Perfil>;
   abrir(): Promise<Perfil>;

@@ -6,5 +6,5 @@ export {
   ProveedorSesion,
   useClienteVeci,
   useComercioActivo,
-  useEstrenarNegocio,
+  usePermisosDePlataforma,
 } from './sesion.composicion';

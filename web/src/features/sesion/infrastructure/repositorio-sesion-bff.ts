@@ -71,6 +71,14 @@ export class RepositorioSesionBff implements RepositorioSesion {
     if (error) throw comoError(error);
   }
 
+  async permisosDePlataforma(tokenAcceso: string): Promise<string[]> {
+    const { data, error } = await this.api.GET('/cuenta/permisos-de-plataforma', {
+      headers: { authorization: `Bearer ${tokenAcceso}` },
+    });
+    if (!data) throw comoError(error);
+    return data;
+  }
+
   async salir(tokenAcceso: string | null): Promise<void> {
     const headers: Record<string, string> = tokenAcceso
       ? { authorization: `Bearer ${tokenAcceso}` }
