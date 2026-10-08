@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { Aviso, Boton } from '@/shared/ui';
 import { useCarga } from '@/shared/lib/use-carga';
 import type { useAlta } from '../application/use-alta';
@@ -33,7 +32,7 @@ export interface CatalogosAlta {
 interface Props {
   alta: ReturnType<typeof useAlta>;
   cargarCatalogos(): Promise<CatalogosAlta>;
-  alRegistrar(comercioId: string): Promise<void>;
+  alEnviar(): void;
 }
 
 function PasoActual({ alta, catalogos }: { alta: Props['alta']; catalogos: CatalogosAlta }) {
@@ -59,8 +58,8 @@ function Botonera(p: { atras: (() => void) | null; ultimo: boolean; ocupado: boo
   const texto = !p.ultimo
     ? 'Seguir'
     : p.ocupado
-      ? 'Colgando el letrero…'
-      : 'Abrir mi negocio en VECI';
+      ? 'Enviando tu solicitud…'
+      : 'Enviar solicitud a VECI';
   return (
     <div className="flex flex-wrap-reverse items-center justify-between gap-m">
       {p.atras ? (
@@ -82,12 +81,12 @@ function Botonera(p: { atras: (() => void) | null; ultimo: boolean; ocupado: boo
 }
 
 /**
- * Registrar un negocio como una conversación: una pregunta por pantalla, el avance
- * como piedras para cruzar la quebrada y, al final, el letrero del negocio (HU-03-01).
+ * Pedir el registro de un negocio como una conversación: una pregunta por pantalla, el
+ * avance como piedras para cruzar la quebrada y, al final, el letrero del negocio
+ * (HU-03-01). Lo que se envía es una solicitud: VECI la revisa y abre el negocio.
  */
-export function AltaConversada({ alta, cargarCatalogos, alRegistrar }: Props) {
+export function AltaConversada({ alta, cargarCatalogos, alEnviar }: Props) {
   const { estado } = useCarga(cargarCatalogos);
-  const [abriendo, setAbriendo] = useState(false);
   const ultimo = alta.indice === PASOS.length - 1;
   const piedras = PASOS.map((p, i) => ({
     etiqueta: NOMBRES[p],
@@ -96,10 +95,7 @@ export function AltaConversada({ alta, cargarCatalogos, alRegistrar }: Props) {
   }));
 
   const terminar = async () => {
-    const comercioId = await alta.registrar();
-    if (!comercioId) return;
-    setAbriendo(true);
-    await alRegistrar(comercioId);
+    if (await alta.solicitar()) alEnviar();
   };
 
   if (estado.tipo === 'cargando')
@@ -126,7 +122,7 @@ export function AltaConversada({ alta, cargarCatalogos, alRegistrar }: Props) {
       <Botonera
         atras={alta.indice > 0 ? alta.volver : null}
         ultimo={ultimo}
-        ocupado={alta.ocupado || abriendo}
+        ocupado={alta.ocupado}
       />
     </form>
   );

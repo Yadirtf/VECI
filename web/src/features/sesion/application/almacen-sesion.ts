@@ -64,13 +64,10 @@ export class AlmacenSesion {
     this.cambiar({ ...this.actual, comercioId });
   }
 
-  /**
-   * Recién registrado un negocio (HU-03-01): trae otra vez la lista de negocios,
-   * que ya lo incluye como propietario, y lo deja activo.
-   */
-  async estrenarNegocio(comercioId: string): Promise<void> {
-    await this.renovar();
-    await this.elegirComercio(comercioId);
+  /** Permisos de la consola VECI de quien entró; vacío si no es del equipo o sin sesión. */
+  async permisosDePlataforma(): Promise<string[]> {
+    const token = await this.tokenVigente();
+    return token ? this.repositorio.permisosDePlataforma(token) : [];
   }
 
   /** Vuelve a la lista de negocios sin cerrar la sesión. */

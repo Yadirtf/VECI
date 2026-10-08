@@ -440,18 +440,19 @@ model departments {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model document_types {
-  id                 Int       @id @db.SmallInt
-  code               String    @unique @db.VarChar(40)
-  name               String    @db.VarChar(80)
-  country_id         Int       @db.SmallInt
-  for_natural_person Boolean
-  for_legal_entity   Boolean
-  validation_regex   String?   @db.VarChar(120)
-  sort_order         Int       @default(0) @db.SmallInt
-  is_active          Boolean   @default(true)
-  countries          countries @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  people             people[]
-  tenants            tenants[]
+  id                    Int                     @id @db.SmallInt
+  code                  String                  @unique @db.VarChar(40)
+  name                  String                  @db.VarChar(80)
+  country_id            Int                     @db.SmallInt
+  for_natural_person    Boolean
+  for_legal_entity      Boolean
+  validation_regex      String?                 @db.VarChar(120)
+  sort_order            Int                     @default(0) @db.SmallInt
+  is_active             Boolean                 @default(true)
+  countries             countries               @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  people                people[]
+  business_applications business_applications[]
+  tenants               tenants[]
 
   @@schema("core")
 }
@@ -484,12 +485,14 @@ model modules {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model municipalities {
-  id            Int         @id
-  department_id Int         @db.SmallInt
-  official_code String      @unique @db.VarChar(10)
-  name          String      @db.VarChar(80)
-  departments   departments @relation(fields: [department_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  branches      branches[]
+  id                    Int                     @id
+  department_id         Int                     @db.SmallInt
+  official_code         String                  @unique @db.VarChar(10)
+  name                  String                  @db.VarChar(80)
+  is_served             Boolean                 @default(false)
+  departments           departments             @relation(fields: [department_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  branches              branches[]
+  business_applications business_applications[]
 
   @@schema("core")
 }
@@ -992,37 +995,39 @@ model user_statuses {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model users {
-  id                                                                String                   @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
-  person_id                                                         String                   @unique @db.Uuid
-  user_status_id                                                    Int                      @db.SmallInt
-  status_changed_at                                                 DateTime                 @default(now()) @db.Timestamptz(6)
-  activated_at                                                      DateTime?                @db.Timestamptz(6)
-  last_login_at                                                     DateTime?                @db.Timestamptz(6)
-  created_at                                                        DateTime                 @default(now()) @db.Timestamptz(6)
-  updated_at                                                        DateTime                 @default(now()) @db.Timestamptz(6)
-  subscription_payments                                             subscription_payments[]
-  data_requests                                                     data_requests[]
-  affiliation_qr_codes                                              affiliation_qr_codes[]
-  balance_links                                                     balance_links[]
-  sessions_sessions_revoked_by_user_idTousers                       sessions[]               @relation("sessions_revoked_by_user_idTousers")
-  sessions_sessions_user_idTousers                                  sessions[]               @relation("sessions_user_idTousers")
-  user_credentials_user_credentials_created_by_user_idTousers       user_credentials[]       @relation("user_credentials_created_by_user_idTousers")
-  user_credentials_user_credentials_user_idTousers                  user_credentials[]       @relation("user_credentials_user_idTousers")
-  user_login_identifiers                                            user_login_identifiers[]
-  user_platform_roles_user_platform_roles_granted_by_user_idTousers user_platform_roles[]    @relation("user_platform_roles_granted_by_user_idTousers")
-  user_platform_roles_user_platform_roles_user_idTousers            user_platform_roles[]    @relation("user_platform_roles_user_idTousers")
-  people                                                            people                   @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user_statuses                                                     user_statuses            @relation(fields: [user_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  push_tokens                                                       push_tokens[]
-  package_types                                                     package_types[]
-  membership_branches                                               membership_branches[]
-  membership_roles_membership_roles_granted_by_user_idTousers       membership_roles[]       @relation("membership_roles_granted_by_user_idTousers")
-  membership_roles_membership_roles_revoked_by_user_idTousers       membership_roles[]       @relation("membership_roles_revoked_by_user_idTousers")
-  memberships_memberships_invited_by_user_idTousers                 memberships[]            @relation("memberships_invited_by_user_idTousers")
-  memberships_memberships_user_idTousers                            memberships[]            @relation("memberships_user_idTousers")
-  tenant_devices                                                    tenant_devices[]
-  tenant_settings                                                   tenant_settings[]
-  tenants                                                           tenants[]
+  id                                                                     String                   @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  person_id                                                              String                   @unique @db.Uuid
+  user_status_id                                                         Int                      @db.SmallInt
+  status_changed_at                                                      DateTime                 @default(now()) @db.Timestamptz(6)
+  activated_at                                                           DateTime?                @db.Timestamptz(6)
+  last_login_at                                                          DateTime?                @db.Timestamptz(6)
+  created_at                                                             DateTime                 @default(now()) @db.Timestamptz(6)
+  updated_at                                                             DateTime                 @default(now()) @db.Timestamptz(6)
+  subscription_payments                                                  subscription_payments[]
+  data_requests                                                          data_requests[]
+  affiliation_qr_codes                                                   affiliation_qr_codes[]
+  balance_links                                                          balance_links[]
+  sessions_sessions_revoked_by_user_idTousers                            sessions[]               @relation("sessions_revoked_by_user_idTousers")
+  sessions_sessions_user_idTousers                                       sessions[]               @relation("sessions_user_idTousers")
+  user_credentials_user_credentials_created_by_user_idTousers            user_credentials[]       @relation("user_credentials_created_by_user_idTousers")
+  user_credentials_user_credentials_user_idTousers                       user_credentials[]       @relation("user_credentials_user_idTousers")
+  user_login_identifiers                                                 user_login_identifiers[]
+  user_platform_roles_user_platform_roles_granted_by_user_idTousers      user_platform_roles[]    @relation("user_platform_roles_granted_by_user_idTousers")
+  user_platform_roles_user_platform_roles_user_idTousers                 user_platform_roles[]    @relation("user_platform_roles_user_idTousers")
+  people                                                                 people                   @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_statuses                                                          user_statuses            @relation(fields: [user_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  push_tokens                                                            push_tokens[]
+  package_types                                                          package_types[]
+  business_applications_business_applications_applicant_user_idTousers   business_applications?   @relation("business_applications_applicant_user_idTousers")
+  business_applications_business_applications_reviewed_by_user_idTousers business_applications[]  @relation("business_applications_reviewed_by_user_idTousers")
+  membership_branches                                                    membership_branches[]
+  membership_roles_membership_roles_granted_by_user_idTousers            membership_roles[]       @relation("membership_roles_granted_by_user_idTousers")
+  membership_roles_membership_roles_revoked_by_user_idTousers            membership_roles[]       @relation("membership_roles_revoked_by_user_idTousers")
+  memberships_memberships_invited_by_user_idTousers                      memberships[]            @relation("memberships_invited_by_user_idTousers")
+  memberships_memberships_user_idTousers                                 memberships[]            @relation("memberships_user_idTousers")
+  tenant_devices                                                         tenant_devices[]
+  tenant_settings                                                        tenant_settings[]
+  tenants                                                                tenants[]
 
   @@schema("identity")
 }
@@ -1725,6 +1730,66 @@ model branches {
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model business_application_status_transitions {
+  from_status_id                                                                                                      Int                           @db.SmallInt
+  to_status_id                                                                                                        Int                           @db.SmallInt
+  business_application_statuses_business_application_status_transitions_from_status_idTobusiness_application_statuses business_application_statuses @relation("business_application_status_transitions_from_status_idTobusiness_application_statuses", fields: [from_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  business_application_statuses_business_application_status_transitions_to_status_idTobusiness_application_statuses   business_application_statuses @relation("business_application_status_transitions_to_status_idTobusiness_application_statuses", fields: [to_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([from_status_id, to_status_id])
+  @@schema("tenancy")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model business_application_statuses {
+  id                                                                                                                            Int                                       @id @db.SmallInt
+  code                                                                                                                          String                                    @unique @db.VarChar(40)
+  name                                                                                                                          String                                    @db.VarChar(80)
+  creates_tenant                                                                                                                Boolean                                   @default(false)
+  is_initial                                                                                                                    Boolean                                   @default(false)
+  is_terminal                                                                                                                   Boolean                                   @default(false)
+  sort_order                                                                                                                    Int                                       @default(0) @db.SmallInt
+  business_application_status_transitions_business_application_status_transitions_from_status_idTobusiness_application_statuses business_application_status_transitions[] @relation("business_application_status_transitions_from_status_idTobusiness_application_statuses")
+  business_application_status_transitions_business_application_status_transitions_to_status_idTobusiness_application_statuses   business_application_status_transitions[] @relation("business_application_status_transitions_to_status_idTobusiness_application_statuses")
+  business_applications                                                                                                         business_applications[]
+
+  @@schema("tenancy")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model business_applications {
+  id                                                     String                        @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  applicant_user_id                                      String                        @unique(map: "business_applications_one_open_ux", where: raw("(reviewed_by_user_id IS NULL)")) @db.Uuid
+  display_name                                           String                        @db.VarChar(120)
+  document_type_id                                       Int                           @db.SmallInt
+  document_number                                        String                        @db.VarChar(20)
+  business_type_id                                       Int                           @db.SmallInt
+  contact_phone                                          String                        @db.VarChar(20)
+  contact_email                                          String?                       @db.VarChar(254)
+  logo_url                                               String?                       @db.VarChar(500)
+  municipality_id                                        Int
+  address_line                                           String?                       @db.VarChar(200)
+  business_application_status_id                         Int                           @db.SmallInt
+  status_changed_at                                      DateTime                      @default(now()) @db.Timestamptz(6)
+  reviewed_by_user_id                                    String?                       @db.Uuid
+  review_note                                            String?                       @db.VarChar(500)
+  tenant_id                                              String?                       @unique @db.Uuid
+  created_at                                             DateTime                      @default(now()) @db.Timestamptz(6)
+  updated_at                                             DateTime                      @default(now()) @db.Timestamptz(6)
+  users_business_applications_applicant_user_idTousers   users                         @relation("business_applications_applicant_user_idTousers", fields: [applicant_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  business_application_statuses                          business_application_statuses @relation(fields: [business_application_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  business_types                                         business_types                @relation(fields: [business_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  document_types                                         document_types                @relation(fields: [document_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  municipalities                                         municipalities                @relation(fields: [municipality_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_business_applications_reviewed_by_user_idTousers users?                        @relation("business_applications_reviewed_by_user_idTousers", fields: [reviewed_by_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenants                                                tenants?                      @relation(fields: [tenant_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([business_application_status_id, created_at], map: "business_applications_status_ix")
+  @@schema("tenancy")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model business_type_services {
   business_type_id Int                       @db.SmallInt
@@ -1745,6 +1810,7 @@ model business_types {
   description            String?
   sort_order             Int                      @default(0) @db.SmallInt
   is_active              Boolean                  @default(true)
+  business_applications  business_applications[]
   business_type_services business_type_services[]
   tenants                tenants[]
 
@@ -2020,43 +2086,44 @@ model tenant_statuses {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model tenants {
-  id                  String               @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
-  slug                String               @unique @db.VarChar(60)
-  display_name        String               @db.VarChar(120)
-  legal_name          String?              @db.VarChar(160)
-  document_type_id    Int                  @db.SmallInt
-  document_number     String               @db.VarChar(20)
-  business_type_id    Int                  @db.SmallInt
-  tenant_status_id    Int                  @db.SmallInt
-  status_changed_at   DateTime             @default(now()) @db.Timestamptz(6)
-  currency_code       String               @default("COP") @db.Char(3)
-  time_zone           String               @default("America/Bogota") @db.VarChar(64)
-  logo_url            String?              @db.VarChar(500)
-  created_by_user_id  String?              @db.Uuid
-  created_at          DateTime             @default(now()) @db.Timestamptz(6)
-  updated_at          DateTime             @default(now()) @db.Timestamptz(6)
-  subscriptions       subscriptions?
-  consents            consents[]
-  affiliations        affiliations[]
-  events              events[]
-  notifications       notifications[]
-  consumption_units   consumption_units[]
-  package_types       package_types[]
-  conflicts           conflicts[]
-  device_checkpoints  device_checkpoints[]
-  sync_batches        sync_batches[]
-  branches            branches?
-  memberships         memberships[]
-  services            services[]
-  tenant_contacts     tenant_contacts[]
-  tenant_devices      tenant_devices[]
-  tenant_settings     tenant_settings[]
-  tenant_signing_keys tenant_signing_keys?
-  business_types      business_types       @relation(fields: [business_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users               users?               @relation(fields: [created_by_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  currencies          currencies           @relation(fields: [currency_code], references: [code], onDelete: NoAction, onUpdate: NoAction)
-  document_types      document_types       @relation(fields: [document_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tenant_statuses     tenant_statuses      @relation(fields: [tenant_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id                    String                 @id @default(dbgenerated("core.uuid_v7()")) @db.Uuid
+  slug                  String                 @unique @db.VarChar(60)
+  display_name          String                 @db.VarChar(120)
+  legal_name            String?                @db.VarChar(160)
+  document_type_id      Int                    @db.SmallInt
+  document_number       String                 @db.VarChar(20)
+  business_type_id      Int                    @db.SmallInt
+  tenant_status_id      Int                    @db.SmallInt
+  status_changed_at     DateTime               @default(now()) @db.Timestamptz(6)
+  currency_code         String                 @default("COP") @db.Char(3)
+  time_zone             String                 @default("America/Bogota") @db.VarChar(64)
+  logo_url              String?                @db.VarChar(500)
+  created_by_user_id    String?                @db.Uuid
+  created_at            DateTime               @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime               @default(now()) @db.Timestamptz(6)
+  subscriptions         subscriptions?
+  consents              consents[]
+  affiliations          affiliations[]
+  events                events[]
+  notifications         notifications[]
+  consumption_units     consumption_units[]
+  package_types         package_types[]
+  conflicts             conflicts[]
+  device_checkpoints    device_checkpoints[]
+  sync_batches          sync_batches[]
+  branches              branches?
+  business_applications business_applications?
+  memberships           memberships[]
+  services              services[]
+  tenant_contacts       tenant_contacts[]
+  tenant_devices        tenant_devices[]
+  tenant_settings       tenant_settings[]
+  tenant_signing_keys   tenant_signing_keys?
+  business_types        business_types         @relation(fields: [business_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users                 users?                 @relation(fields: [created_by_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  currencies            currencies             @relation(fields: [currency_code], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  document_types        document_types         @relation(fields: [document_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tenant_statuses       tenant_statuses        @relation(fields: [tenant_status_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([document_type_id, document_number], map: "tenants_document_ix")
   @@schema("tenancy")

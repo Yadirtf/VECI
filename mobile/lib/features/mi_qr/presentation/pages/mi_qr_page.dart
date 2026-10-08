@@ -56,8 +56,8 @@ class MiQrPage extends ConsumerWidget {
                 ],
                 if (esInicio && ref.watch(soloClienteProvider))
                   TextButton(
-                    onPressed: () => unawaited(context.push(Rutas.registrarNegocio)),
-                    child: const Text('¿Tienes un negocio? Regístralo en VECI'),
+                    onPressed: () => unawaited(context.push(Rutas.ajustes)),
+                    child: const Text('¿Tienes un negocio? Solicita registrarlo en VECI'),
                   ),
                 const SizedBox(height: VeciEspacio.m),
               ],

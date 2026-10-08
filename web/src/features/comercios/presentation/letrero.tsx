@@ -33,7 +33,8 @@ export function Letrero({ borrador, tipo }: { borrador: BorradorAlta; tipo?: Tip
         </dl>
       </div>
       <figcaption className="mt-m text-cuerpo text-tinta-suave">
-        Así queda tu negocio. Arranca con 30 días de prueba gratis.
+        Así queda tu negocio. Cuando VECI apruebe tu solicitud, arranca con 30 días de prueba
+        gratis.
       </figcaption>
     </figure>
   );

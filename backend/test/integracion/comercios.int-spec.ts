@@ -6,6 +6,7 @@ import { AppModule } from '../../src/app.module';
 import { configurarAplicacion } from '../../src/app.setup';
 import { conectarDueno, urlApp } from '../soporte/base-de-datos';
 import { celularAleatorio } from '../soporte/acceso';
+import { crearEquipoVeci, registrarNegocio } from '../soporte/negocios';
 import { crearUsuario } from '../soporte/personas';
 
 // HU-03-01 a HU-03-03 por HTTP, con RLS real: el alta corre como veci_api.
@@ -13,6 +14,7 @@ describe('Comercios, sedes y horarios', () => {
   let app: INestApplication;
   let dueno: Client;
   let usuarioId: string;
+  let adminId: string;
 
   const negocio = () => ({
     nombre: 'Restaurante La Prueba',
@@ -33,6 +35,7 @@ describe('Comercios, sedes y horarios', () => {
     process.env.DATABASE_APP_URL = urlApp();
     dueno = await conectarDueno();
     usuarioId = await crearUsuario(dueno);
+    adminId = await crearEquipoVeci(dueno);
     const modulo = await Test.createTestingModule({ imports: [AppModule] }).compile();
     app = modulo.createNestApplication({ logger: false });
     configurarAplicacion(app);
@@ -60,11 +63,7 @@ describe('Comercios, sedes y horarios', () => {
   });
 
   it('registra el negocio con todo lo que necesita y el camino para abrir', async () => {
-    const alta = await request(servidor())
-      .post('/comercios')
-      .set(comoUsuario(usuarioId))
-      .send(negocio())
-      .expect(201);
+    const alta = await registrarNegocio(servidor(), adminId, usuarioId, negocio());
     const { comercioId, slug } = alta.body;
     expect(slug).toMatch(/^restaurante-la-prueba/);
 
@@ -121,20 +120,8 @@ describe('Comercios, sedes y horarios', () => {
   });
 
   it('el mismo nombre recibe otro enlace y el negocio aparece en mis negocios', async () => {
-    const primero = (
-      await request(servidor())
-        .post('/comercios')
-        .set(comoUsuario(usuarioId))
-        .send(negocio())
-        .expect(201)
-    ).body;
-    const segundo = (
-      await request(servidor())
-        .post('/comercios')
-        .set(comoUsuario(usuarioId))
-        .send(negocio())
-        .expect(201)
-    ).body;
+    const primero = (await registrarNegocio(servidor(), adminId, usuarioId, negocio())).body;
+    const segundo = (await registrarNegocio(servidor(), adminId, usuarioId, negocio())).body;
     expect(segundo.slug).not.toBe(primero.slug);
     const { rows } = await dueno.query(
       `SELECT count(*)::int AS n FROM tenancy.memberships m
@@ -148,7 +135,7 @@ describe('Comercios, sedes y horarios', () => {
 
   it('rechaza un NIT con el dígito equivocado sin crear nada', async () => {
     const respuesta = await request(servidor())
-      .post('/comercios')
+      .post('/solicitudes-de-negocio')
       .set(comoUsuario(usuarioId))
       .send({ ...negocio(), numeroDocumento: '800197268-5' });
     expect(respuesta.status).toBe(422);
@@ -156,13 +143,7 @@ describe('Comercios, sedes y horarios', () => {
   });
 
   it('edita los datos del negocio y deja el celular anterior en la historia', async () => {
-    const { comercioId } = (
-      await request(servidor())
-        .post('/comercios')
-        .set(comoUsuario(usuarioId))
-        .send(negocio())
-        .expect(201)
-    ).body;
+    const { comercioId } = (await registrarNegocio(servidor(), adminId, usuarioId, negocio())).body;
     const perfil = (
       await request(servidor())
         .patch('/comercio')

@@ -31,6 +31,7 @@ String? problemaEnPaso(PasoAlta paso, BorradorAlta b) => switch (paso) {
     'La cédula tiene de 6 a 10 números.',
   PasoAlta.contacto when !RegExp(r'^3\d{9}$').hasMatch(soloDigitos(b.celular)) =>
     'El celular son 10 números y empieza por 3.',
+  PasoAlta.lugar when b.municipioId == null => 'Toca el municipio donde queda tu negocio.',
   _ => null,
 };
 

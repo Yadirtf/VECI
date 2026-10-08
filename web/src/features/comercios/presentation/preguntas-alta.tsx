@@ -160,6 +160,10 @@ export function PreguntaLugar({
 }: PropsPregunta & { municipios: Municipio[] }) {
   return (
     <Pregunta titulo="¿Dónde queda?">
+      <p className="text-cuerpo text-tinta-suave">
+        Por ahora VECI atiende en {municipios.map((m) => m.nombre).join(', ')}. Pronto llegamos a
+        más municipios del Putumayo.
+      </p>
       <div className="flex flex-wrap gap-s">
         {municipios.map((m) => (
           <Bola

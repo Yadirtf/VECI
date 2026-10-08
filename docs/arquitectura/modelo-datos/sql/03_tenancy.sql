@@ -168,6 +168,53 @@ LANGUAGE sql STABLE AS $$
   SELECT validity && daterange(tenancy.current_local_date(), NULL, '[)');
 $$;
 
+-- ------------------------------------------- solicitudes para registrar un negocio
+-- Cualquier persona con cuenta pide registrar su negocio; Administración VECI lo
+-- revisa y, al aprobar, nace el comercio con ella como propietaria.
+CREATE TABLE tenancy.business_application_statuses (
+  id             smallint PRIMARY KEY,
+  code           core.catalog_code NOT NULL UNIQUE,
+  name           varchar(80) NOT NULL,
+  creates_tenant boolean NOT NULL DEFAULT false,
+  is_initial     boolean NOT NULL DEFAULT false,
+  is_terminal    boolean NOT NULL DEFAULT false,
+  sort_order     smallint NOT NULL DEFAULT 0
+);
+COMMENT ON TABLE tenancy.business_application_statuses IS 'En revisión, aprobada (crea el comercio), rechazada.';
+
+CREATE TABLE tenancy.business_application_status_transitions (
+  from_status_id smallint NOT NULL REFERENCES tenancy.business_application_statuses (id),
+  to_status_id   smallint NOT NULL REFERENCES tenancy.business_application_statuses (id),
+  PRIMARY KEY (from_status_id, to_status_id),
+  CHECK (from_status_id <> to_status_id)
+);
+
+CREATE TABLE tenancy.business_applications (
+  id                             uuid PRIMARY KEY DEFAULT core.uuid_v7(),
+  applicant_user_id              uuid NOT NULL REFERENCES identity.users (id),
+  display_name                   varchar(120) NOT NULL,
+  document_type_id               smallint NOT NULL REFERENCES core.document_types (id),
+  document_number                varchar(20) NOT NULL,
+  business_type_id               smallint NOT NULL REFERENCES tenancy.business_types (id),
+  contact_phone                  varchar(20) NOT NULL,
+  contact_email                  varchar(254),
+  logo_url                       varchar(500),
+  municipality_id                integer NOT NULL REFERENCES core.municipalities (id),
+  address_line                   varchar(200),
+  business_application_status_id smallint NOT NULL REFERENCES tenancy.business_application_statuses (id),
+  status_changed_at              timestamptz NOT NULL DEFAULT now(),
+  reviewed_by_user_id            uuid REFERENCES identity.users (id),
+  review_note                    varchar(500),
+  tenant_id                      uuid UNIQUE REFERENCES tenancy.tenants (id),
+  created_at                     timestamptz NOT NULL DEFAULT now(),
+  updated_at                     timestamptz NOT NULL DEFAULT now()
+);
+COMMENT ON TABLE tenancy.business_applications IS 'Solicitud de una persona para registrar su negocio; VECI la aprueba o la rechaza.';
+CREATE UNIQUE INDEX business_applications_one_open_ux
+  ON tenancy.business_applications (applicant_user_id) WHERE reviewed_by_user_id IS NULL;
+CREATE INDEX business_applications_status_ix
+  ON tenancy.business_applications (business_application_status_id, created_at);
+
 -- ----------------------------------------------------------------- sedes
 CREATE TABLE tenancy.branches (
   id                uuid PRIMARY KEY DEFAULT core.uuid_v7(),
@@ -311,3 +358,7 @@ CREATE TRIGGER schedules_touch BEFORE UPDATE ON tenancy.service_schedules
   FOR EACH ROW EXECUTE FUNCTION core.touch_updated_at();
 CREATE TRIGGER schedules_sync BEFORE INSERT OR UPDATE ON tenancy.service_schedules
   FOR EACH ROW EXECUTE FUNCTION core.bump_sync_version();
+CREATE TRIGGER business_applications_touch BEFORE UPDATE ON tenancy.business_applications
+  FOR EACH ROW EXECUTE FUNCTION core.touch_updated_at();
+CREATE TRIGGER business_applications_status BEFORE UPDATE OF business_application_status_id ON tenancy.business_applications
+  FOR EACH ROW EXECUTE FUNCTION core.enforce_status_transition('tenancy.business_application_status_transitions', 'business_application_status_id');

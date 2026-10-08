@@ -287,59 +287,6 @@ class ComerciosApi {
     return null;
   }
 
-  /// Registra un negocio propio (HU-03-01)
-  ///
-  /// Note: This method returns the HTTP [Response].
-  ///
-  /// Parameters:
-  ///
-  /// * [RegistrarComercioRequest] registrarComercioRequest (required):
-  Future<Response> registrarComercioWithHttpInfo(RegistrarComercioRequest registrarComercioRequest, { Future<void>? abortTrigger, }) async {
-    // ignore: prefer_const_declarations
-    final path = r'/comercios';
-
-    // ignore: prefer_final_locals
-    Object? postBody = registrarComercioRequest;
-
-    final queryParams = <QueryParam>[];
-    final headerParams = <String, String>{};
-    final formParams = <String, String>{};
-
-    const contentTypes = <String>['application/json'];
-
-
-    return apiClient.invokeAPI(
-      path,
-      'POST',
-      queryParams,
-      postBody,
-      headerParams,
-      formParams,
-      contentTypes.isEmpty ? null : contentTypes.first,
-      abortTrigger: abortTrigger,
-    );
-  }
-
-  /// Registra un negocio propio (HU-03-01)
-  ///
-  /// Parameters:
-  ///
-  /// * [RegistrarComercioRequest] registrarComercioRequest (required):
-  Future<ComercioRegistradoResponse?> registrarComercio(RegistrarComercioRequest registrarComercioRequest, { Future<void>? abortTrigger, }) async {
-    final response = await registrarComercioWithHttpInfo(registrarComercioRequest, abortTrigger: abortTrigger,);
-    if (response.statusCode >= HttpStatus.badRequest) {
-      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
-    }
-    // When a remote server returns no body with a status of 204, we shall not decode it.
-    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
-    // FormatException when trying to decode an empty string.
-    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
-      return await apiClient.deserializeAsync(await _decodeBodyBytes(response), 'ComercioRegistradoResponse',) as ComercioRegistradoResponse;
-    
-    }
-    return null;
-  }
-
   /// Administración VECI registra un negocio e invita a su dueño (HU-03-01)
   ///
   /// Note: This method returns the HTTP [Response].

@@ -48,6 +48,7 @@ export interface CambiosComercio {
 /** Comercios. Salvo registrar, todo actúa sobre el comercio activo (RLS). */
 export interface ComerciosRepository {
   tiposDeNegocio(): Promise<TipoDeNegocio[]>;
+  /** Solo los municipios donde VECI opera (cobertura). */
   municipios(): Promise<Municipio[]>;
   /** Comercio, sede principal, servicios, plan de prueba y propietario. Devuelve el slug. */
   registrar(alta: AltaDeComercio): Promise<string>;

@@ -9,10 +9,11 @@ import 'sello_negocio.dart';
 
 /// El resumen como el letrero que cuelga en la puerta del negocio.
 class Letrero extends StatelessWidget {
-  const Letrero({super.key, required this.borrador, this.tipo});
+  const Letrero({super.key, required this.borrador, this.tipo, this.municipio});
 
   final BorradorAlta borrador;
   final TipoDeNegocio? tipo;
+  final String? municipio;
 
   @override
   Widget build(BuildContext context) {
@@ -47,12 +48,16 @@ class Letrero extends StatelessWidget {
                 const SizedBox(height: VeciEspacio.s),
                 Text(legible),
                 Text('Celular ${soloDigitos(borrador.celular)}'),
+                if (municipio != null) Text(municipio!),
               ],
             ),
           ),
         ),
         const SizedBox(height: VeciEspacio.m),
-        const Text('Así queda tu negocio. Arranca con 30 días de prueba gratis.'),
+        const Text(
+          'Así queda tu negocio. VECI revisa la solicitud y, cuando la apruebe, '
+          'arrancas con 30 días de prueba gratis.',
+        ),
       ],
     );
   }

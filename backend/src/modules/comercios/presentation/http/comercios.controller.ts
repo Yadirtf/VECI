@@ -16,13 +16,8 @@ import { RequiereSesion } from '../../../../shared/presentation/http/decoradores
 import { RespuestaErrorDto } from '../../../../shared/presentation/http/respuesta-error.dto';
 import { CatalogosDeComercio } from '../../application/use-cases/catalogos.use-case';
 import { PerfilDelComercio } from '../../application/use-cases/perfil-comercio.use-case';
-import { RegistrarComercio } from '../../application/use-cases/registrar-comercio.use-case';
 import { RegistrarComercioParaPropietario } from '../../application/use-cases/registrar-para-propietario.use-case';
-import {
-  EditarComercioRequest,
-  RegistrarComercioRequest,
-  RegistrarParaPropietarioRequest,
-} from './comercios.request';
+import { EditarComercioRequest, RegistrarParaPropietarioRequest } from './comercios.request';
 import {
   ComercioRegistradoResponse,
   MunicipioResponse,
@@ -35,7 +30,6 @@ import {
 export class ComerciosController {
   constructor(
     private readonly catalogos: CatalogosDeComercio,
-    private readonly registrar: RegistrarComercio,
     private readonly registrarParaPropietario: RegistrarComercioParaPropietario,
     private readonly perfil: PerfilDelComercio,
   ) {}
@@ -54,21 +48,6 @@ export class ComerciosController {
   @ApiOkResponse({ type: MunicipioResponse, isArray: true })
   municipios(): Promise<MunicipioResponse[]> {
     return this.catalogos.municipios();
-  }
-
-  @Post('comercios')
-  @RequiereSesion()
-  @ApiOperation({
-    operationId: 'registrarComercio',
-    summary: 'Registra un negocio propio (HU-03-01)',
-  })
-  @ApiCreatedResponse({ type: ComercioRegistradoResponse })
-  @ApiUnprocessableEntityResponse({ type: RespuestaErrorDto, description: 'Datos inválidos' })
-  registrarPropio(
-    @IdentidadActual() identidad: Identidad,
-    @Body() s: RegistrarComercioRequest,
-  ): Promise<ComercioRegistradoResponse> {
-    return this.registrar.ejecutar(identidad.usuarioId, s);
   }
 
   @Post('plataforma/comercios')

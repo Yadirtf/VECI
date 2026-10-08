@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ALCANCE_DE_CUENTAS } from './application/puertos/alcance-de-cuentas.port';
 import { CREDENCIALES_REPOSITORY } from './application/puertos/credenciales.repository';
 import { CUENTAS_REPOSITORY } from './application/puertos/cuentas.repository';
 import { ESPACIOS_REPOSITORY } from './application/puertos/espacios.repository';
@@ -7,6 +8,7 @@ import { SESIONES_REPOSITORY } from './application/puertos/sesiones.repository';
 import { EmitirPinTemporal } from './application/use-cases/emitir-pin-temporal.use-case';
 import { EntrarConCuentaNueva } from './application/use-cases/entrar-con-cuenta-nueva.use-case';
 import { PROVEEDORES_AUTENTICACION } from './autenticacion.proveedores';
+import { PrismaAlcanceDeCuentas } from './infrastructure/persistence/prisma-alcance-de-cuentas';
 import { PrismaCredencialesRepository } from './infrastructure/persistence/prisma-credenciales.repository';
 import { PrismaCuentasRepository } from './infrastructure/persistence/prisma-cuentas.repository';
 import { PrismaEspaciosRepository } from './infrastructure/persistence/prisma-espacios.repository';
@@ -29,6 +31,7 @@ import { SesionController } from './presentation/http/sesion.controller';
     { provide: SESIONES_REPOSITORY, useClass: PrismaSesionesRepository },
     { provide: ESPACIOS_REPOSITORY, useClass: PrismaEspaciosRepository },
     { provide: INTENTOS_INGRESO, useClass: PrismaIntentosIngreso },
+    { provide: ALCANCE_DE_CUENTAS, useClass: PrismaAlcanceDeCuentas },
     ...PROVEEDORES_AUTENTICACION,
   ],
   exports: [EmitirPinTemporal, EntrarConCuentaNueva],

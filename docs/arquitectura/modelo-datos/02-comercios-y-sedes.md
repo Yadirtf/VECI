@@ -27,6 +27,10 @@ erDiagram
     setting_definitions ||--o{ tenant_settings : ""
     tenants ||--o{ tenant_settings : ""
     tenants ||--o{ tenant_signing_keys : "firma QR"
+    users ||--o{ business_applications : "solicita"
+    business_application_statuses ||--o{ business_applications : ""
+    municipalities ||--o{ business_applications : ""
+    business_applications |o--o| tenants : "al aprobarse"
 ```
 
 ## Tablas
@@ -35,6 +39,7 @@ erDiagram
 | --- | --- | --- |
 | `business_types` | Restaurante, cafetería, panadería, colegio, tienda, otro. | Nuevo sector = nueva fila (RF-COM-04, RNF-ESC-02). |
 | `business_type_services` | Plantilla: servicios con que nace cada tipo de negocio y su horario sugerido. | Al registrar un comercio se copian sus servicios; las horas las confirma el dueño ([ADR-0016](../adr/0016-alta-de-comercios-horarios-y-sedes.md)). |
+| `business_applications` | Solicitud de una persona para registrar su negocio: los datos del alta, el municipio, quién la revisó y el motivo si se rechazó. | Una abierta por persona. Estados en catálogo: en revisión, aprobada (crea el comercio) y rechazada. RLS: el solicitante ve las suyas y la plataforma las decide ([ADR-0019](../adr/0019-roles-solicitudes-de-negocio-y-cobertura.md)). |
 | `tenants` | Comercio: nombre, documento (NIT o cédula), tipo, estado, moneda, zona horaria, logo. | `slug` único para el enlace público. El estado es administrativo (alta, activo, suspendido, cerrado); el estado de pago vive en `billing.subscriptions`. |
 | `tenant_contacts` | Teléfonos y correos del comercio. | Uno principal por tipo. |
 | `branches` | Sede con municipio (DIVIPOLA) y dirección. | Una sola sede principal por comercio; nace con el comercio (HU-03-01). |
@@ -50,7 +55,7 @@ erDiagram
 
 ## Alta de un comercio (HU-03-01)
 
-En una sola transacción: `tenants` (estado `ONBOARDING`) → `tenant_contacts` → `branches` (principal) → `services` (de la plantilla del tipo) → `memberships` + `membership_roles` (propietario) → `billing.subscriptions` (plan `TRIAL`, por la política `tenant_starts_trial`). Si registra Administración VECI, el propietario llega por invitación con PIN temporal. Cuando el dueño tiene horarios y lo abre, el comercio pasa a `ACTIVE` ([ADR-0016](../adr/0016-alta-de-comercios-horarios-y-sedes.md)). La clave de firma de QR se crea con EP-04.
+El dueño radica una solicitud (`business_applications`) solo en un municipio atendido (`core.municipalities.is_served`, hoy Mocoa). Al aprobarla, Administración VECI corre el alta en una sola transacción, con `app.user_id` y `app.tenant_id` fijados, y la solicitud queda con el `tenant_id` nuevo ([ADR-0019](../adr/0019-roles-solicitudes-de-negocio-y-cobertura.md)). El alta es: `tenants` (estado `ONBOARDING`) → `tenant_contacts` → `branches` (principal) → `services` (de la plantilla del tipo) → `memberships` + `membership_roles` (propietario) → `billing.subscriptions` (plan `TRIAL`, por la política `tenant_starts_trial`). Si registra Administración VECI, el propietario llega por invitación con PIN temporal. Cuando el dueño tiene horarios y lo abre, el comercio pasa a `ACTIVE` ([ADR-0016](../adr/0016-alta-de-comercios-horarios-y-sedes.md)). La clave de firma de QR se crea con EP-04.
 
 ## Horarios vigentes (HU-03-02)
 

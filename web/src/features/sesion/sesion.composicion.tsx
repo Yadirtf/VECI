@@ -1,7 +1,7 @@
 'use client';
 
 import { setTag } from '@sentry/nextjs';
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { crearClienteVeci, type ClienteVeci } from '@/shared/api/cliente';
 import { entorno } from '@/shared/config/entorno';
 import { AlmacenSesion } from './application/almacen-sesion';
@@ -57,10 +57,10 @@ export function useComercioActivo(): string {
   return estado.comercioId;
 }
 
-/** Para registrar un negocio nuevo y dejarlo activo al terminar. */
-export function useEstrenarNegocio(): (comercioId: string) => Promise<void> {
+/** Permisos de la consola VECI de quien entró (vacío si no es del equipo VECI). */
+export function usePermisosDePlataforma(): () => Promise<string[]> {
   const { almacen } = usePiezas();
-  return (comercioId) => almacen.estrenarNegocio(comercioId);
+  return useCallback(() => almacen.permisosDePlataforma(), [almacen]);
 }
 
 /** Exige sesión abierta (con o sin negocio elegido); sin sesión manda a /entrar. */

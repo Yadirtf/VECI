@@ -43,6 +43,8 @@ export interface RepositorioSesion {
   /** null si no hay sesión guardada o ya se cerró. */
   renovar(): Promise<SesionActiva | null>;
   elegirComercio(tokenAcceso: string, comercioId: string): Promise<void>;
+  /** Qué puede hacer en la consola VECI; vacío si no es del equipo VECI. */
+  permisosDePlataforma(tokenAcceso: string): Promise<string[]>;
   salir(tokenAcceso: string | null): Promise<void>;
 }
 

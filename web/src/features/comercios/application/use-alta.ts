@@ -18,7 +18,7 @@ export interface AlmacenBorrador {
 
 /**
  * La conversación del alta: una pregunta a la vez, lo escrito queda guardado y al
- * final se registra el negocio. Devuelve el id para dejarlo activo.
+ * final se envía la solicitud a VECI. Devuelve true si llegó.
  */
 export function useAlta(repositorio: RepositorioComercios, almacen: AlmacenBorrador) {
   const [indice, setIndice] = useState(0);
@@ -43,19 +43,19 @@ export function useAlta(repositorio: RepositorioComercios, almacen: AlmacenBorra
     if (!falta) setIndice((i) => Math.min(i + 1, PASOS.length - 1));
   };
   const volver = () => (setProblema(null), setIndice((i) => Math.max(i - 1, 0)));
-  const registrar = async (): Promise<string | null> => {
+  const solicitar = async (): Promise<boolean> => {
     setOcupado(true);
     setProblema(null);
     try {
-      const { comercioId } = await repositorio.registrar(aDatosAlta(borrador));
+      await repositorio.solicitar(aDatosAlta(borrador));
       almacen.guardar(null);
-      return comercioId;
+      return true;
     } catch (error) {
-      setProblema(error instanceof Error ? error.message : 'No pudimos registrar tu negocio.');
-      return null;
+      setProblema(error instanceof Error ? error.message : 'No pudimos enviar tu solicitud.');
+      return false;
     } finally {
       setOcupado(false);
     }
   };
-  return { paso, indice, borrador, cambiar, seguir, volver, registrar, problema, ocupado };
+  return { paso, indice, borrador, cambiar, seguir, volver, solicitar, problema, ocupado };
 }

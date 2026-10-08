@@ -1,9 +1,13 @@
 import '../entities/alta.dart';
+import '../entities/solicitud.dart';
 
-/// Registrar un negocio desde el celular (HU-03-01).
+/// Pedir el registro de un negocio desde el celular (HU-03-01). VECI lo revisa y, al
+/// aprobarlo, la persona queda como dueña.
 abstract interface class ComerciosRepository {
-  Future<List<TipoDeNegocio>> tipos();
+  Future<CatalogosAlta> catalogos();
 
-  /// Devuelve el id del negocio nuevo para dejarlo activo.
-  Future<String> registrar(BorradorAlta borrador);
+  Future<void> solicitar(BorradorAlta borrador);
+
+  /// Las solicitudes de la persona, la más reciente primero.
+  Future<List<SolicitudDeNegocio>> misSolicitudes();
 }

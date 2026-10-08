@@ -1,31 +1,31 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
-import { useClienteVeci, useComercioActivo, useEstrenarNegocio } from '@/features/sesion';
+import { useClienteVeci, useComercioActivo } from '@/features/sesion';
 import { useAlta } from './application/use-alta';
 import { borradorNavegador } from './infrastructure/borrador-navegador';
 import { RepositorioComerciosApi } from './infrastructure/repositorio-comercios-api';
-import { AltaConversada } from './presentation/alta-conversada';
 import { CaminoDeApertura } from './presentation/camino-de-apertura';
 import { MiNegocio } from './presentation/mi-negocio';
+import { SolicitudDeNegocio } from './presentation/solicitud-de-negocio';
 
-/** Registrar un negocio (no exige tener uno elegido). */
+/** Pedir el registro de un negocio (no exige tener uno elegido). */
 export function RegistrarNegocio() {
   const cliente = useClienteVeci();
-  const estrenar = useEstrenarNegocio();
-  const router = useRouter();
   const repositorio = useMemo(() => new RepositorioComerciosApi(cliente), [cliente]);
   const alta = useAlta(repositorio, borradorNavegador);
   const cargarCatalogos = useCallback(
     async () => ({ tipos: await repositorio.tipos(), municipios: await repositorio.municipios() }),
     [repositorio],
   );
-  const alRegistrar = async (comercioId: string) => {
-    await estrenar(comercioId);
-    router.replace('/');
-  };
-  return <AltaConversada alta={alta} cargarCatalogos={cargarCatalogos} alRegistrar={alRegistrar} />;
+  const misSolicitudes = useCallback(() => repositorio.misSolicitudes(), [repositorio]);
+  return (
+    <SolicitudDeNegocio
+      alta={alta}
+      cargarCatalogos={cargarCatalogos}
+      misSolicitudes={misSolicitudes}
+    />
+  );
 }
 
 function useRepositorioDelNegocio() {

@@ -24,6 +24,7 @@ function preparar(ahora = 0) {
     crearPinNuevo: vi.fn(async () => sesion('t-nuevo')),
     renovar: vi.fn(async () => sesion('t2', ahora + 900_000)),
     elegirComercio: vi.fn(async () => undefined),
+    permisosDePlataforma: vi.fn(async () => ['platform.manage_tenants']),
     salir: vi.fn(async () => undefined),
   };
   let guardado: string | null = null;

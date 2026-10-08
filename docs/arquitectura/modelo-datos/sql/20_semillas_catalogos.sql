@@ -20,6 +20,8 @@ INSERT INTO core.municipalities (id, department_id, official_code, name) VALUES
   (86749,1,'86749','Sibundoy'), (86755,1,'86755','San Francisco'),
   (86757,1,'86757','San Miguel'), (86760,1,'86760','Santiago'),
   (86865,1,'86865','Valle del Guamuez'), (86885,1,'86885','Villagarzón');
+-- Cobertura: por ahora VECI opera solo en Mocoa.
+UPDATE core.municipalities SET is_served = true WHERE official_code = '86001';
 
 INSERT INTO core.document_types (id, code, name, country_id, for_natural_person, for_legal_entity, validation_regex, sort_order) VALUES
   (1,'CC','Cédula de ciudadanía',1,true,false,'^[0-9]{6,10}$',1),
@@ -107,6 +109,11 @@ INSERT INTO tenancy.tenant_statuses (id, code, name, allows_operations, is_initi
   (1,'ONBOARDING','En configuración',false,true,false), (2,'ACTIVE','Activo',true,false,false),
   (3,'SUSPENDED','Suspendido por VECI',false,false,false), (4,'CLOSED','Cerrado',false,false,true);
 INSERT INTO tenancy.tenant_status_transitions VALUES (1,2),(1,4),(2,3),(3,2),(2,4),(3,4);
+
+INSERT INTO tenancy.business_application_statuses (id, code, name, creates_tenant, is_initial, is_terminal) VALUES
+  (1,'PENDING','En revisión',false,true,false), (2,'APPROVED','Aprobada',true,false,true),
+  (3,'REJECTED','Rechazada',false,false,true);
+INSERT INTO tenancy.business_application_status_transitions VALUES (1,2),(1,3);
 
 INSERT INTO tenancy.branch_statuses (id, code, name, allows_operations) VALUES
   (1,'ACTIVE','Activa',true), (2,'INACTIVE','Inactiva',false), (3,'CLOSED','Cerrada',false);

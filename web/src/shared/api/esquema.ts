@@ -175,23 +175,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/comercios": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Registra un negocio propio (HU-03-01) */
-        post: operations["registrarComercio"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/comercios/municipios": {
         parameters: {
             query?: never;
@@ -269,6 +252,23 @@ export interface paths {
         };
         /** Comercios donde trabajo o soy cliente */
         get: operations["listarMisEspacios"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cuenta/permisos-de-plataforma": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Qué puedo hacer en la consola VECI (vacío si no soy del equipo VECI) */
+        get: operations["listarMisPermisosDePlataforma"];
         put?: never;
         post?: never;
         delete?: never;
@@ -550,6 +550,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/plataforma/solicitudes-de-negocio": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Solicitudes por revisar */
+        get: operations["listarSolicitudesDeNegocio"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/plataforma/solicitudes-de-negocio/{solicitudId}/aprobacion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Aprueba: nace el negocio con quien lo pidió como propietaria */
+        post: operations["aprobarSolicitudDeNegocio"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/plataforma/solicitudes-de-negocio/{solicitudId}/rechazo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Rechaza y dice por qué */
+        post: operations["rechazarSolicitudDeNegocio"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/politica-de-datos": {
         parameters: {
             query?: never;
@@ -767,6 +818,24 @@ export interface paths {
         put?: never;
         /** Cierra la sesión en este dispositivo */
         post: operations["salir"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/solicitudes-de-negocio": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Mis solicitudes */
+        get: operations["listarMisSolicitudesDeNegocio"];
+        put?: never;
+        /** Pide registrar mi negocio */
+        post: operations["solicitarRegistroDeNegocio"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1646,34 +1715,9 @@ export interface components {
             /** @example 1 */
             version: number;
         };
-        RegistrarComercioRequest: {
-            /** @example 310 000 0101 */
-            celular: string;
-            /** @example hola@lavecina.co */
-            correo?: string | null;
-            /** @example Barrio San Agustín */
-            direccion?: string | null;
-            /** @example https://lavecina.co/logo.png */
-            logoUrl?: string | null;
-            /**
-             * @description Municipio (DIVIPOLA) de la sede principal
-             * @example 86001
-             */
-            municipioId?: number | null;
-            /** @example Restaurante La Vecina */
-            nombre: string;
-            /**
-             * @description NIT con o sin dígito de verificación
-             * @example 900123456
-             */
-            numeroDocumento: string;
-            /** @enum {string} */
-            tipoDocumento: "NIT" | "CC";
-            /**
-             * @description Código del tipo de negocio (catálogo)
-             * @example RESTAURANT
-             */
-            tipoNegocio: string;
+        RechazoSolicitudRequest: {
+            /** @example El NIT no corresponde al negocio. Revísalo y vuelve a pedirlo. */
+            motivo: string;
         };
         RegistrarParaPropietarioRequest: {
             /** @example 310 000 0101 */
@@ -1878,6 +1922,78 @@ export interface components {
             /** @description Se cambia por uno nuevo en cada renovación; guárdelo seguro. */
             tokenRenovacion: string;
             usuario: components["schemas"]["UsuarioResponse"];
+        };
+        SolicitanteResponse: {
+            /** @example +573124567890 */
+            celular?: string | null;
+            /** @example Rosa Elena Chindoy */
+            nombre: string;
+            /** Format: uuid */
+            usuarioId: string;
+        };
+        SolicitarRegistroRequest: {
+            /** @example 310 000 0101 */
+            celular: string;
+            /** @example hola@lavecina.co */
+            correo?: string | null;
+            /** @example Barrio San Agustín */
+            direccion?: string | null;
+            /** @example https://lavecina.co/logo.png */
+            logoUrl?: string | null;
+            /**
+             * @description Municipio (DIVIPOLA) donde queda el negocio
+             * @example 86001
+             */
+            municipioId: number;
+            /** @example Restaurante La Vecina */
+            nombre: string;
+            /**
+             * @description NIT con o sin dígito de verificación
+             * @example 900123456
+             */
+            numeroDocumento: string;
+            /** @enum {string} */
+            tipoDocumento: "NIT" | "CC";
+            /**
+             * @description Código del tipo de negocio (catálogo)
+             * @example RESTAURANT
+             */
+            tipoNegocio: string;
+        };
+        SolicitudResponse: {
+            /** @example +573100000101 */
+            celular: string;
+            /**
+             * Format: uuid
+             * @description El negocio que nació al aprobarla
+             */
+            comercioId?: string | null;
+            correo?: string | null;
+            direccion?: string | null;
+            /** @enum {string} */
+            estado: "PENDING" | "APPROVED" | "REJECTED";
+            logoUrl?: string | null;
+            /** @example Mocoa */
+            municipio: string;
+            /** @example 86001 */
+            municipioId: number;
+            /** @example Restaurante La Vecina */
+            nombre: string;
+            /** @description Por qué se rechazó, en palabras para la persona */
+            nota?: string | null;
+            /** @example 9001234567 */
+            numeroDocumento: string;
+            /** Format: date-time */
+            radicadaEn: string;
+            /** Format: date-time */
+            revisadaEn?: string | null;
+            solicitante: components["schemas"]["SolicitanteResponse"];
+            /** Format: uuid */
+            solicitudId: string;
+            /** @enum {string} */
+            tipoDocumento: "NIT" | "CC";
+            /** @example RESTAURANT */
+            tipoNegocio: string;
         };
         TipoDeNegocioResponse: {
             /** @example RESTAURANT */
@@ -2690,45 +2806,6 @@ export interface operations {
             };
         };
     };
-    registrarComercio: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RegistrarComercioRequest"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ComercioRegistradoResponse"];
-                };
-            };
-            /** @description Sin sesión o sesión cerrada */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Datos inválidos */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RespuestaErrorDto"];
-                };
-            };
-        };
-    };
     listarMunicipios: {
         parameters: {
             query?: never;
@@ -2883,6 +2960,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EspacioResponse"][];
+                };
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarMisPermisosDePlataforma: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string[];
                 };
             };
             /** @description Sin sesión o sesión cerrada */
@@ -3765,6 +3868,147 @@ export interface operations {
             };
         };
     };
+    listarSolicitudesDeNegocio: {
+        parameters: {
+            query?: {
+                estado?: "PENDING" | "APPROVED" | "REJECTED";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SolicitudResponse"][];
+                };
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso platform.manage_tenants */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    aprobarSolicitudDeNegocio: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                solicitudId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ComercioRegistradoResponse"];
+                };
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso platform.manage_tenants */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description Ya fue revisada */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    rechazarSolicitudDeNegocio: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                solicitudId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RechazoSolicitudRequest"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso platform.manage_tenants */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description Ya fue revisada */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
     consultarPoliticaDeDatos: {
         parameters: {
             query?: never;
@@ -4357,6 +4601,78 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    listarMisSolicitudesDeNegocio: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SolicitudResponse"][];
+                };
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    solicitarRegistroDeNegocio: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SolicitarRegistroRequest"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Ya tiene una en revisión */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description Datos inválidos o municipio sin cobertura */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
             };
         };
     };

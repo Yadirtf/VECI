@@ -412,6 +412,8 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 - [x] El tipo de negocio sale de un catálogo configurable (restaurante, cafetería, panadería, colegio, tienda).
 - [x] Al crearlo se crean su sede principal, su plan de Prueba y la membresía del propietario.
 
+*Nota:* Desde ADR-0019 el dueño no crea el negocio solo: lo solicita desde Ajustes de la app o desde el panel, y Administración VECI lo aprueba o lo rechaza con un motivo. Solo se reciben negocios en municipios atendidos (hoy Mocoa).
+
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
 | Debe | 5 | F1 | S3 | HU-01-04 | RF-COM-01, RF-COM-04 |
@@ -1443,3 +1445,4 @@ Cada requerimiento del documento y las historias que lo cumplen. Un requerimient
 | 1.7 | 2026-10-05 | EP-03 implementada: alta de negocios por el dueño (conversación) y por Administración VECI (PIN temporal del propietario), horarios editables con historia, pausa y ETag para la caja, y sedes del plan Pro con cajeros por sede (ADR-0016). HU-03-03 se adelanta de la Fase 2; su filtro por sede en consumos y reportes queda para EP-06 y EP-10. |
 | 1.8 | 2026-10-05 | EP-04 implementada: registro propio del cliente con política de datos versionada (HU-12-01 en parte), QR personal firmado que se ve sin internet y se regenera, afiliación con un escaneo y QR propio por negocio, registro asistido con PIN de bienvenida de 7 días y búsqueda en la caja sobre una copia local enmascarada (ADR-0017). |
 | 1.9 | 2026-10-08 | EP-05 implementada: pizarra de tipos de tiquetera, venta idempotente con medio de pago en línea y sin señal (cola en el celular), saldo por unidad con la pila por vencimiento en la caja, el panel y la app del cliente (con copia sin internet), vencimiento automático por negocio y anulación y ajuste con motivo y auditoría (ADR-0018). |
+| 1.10 | 2026-10-08 | Revisión de roles y seguridad antes de EP-06: el registro de negocio pasa a ser una solicitud que aprueba Administración VECI (Ajustes en la app, consola VECI en el panel), cobertura por municipio en datos (hoy Mocoa) y PIN temporal que no toca cuentas de otros negocios ni del equipo VECI (ADR-0019). |

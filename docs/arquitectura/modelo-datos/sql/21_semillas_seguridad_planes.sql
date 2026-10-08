@@ -144,4 +144,6 @@ INSERT INTO audit.actions (id, module_id, code, name, is_sensitive) VALUES
   (15,5,'EXTRA_CONSUMPTION_AUTHORIZED','Consumo adicional autorizado',true),
   (16,6,'CONFLICT_RESOLVED','Conflicto resuelto',true), (17,2,'SETTING_CHANGED','Configuración cambiada',false),
   (18,9,'SUBSCRIPTION_CHANGED','Suscripción cambiada',false), (19,10,'DATA_REQUEST_RESOLVED','Solicitud de datos resuelta',true),
-  (20,10,'PERSON_ANONYMIZED','Datos personales anonimizados',true);
+  (20,10,'PERSON_ANONYMIZED','Datos personales anonimizados',true),
+  (21,2,'BUSINESS_APPLICATION_SUBMITTED','Solicitud de negocio radicada',false),
+  (22,2,'BUSINESS_APPLICATION_REVIEWED','Solicitud de negocio revisada',true);
