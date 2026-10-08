@@ -499,6 +499,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/mis-tiqueteras": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Mi saldo en cada negocio */
+        get: operations["consultarMisTiqueteras"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/plataforma/comercios": {
         parameters: {
             query?: never;
@@ -756,6 +773,178 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/tiqueteras/{tiqueteraId}/ajustes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Suma o quita unidades con motivo; queda en la historia (HU-05-05) */
+        post: operations["ajustarSaldo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tiqueteras/cliente/{clienteId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Saldo por unidad, tiqueteras e historia (HU-05-03) */
+        get: operations["consultarSaldoDelCliente"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tiqueteras/motivos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Para anular o ajustar */
+        get: operations["listarMotivosDeCorreccion"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tiqueteras/tipos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Activos y guardados */
+        get: operations["listarTiposDeTiquetera"];
+        put?: never;
+        /** Nuevo paquete (HU-05-01) */
+        post: operations["crearTipoDeTiquetera"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tiqueteras/tipos/{tipoId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Cambia precio o vigencia; lo vendido no cambia */
+        patch: operations["editarTipoDeTiquetera"];
+        trace?: never;
+    };
+    "/tiqueteras/tipos/{tipoId}/estado": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Activar o desactivar la venta */
+        patch: operations["cambiarEstadoDeTipo"];
+        trace?: never;
+    };
+    "/tiqueteras/unidades": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Almuerzo, desayuno, café… */
+        get: operations["listarUnidadesDeConsumo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ventas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Las últimas 50 ventas */
+        get: operations["listarVentasRecientes"];
+        put?: never;
+        /** Carga el saldo de inmediato; reenviarla no la duplica (HU-05-02) */
+        post: operations["venderTiquetera"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ventas/{ventaId}/anulacion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reversa la venta con motivo; nada se borra (HU-05-05) */
+        post: operations["anularVenta"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ventas/catalogo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Tipos activos y medios de pago; 304 si no cambió */
+        get: operations["bajarCatalogoDeVenta"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -764,6 +953,23 @@ export interface components {
             cliente: components["schemas"]["ClienteResponse"];
             /** @description Ya era cliente: no se creó nada */
             yaEstaba: boolean;
+        };
+        AjusteRequest: {
+            /**
+             * @description Código de la lista de motivos
+             * @example DATA_ENTRY_ERROR
+             */
+            motivo: string;
+            /**
+             * @description Obligatoria con "Otro"
+             * @example Se cobró dos veces
+             */
+            nota?: string;
+            /**
+             * @description Unidades que suma (+) o quita (-), sin cero
+             * @example -2
+             */
+            unidades: number;
         };
         AsignarSedesRequest: {
             /** @description Vacío = trabaja en todas las sedes */
@@ -792,6 +998,22 @@ export interface components {
         CambiarPinRequest: {
             pinActual: string;
             pinNuevo: string;
+        };
+        CanalResponse: {
+            /** @example NEQUI */
+            codigo: string;
+            /** @example Nequi */
+            nombre: string;
+        };
+        CatalogoDeVentaResponse: {
+            medios: components["schemas"]["MedioDePagoResponse"][];
+            /** @description Solo los activos */
+            tipos: components["schemas"]["TipoResponse"][];
+            /**
+             * @description Va también en el ETag
+             * @example 7.3
+             */
+            version: string;
         };
         CierreRemotoResponse: {
             /** @example 1 */
@@ -903,6 +1125,18 @@ export interface components {
              * @example 1042.37
              */
             version: string;
+        };
+        CorreccionRequest: {
+            /**
+             * @description Código de la lista de motivos
+             * @example DATA_ENTRY_ERROR
+             */
+            motivo: string;
+            /**
+             * @description Obligatoria con "Otro"
+             * @example Se cobró dos veces
+             */
+            nota?: string;
         };
         CorreoResponse: {
             /** @example marta@lavecina.co */
@@ -1070,8 +1304,21 @@ export interface components {
              */
             tipoNegocio: string;
         };
+        EstadoDeCuentaResponse: {
+            /** Format: uuid */
+            clienteId: string;
+            /** @description Lo más reciente primero */
+            movimientos: components["schemas"]["MovimientoResponse"][];
+            /** @description Saldo por unidad */
+            saldos: components["schemas"]["SaldoResponse"][];
+            tiqueteras: components["schemas"]["TiqueteraResponse"][];
+        };
         EstadoHorarioRequest: {
             /** @description false lo pone en pausa; true lo reanuda */
+            activo: boolean;
+        };
+        EstadoTipoRequest: {
+            /** @description true: se vende. false: se guarda sin borrar lo vendido. */
             activo: boolean;
         };
         HorarioResponse: {
@@ -1153,6 +1400,15 @@ export interface components {
             cupo: components["schemas"]["CupoDeSedesResponse"];
             sedes: components["schemas"]["SedeResponse"][];
         };
+        MedioDePagoResponse: {
+            canales: components["schemas"]["CanalResponse"][];
+            /** @example BANK_TRANSFER */
+            codigo: string;
+            /** @description Hay que decir por cuál canal llegó */
+            necesitaCanal: boolean;
+            /** @example Transferencia */
+            nombre: string;
+        };
         MiComercioResponse: {
             /** Format: date-time */
             afiliadoEn: string;
@@ -1190,11 +1446,71 @@ export interface components {
             /** @example 1 */
             version: number;
         };
+        MisTiqueterasResponse: {
+            /** @example Restaurante Doña Rosa */
+            comercio: string;
+            /** Format: uuid */
+            comercioId: string;
+            saldos: components["schemas"]["SaldoResponse"][];
+            tiqueteras: components["schemas"]["TiqueteraResponse"][];
+        };
+        MotivoResponse: {
+            /** @example DATA_ENTRY_ERROR */
+            codigo: string;
+            /** @example Error al registrar */
+            nombre: string;
+        };
+        MovimientoResponse: {
+            /** Format: uuid */
+            corrigeA?: string | null;
+            /** Format: uuid */
+            eventoId: string;
+            /** @example Error al registrar */
+            motivo?: string | null;
+            nota?: string | null;
+            /** Format: date-time */
+            ocurridoEn: string;
+            /** @example Rosa Elena */
+            quien?: string | null;
+            /** @enum {string} */
+            tipo: "SALE" | "CONSUMPTION" | "CONSUMPTION_REVERSAL" | "SALE_VOID" | "ADJUSTMENT" | "EXPIRATION";
+            /** @example Tiquetera de 20 almuerzos */
+            tiquetera?: string | null;
+            /**
+             * @description Unidades que sumó (+) o quitó (-)
+             * @example -1
+             */
+            unidades: number;
+        };
         MunicipioResponse: {
             /** @example 86001 */
             id: number;
             /** @example Mocoa */
             nombre: string;
+        };
+        PagoRequest: {
+            /**
+             * @description Obligatorio en transferencias
+             * @example NEQUI
+             */
+            canal?: string;
+            /**
+             * @description Código del medio de pago
+             * @example CASH
+             */
+            medio: string;
+            /**
+             * @description Referencia de la transferencia
+             * @example M123456
+             */
+            referencia?: string;
+        };
+        PagoResponse: {
+            /** @example NEQUI */
+            canal?: string | null;
+            /** @example BANK_TRANSFER */
+            medio: string;
+            referencia?: string | null;
         };
         PasoResponse: {
             /** @enum {string} */
@@ -1464,6 +1780,23 @@ export interface components {
         RevisionDocumentoResponse: {
             persona?: components["schemas"]["PersonaPorAfiliarResponse"] | null;
         };
+        SaldoResponse: {
+            /** @example 14 */
+            disponibles: number;
+            /**
+             * Format: date-time
+             * @description Vencimiento de la que se gasta primero
+             */
+            proximoVencimiento: string;
+            /**
+             * @description Tiqueteras vigentes que suman ese saldo
+             * @example 2
+             */
+            tiqueteras: number;
+            /** @example 2026-11-06 */
+            ultimoDia: string;
+            unidad: components["schemas"]["UnidadResponse"];
+        };
         SaludResponse: {
             /** @enum {string} */
             baseDatos: "ok" | "sin-conexion";
@@ -1544,6 +1877,106 @@ export interface components {
             /** @example ^[0-9]{6,10}$ */
             patron?: string | null;
         };
+        TipoRequest: {
+            /** @example Tiquetera de 20 almuerzos */
+            nombre: string;
+            /**
+             * @description Pesos, sin centavos
+             * @example 220000
+             */
+            precio: number;
+            /**
+             * @description Código de la unidad (lista de unidades)
+             * @example LUNCH
+             */
+            unidad: string;
+            /** @example 20 */
+            unidades: number;
+            /** @example 30 */
+            vigenciaDias: number;
+        };
+        TipoResponse: {
+            /**
+             * @description Solo el activo se vende
+             * @enum {string}
+             */
+            estado: "ACTIVE" | "INACTIVE" | "ARCHIVED";
+            /** @example Tiquetera de 20 almuerzos */
+            nombre: string;
+            /**
+             * @description Pesos, sin centavos
+             * @example 220000
+             */
+            precio: number;
+            /**
+             * @description Lo que sale cada unidad, redondeado
+             * @example 11000
+             */
+            precioPorUnidad: number;
+            /** Format: uuid */
+            tipoId: string;
+            unidad: components["schemas"]["UnidadResponse"];
+            /** @example 20 */
+            unidades: number;
+            /**
+             * @description Tiqueteras vendidas de este tipo
+             * @example 12
+             */
+            vendidas: number;
+            /**
+             * @description Días que sirve desde la compra
+             * @example 30
+             */
+            vigenciaDias: number;
+            /**
+             * @description Vendidas que siguen con unidades por servir
+             * @example 4
+             */
+            vigentes: number;
+        };
+        TiqueteraResponse: {
+            /** Format: uuid */
+            clienteId: string;
+            /** Format: date-time */
+            compradaEn: string;
+            /** @example 20 */
+            compradas: number;
+            /** @enum {string} */
+            estado: "ACTIVE" | "DEPLETED" | "EXPIRED" | "VOIDED";
+            /** @example Tiquetera de 20 almuerzos */
+            nombre: string;
+            /**
+             * @description Lo que se cobró; null en la app del cliente
+             * @example 220000
+             */
+            precio?: number | null;
+            /** @example 14 */
+            saldo: number;
+            /** Format: uuid */
+            tipoId: string;
+            /** Format: uuid */
+            tiqueteraId: string;
+            /**
+             * @description 1 = la que se gasta primero (la que vence antes)
+             * @example 1
+             */
+            turno?: number | null;
+            /**
+             * @description Último día en que sirve (fecha local)
+             * @example 2026-11-06
+             */
+            ultimoDia: string;
+            unidad: components["schemas"]["UnidadResponse"];
+            /**
+             * Format: date-time
+             * @description Desde este instante ya no sirve
+             */
+            venceEn: string;
+            /** Format: uuid */
+            ventaId: string;
+            /** @description Tiene unidades y no ha vencido */
+            vigente: boolean;
+        };
         TokenQrRequest: {
             /**
              * @description Texto leído del QR, tal cual
@@ -1551,11 +1984,86 @@ export interface components {
              */
             token: string;
         };
+        UnidadResponse: {
+            /** @example LUNCH */
+            codigo: string;
+            /** @example almuerzos */
+            plural: string;
+            /** @example almuerzo */
+            singular: string;
+        };
         UsuarioResponse: {
             /** Format: uuid */
             id: string;
             /** @example Jhon */
             nombre: string;
+        };
+        VentaRequest: {
+            /** Format: uuid */
+            clienteId: string;
+            /**
+             * Format: date-time
+             * @description Hora real de la venta hecha sin conexión
+             */
+            ocurridaEn?: string;
+            pago: components["schemas"]["PagoRequest"];
+            /**
+             * @description Lo que se le cobró al cliente
+             * @example 220000
+             */
+            precio: number;
+            /**
+             * @description Se hizo sin señal y llega después: se respeta el precio y la hora de la caja
+             * @default false
+             */
+            sinConexion: boolean;
+            /** Format: uuid */
+            tipoId: string;
+            /**
+             * Format: uuid
+             * @description UUID v7 que genera la caja: reenviar la misma venta no la duplica
+             */
+            ventaId: string;
+        };
+        VentaResponse: {
+            /** Format: uuid */
+            clienteId: string;
+            /** @enum {string} */
+            origen: "ONLINE" | "OFFLINE_SYNC";
+            /** @description Ya había llegado: no se registró otra vez */
+            repetida: boolean;
+            saldos: components["schemas"]["SaldoResponse"][];
+            /** @description La tiquetera que se vendió */
+            tiquetera: components["schemas"]["TiqueteraResponse"];
+            tiqueteras: components["schemas"]["TiqueteraResponse"][];
+            /** Format: uuid */
+            ventaId: string;
+        };
+        VentaResumenResponse: {
+            /** @example Rosa Elena */
+            cajero?: string | null;
+            /** @example Luz Marina Chindoy */
+            cliente: string;
+            /** Format: uuid */
+            clienteId: string;
+            /** @enum {string} */
+            estado: "COMPLETED" | "VOIDED";
+            /** Format: date-time */
+            ocurridaEn: string;
+            /** @enum {string} */
+            origen: "ONLINE" | "OFFLINE_SYNC";
+            pago: components["schemas"]["PagoResponse"];
+            /** @example 220000 */
+            precio: number;
+            /**
+             * @description Unidades que le quedan a esa tiquetera
+             * @example 14
+             */
+            saldo: number;
+            /** @example Tiquetera de 20 almuerzos */
+            tiquetera: string;
+            /** Format: uuid */
+            ventaId: string;
         };
     };
     responses: never;
@@ -3085,6 +3593,32 @@ export interface operations {
             };
         };
     };
+    consultarMisTiqueteras: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MisTiqueterasResponse"][];
+                };
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     registrarComercioParaPropietario: {
         parameters: {
             query?: never;
@@ -3787,6 +4321,705 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["RespuestaErrorDto"];
                 };
+            };
+        };
+    };
+    ajustarSaldo: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path: {
+                tiqueteraId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AjusteRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EstadoDeCuentaResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso prepaid.adjust_balance */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    consultarSaldoDelCliente: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path: {
+                clienteId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EstadoDeCuentaResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso customers.search */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    listarMotivosDeCorreccion: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MotivoResponse"][];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso prepaid.adjust_balance */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarTiposDeTiquetera: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TipoResponse"][];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /**
+             * @description Requiere el permiso prepaid.manage_package_types
+             *
+             *     El usuario no trabaja en ese negocio o su rol no alcanza
+             */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    crearTipoDeTiquetera: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TipoRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TipoResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /**
+             * @description Requiere el permiso prepaid.manage_package_types
+             *
+             *     El usuario no trabaja en ese negocio o su rol no alcanza
+             */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Ya hay uno con ese nombre */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    editarTipoDeTiquetera: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path: {
+                tipoId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TipoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TipoResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /**
+             * @description Requiere el permiso prepaid.manage_package_types
+             *
+             *     El usuario no trabaja en ese negocio o su rol no alcanza
+             */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description Cantidad de uno ya vendido */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    cambiarEstadoDeTipo: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path: {
+                tipoId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EstadoTipoRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TipoResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /**
+             * @description Requiere el permiso prepaid.manage_package_types
+             *
+             *     El usuario no trabaja en ese negocio o su rol no alcanza
+             */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    listarUnidadesDeConsumo: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnidadResponse"][];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /**
+             * @description Requiere el permiso prepaid.manage_package_types
+             *
+             *     El usuario no trabaja en ese negocio o su rol no alcanza
+             */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listarVentasRecientes: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VentaResumenResponse"][];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso prepaid.void_sale */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    venderTiquetera: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VentaRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VentaResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso prepaid.sell */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Tipo o cliente no existe */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description El precio cambió, el tipo no se vende o el id es de otra venta */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    anularVenta: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path: {
+                ventaId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CorreccionRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EstadoDeCuentaResponse"];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso prepaid.void_sale */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description Ya estaba anulada */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description Falta el motivo */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    bajarCatalogoDeVenta: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CatalogoDeVentaResponse"];
+                };
+            };
+            /** @description La copia del celular está al día */
+            304: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /**
+             * @description Requiere el permiso prepaid.sell
+             *
+             *     El usuario no trabaja en ese negocio o su rol no alcanza
+             */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

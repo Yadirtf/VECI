@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { useClienteVeci, useComercioActivo } from '@/features/sesion';
+import { CuentaDelCliente } from '@/features/tiqueteras';
 import { crearClienteVeci } from '@/shared/api/cliente';
 import { entorno } from '@/shared/config/entorno';
 import { PoliticaApi, RepositorioClientesApi } from './infrastructure/repositorio-clientes-api';
@@ -16,7 +17,12 @@ export function Clientes() {
     () => new RepositorioClientesApi(cliente, comercioId),
     [cliente, comercioId],
   );
-  return <PantallaClientes repositorio={repositorio} />;
+  return (
+    <PantallaClientes
+      repositorio={repositorio}
+      cuenta={(clienteId) => <CuentaDelCliente clienteId={clienteId} />}
+    />
+  );
 }
 
 /** Política de datos pública: no pide sesión. */

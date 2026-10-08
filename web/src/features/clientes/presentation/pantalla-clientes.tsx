@@ -1,5 +1,6 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { Aviso, Boton, Campo, PinParaDictar, Tarjeta } from '@/shared/ui';
 import { useLibreta } from '../application/use-libreta';
 import type { RepositorioClientes } from '../domain/cliente';
@@ -54,7 +55,16 @@ function ColumnaLibreta({ l }: { l: Libreta }) {
   );
 }
 
-function Ventanilla({ l, repositorio }: { l: Libreta; repositorio: RepositorioClientes }) {
+/** Lo que otra funcionalidad pone bajo la ficha: el saldo de tiqueteras (EP-05). */
+export type ExtraDeFicha = (clienteId: string) => ReactNode;
+
+interface VentanillaProps {
+  l: Libreta;
+  repositorio: RepositorioClientes;
+  cuenta?: ExtraDeFicha;
+}
+
+function Ventanilla({ l, repositorio, cuenta }: VentanillaProps) {
   const v = l.ventanilla;
   return (
     <div className="flex flex-col gap-m">
@@ -76,6 +86,9 @@ function Ventanilla({ l, repositorio }: { l: Libreta; repositorio: RepositorioCl
           alDarPin={l.mostrarPin}
         />
       )}
+      {v.tipo === 'ficha' && cuenta && (
+        <Tarjeta aria-label="Saldo de tiqueteras">{cuenta(v.clienteId)}</Tarjeta>
+      )}
       {v.tipo === 'registro' && (
         <RegistroAsistido
           key={v.desde}
@@ -95,7 +108,13 @@ function Ventanilla({ l, repositorio }: { l: Libreta; repositorio: RepositorioCl
 }
 
 /** Tus clientes: la libreta a la izquierda y la ventanilla con la ficha o el registro. */
-export function PantallaClientes({ repositorio }: { repositorio: RepositorioClientes }) {
+export function PantallaClientes({
+  repositorio,
+  cuenta,
+}: {
+  repositorio: RepositorioClientes;
+  cuenta?: ExtraDeFicha;
+}) {
   const l = useLibreta(repositorio);
   return (
     <div className="flex flex-col gap-l">
@@ -115,7 +134,7 @@ export function PantallaClientes({ repositorio }: { repositorio: RepositorioClie
       <Filtros filtro={l.filtro} alCambiar={l.setFiltro} />
       <div className="grid items-start gap-l lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
         <ColumnaLibreta l={l} />
-        <Ventanilla l={l} repositorio={repositorio} />
+        <Ventanilla l={l} repositorio={repositorio} cuenta={cuenta} />
       </div>
     </div>
   );
