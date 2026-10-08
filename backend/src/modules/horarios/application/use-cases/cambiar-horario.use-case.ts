@@ -25,7 +25,7 @@ export class CambiarHorario {
       horas: RangoHoras.de(entrada.horaInicio, entrada.horaFin),
     });
     await this.asegurarSinCruces(nuevo, actual.id);
-    await this.horarios.reemplazar(actual.id, nuevo);
+    await this.horarios.programar([actual.id], [nuevo]);
     return aHorarioOutput(nuevo);
   }
 

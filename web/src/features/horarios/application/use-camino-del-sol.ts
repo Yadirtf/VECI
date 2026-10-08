@@ -7,14 +7,13 @@ import { DIAS } from '../domain/agrupar-por-dia';
 import { aHora, aMinutos } from '../domain/arco';
 import { limitesDe, moverExtremo, type Extremo } from '../domain/dia-de-servicio';
 import type { Horario, RepositorioHorarios, SedeCorta, Servicio } from '../domain/horario';
+import type { Rango } from '../domain/programacion';
 
 export interface DatosHorarios {
   horarios: Horario[];
   servicios: Servicio[];
   sedes: SedeCorta[];
 }
-
-type Rango = { inicio: number; fin: number };
 
 /** Código del día de hoy: la pantalla abre en el sol de hoy. */
 export function diaDeHoy(fecha = new Date()): string {
@@ -46,16 +45,12 @@ function useBorrador(horarios: Horario[]) {
     if (!elegido || !rango) return;
     setRango(moverExtremo(rango, extremo, minutos, limitesDe(horarios, elegido)));
   };
-  const cambiado =
-    !!elegido &&
-    !!rango &&
-    (aHora(rango.inicio) !== elegido.horaInicio || aHora(rango.fin) !== elegido.horaFin);
-  return { elegido, rango, elegir, mover, cambiado, setElegidoId };
+  return { elegido, rango, elegir, mover, setElegidoId };
 }
 
 /**
  * Caso de uso "ajustar el día de servicio" (HU-03-02): elegir un día y una sede,
- * estirar un servicio, guardarlo, pausarlo o copiarlo a otros días.
+ * estirar un servicio y guardarlo en ese día o en varios a la vez, o pausarlo.
  */
 export function useCaminoDelSol(repositorio: RepositorioHorarios) {
   const { estado, recargar } = useDatos(repositorio);
@@ -92,29 +87,27 @@ type Borrador = ReturnType<typeof useBorrador>;
 type Hecho = (f: () => Promise<void>) => Promise<boolean>;
 
 function useAcciones(repositorio: RepositorioHorarios, b: Borrador, hecho: Hecho) {
-  const guardar = () =>
+  /** Las horas del borrador quedan en el día que se ve y en los demás elegidos. */
+  const guardar = (dias: string[]) =>
     hecho(async () => {
       if (!b.elegido || !b.rango) return;
-      b.setElegidoId(
-        await repositorio.editar(b.elegido.id, aHora(b.rango.inicio), aHora(b.rango.fin)),
-      );
+      const { servicioId, sedeId, dia } = b.elegido;
+      const programados = await repositorio.programar({
+        servicioId,
+        sedeId,
+        dias,
+        horaInicio: aHora(b.rango.inicio),
+        horaFin: aHora(b.rango.fin),
+      });
+      const delDia = programados.find((h) => h.dia === dia);
+      if (delDia) b.setElegidoId(delDia.id);
     });
   const pausar = (h: Horario) => hecho(() => repositorio.cambiarEstado(h.id, !h.activo));
-  const copiar = (h: Horario, dias: string[]) =>
-    hecho(() =>
-      repositorio.crear({
-        servicioId: h.servicioId,
-        sedeId: h.sedeId,
-        dias,
-        horaInicio: h.horaInicio,
-        horaFin: h.horaFin,
-      }),
-    );
   const crear = (servicio: Servicio | string, sedeId: string, dias: string[], rango: Rango) =>
     hecho(async () => {
       const { id } =
         typeof servicio === 'string' ? await repositorio.crearServicio(servicio) : servicio;
-      await repositorio.crear({
+      await repositorio.programar({
         servicioId: id,
         sedeId,
         dias,
@@ -122,5 +115,5 @@ function useAcciones(repositorio: RepositorioHorarios, b: Borrador, hecho: Hecho
         horaFin: aHora(rango.fin),
       });
     });
-  return { guardar, pausar, copiar, crear };
+  return { guardar, pausar, crear };
 }

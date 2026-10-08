@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Put,
   Res,
 } from '@nestjs/common';
 import {
@@ -26,6 +27,7 @@ import { RequierePermiso } from '../../../../shared/presentation/http/decoradore
 import { RespuestaErrorDto } from '../../../../shared/presentation/http/respuesta-error.dto';
 import { CambiarHorario } from '../../application/use-cases/cambiar-horario.use-case';
 import { CrearHorario } from '../../application/use-cases/crear-horario.use-case';
+import { ProgramarServicio } from '../../application/use-cases/programar-servicio.use-case';
 import { ListarHorarios } from '../../application/use-cases/listar-horarios.use-case';
 import {
   CrearHorarioRequest,
@@ -44,6 +46,7 @@ export class HorariosController {
     private readonly listarHorarios: ListarHorarios,
     private readonly crearHorario: CrearHorario,
     private readonly cambiarHorario: CambiarHorario,
+    private readonly programarServicio: ProgramarServicio,
   ) {}
 
   /**
@@ -82,6 +85,27 @@ export class HorariosController {
   @ApiUnprocessableEntityResponse({ type: RespuestaErrorDto, description: 'Horas o día inválidos' })
   crear(@Body() solicitud: CrearHorarioRequest): Promise<HorarioResponse[]> {
     return this.crearHorario.ejecutar(solicitud);
+  }
+
+  /**
+   * "Almuerzo de 11:30 a 15:00 de lunes a viernes": deja ese servicio con esas horas
+   * en cada día elegido. Reemplaza el que ya tenía y crea el que faltaba.
+   */
+  @Put('programacion')
+  @RequierePermiso('tenancy.manage_schedules')
+  @ApiOperation({
+    operationId: 'programarServicio',
+    summary: 'Deja un servicio con las mismas horas en uno o varios días',
+  })
+  @ApiOkResponse({ type: HorarioResponse, isArray: true })
+  @ApiConflictResponse({ type: RespuestaErrorDto, description: 'Algún día se cruza con otro' })
+  @ApiNotFoundResponse({
+    type: RespuestaErrorDto,
+    description: 'El servicio o la sede no son del negocio',
+  })
+  @ApiUnprocessableEntityResponse({ type: RespuestaErrorDto, description: 'Horas o día inválidos' })
+  programar(@Body() solicitud: CrearHorarioRequest): Promise<HorarioResponse[]> {
+    return this.programarServicio.ejecutar(solicitud);
   }
 
   @Patch(':id')

@@ -184,3 +184,16 @@
     color: #000;
   }
 }
+
+/* Cajón del menú en celular: entra desde la izquierda. */
+@keyframes cajon-entra {
+  from {
+    transform: translateX(-100%);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cajon-entra {
+    animation: cajon-entra 180ms ease-out;
+  }
+}

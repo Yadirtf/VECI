@@ -148,6 +148,28 @@ describe('API de horarios con comercio activo', () => {
     expect(martes.map((h: { horaInicio: string }) => h.horaInicio)).toEqual(['06:30']);
   });
 
+  it('programa un servicio en varios días: reemplaza el que había y crea el que faltaba', async () => {
+    const servidor = app.getHttpServer();
+    const c = await crearComercio(dueno);
+    const cabeceras = comoUsuario(c.usuarioId, c.comercioId);
+    await request(servidor)
+      .post('/horarios')
+      .set(cabeceras)
+      .send(horario(c, '08:00', '10:00'))
+      .expect(201);
+    const semana = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY'];
+    const programados = await request(servidor)
+      .put('/horarios/programacion')
+      .set(cabeceras)
+      .send({ ...horario(c, '11:30', '15:00'), dias: semana })
+      .expect(200);
+    expect(programados.body).toHaveLength(5);
+    const lista = await request(servidor).get('/horarios').set(cabeceras).expect(200);
+    expect(
+      lista.body.map((h: { dia: string; horaInicio: string }) => `${h.dia} ${h.horaInicio}`),
+    ).toEqual(semana.map((dia) => `${dia} 11:30`));
+  });
+
   it('valida el formato de la petición', async () => {
     await request(app.getHttpServer())
       .post('/horarios')

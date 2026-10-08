@@ -4,7 +4,6 @@ import { Aviso } from '@/shared/ui';
 import { diaDeHoy, useCaminoDelSol } from '../application/use-camino-del-sol';
 import { DIAS, horaLegible } from '../domain/agrupar-por-dia';
 import { aHora } from '../domain/arco';
-import { primerHueco } from '../domain/dia-de-servicio';
 import type { RepositorioHorarios, SedeCorta } from '../domain/horario';
 import { ArcoDelDia, minutosDe, type Segmento } from './arco-del-dia';
 import { colorDeServicio } from './colores';
@@ -64,28 +63,27 @@ function Debajo({ c }: { c: Camino }) {
   if (elegido && rango) {
     return (
       <DetalleServicio
+        key={elegido.id}
         horario={elegido}
         rango={rango}
-        cambiado={c.borrador.cambiado}
+        deLaSede={c.deLaSede}
         ocupado={c.accion.ocupado}
         alMover={c.borrador.mover}
-        alGuardar={() => void c.guardar()}
+        alGuardar={c.guardar}
         alPausar={() => void c.pausar(elegido)}
-        alCopiar={(dias) => c.copiar(elegido, dias)}
       />
     );
   }
   if (!c.datos || !c.sedeId) return null;
   const sedeId = c.sedeId;
-  const hueco = primerHueco(c.delDia);
   return (
     <NuevoServicio
-      key={c.dia}
+      key={`${sedeId}-${c.dia}`}
       servicios={c.datos.servicios}
+      deLaSede={c.deLaSede}
       dia={c.dia}
-      hueco={hueco}
       ocupado={c.accion.ocupado}
-      alCrear={(s, dias) => (hueco ? c.crear(s, sedeId, dias, hueco) : Promise.resolve(false))}
+      alCrear={(s, dias, rango) => c.crear(s, sedeId, dias, rango)}
     />
   );
 }
@@ -114,21 +112,25 @@ export function CaminoDelSol({ repositorio }: { repositorio: RepositorioHorarios
         alElegir={(id) => (c.setSede(id), c.borrador.elegir(null))}
       />
       <SolesDeLaSemana horarios={c.deLaSede} dia={c.dia} alElegir={c.elegirDia} />
-      <div
-        className="flex justify-center overflow-hidden rounded-l bg-superficie px-s pt-m"
-        onClick={(e) => e.target === e.currentTarget && c.borrador.elegir(null)}
-      >
-        <ArcoDelDia
-          segmentos={segmentos(c)}
-          elegidoId={c.borrador.elegido?.id ?? null}
-          ahora={ahoraSiEsHoy(c.dia)}
-          alElegir={c.borrador.elegir}
-          alMover={c.borrador.mover}
-          centro={centro(c)}
-        />
+      <div className="grid gap-l lg:grid-cols-2 lg:items-start">
+        <div
+          className="flex justify-center overflow-hidden rounded-l bg-superficie px-s pt-m lg:sticky lg:top-m"
+          onClick={(e) => e.target === e.currentTarget && c.borrador.elegir(null)}
+        >
+          <ArcoDelDia
+            segmentos={segmentos(c)}
+            elegidoId={c.borrador.elegido?.id ?? null}
+            ahora={ahoraSiEsHoy(c.dia)}
+            alElegir={c.borrador.elegir}
+            alMover={c.borrador.mover}
+            centro={centro(c)}
+          />
+        </div>
+        <div className="flex min-w-0 flex-col gap-l">
+          {c.accion.problema && <Aviso tono="error">{c.accion.problema}</Aviso>}
+          <Debajo c={c} />
+        </div>
       </div>
-      {c.accion.problema && <Aviso tono="error">{c.accion.problema}</Aviso>}
-      <Debajo c={c} />
       <p className="text-pequeno text-tinta-suave">
         Los cambios llegan al celular de caja la próxima vez que se sincronice.
       </p>

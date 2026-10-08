@@ -448,6 +448,23 @@ export interface paths {
         patch: operations["cambiarEstadoHorario"];
         trace?: never;
     };
+    "/horarios/programacion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Deja un servicio con las mismas horas en uno o varios días */
+        put: operations["programarServicio"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/mi-qr": {
         parameters: {
             query?: never;
@@ -3609,6 +3626,80 @@ export interface operations {
             };
             /** @description Al reanudar se cruza con otro */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+        };
+    };
+    programarServicio: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Id del negocio activo */
+                "x-veci-comercio": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrearHorarioRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HorarioResponse"][];
+                };
+            };
+            /** @description Falta el negocio activo */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Sin sesión o sesión cerrada */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Requiere el permiso tenancy.manage_schedules */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description El servicio o la sede no son del negocio */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description Algún día se cruza con otro */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RespuestaErrorDto"];
+                };
+            };
+            /** @description Horas o día inválidos */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };
