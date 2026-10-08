@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { GENERADOR_IDS, GeneradorIds } from '../../shared/application/puertos/generador-ids.port';
 import { CambiarHorario } from './application/use-cases/cambiar-horario.use-case';
 import { CrearHorario } from './application/use-cases/crear-horario.use-case';
+import { ProgramarServicio } from './application/use-cases/programar-servicio.use-case';
 import { ListarHorarios } from './application/use-cases/listar-horarios.use-case';
 import { GestionarServicios } from './application/use-cases/servicios.use-case';
 import {
@@ -36,6 +37,12 @@ import { ServiciosController } from './presentation/http/servicios.controller';
       provide: CambiarHorario,
       useFactory: (repositorio: HorarioServicioRepository, ids: GeneradorIds) =>
         new CambiarHorario(repositorio, ids),
+      inject: [HORARIO_SERVICIO_REPOSITORY, GENERADOR_IDS],
+    },
+    {
+      provide: ProgramarServicio,
+      useFactory: (repositorio: HorarioServicioRepository, ids: GeneradorIds) =>
+        new ProgramarServicio(repositorio, ids),
       inject: [HORARIO_SERVICIO_REPOSITORY, GENERADOR_IDS],
     },
     {

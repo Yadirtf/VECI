@@ -4,7 +4,8 @@ export class HorarioSeCruza extends ErrorDeDominio {
   readonly codigo = 'HORARIO_SE_CRUZA';
   readonly tipo = 'conflicto' as const;
 
-  constructor() {
-    super('Ese horario se cruza con otro del mismo día en esta sede.');
+  /** Con el detalle ("El martes se cruza con Desayuno...") el dueño sabe qué mover. */
+  constructor(detalle?: string) {
+    super(detalle ?? 'Ese horario se cruza con otro del mismo día en esta sede.');
   }
 }

@@ -401,4 +401,68 @@ class HorariosDeServicioApi {
     }
     return null;
   }
+
+  /// Deja un servicio con las mismas horas en uno o varios días
+  ///
+  /// Note: This method returns the HTTP [Response].
+  ///
+  /// Parameters:
+  ///
+  /// * [String] xVeciComercio (required):
+  ///   Id del negocio activo
+  ///
+  /// * [CrearHorarioRequest] crearHorarioRequest (required):
+  Future<Response> programarServicioWithHttpInfo(String xVeciComercio, CrearHorarioRequest crearHorarioRequest, { Future<void>? abortTrigger, }) async {
+    // ignore: prefer_const_declarations
+    final path = r'/horarios/programacion';
+
+    // ignore: prefer_final_locals
+    Object? postBody = crearHorarioRequest;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    headerParams[r'x-veci-comercio'] = parameterToString(xVeciComercio);
+
+    const contentTypes = <String>['application/json'];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'PUT',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+      abortTrigger: abortTrigger,
+    );
+  }
+
+  /// Deja un servicio con las mismas horas en uno o varios días
+  ///
+  /// Parameters:
+  ///
+  /// * [String] xVeciComercio (required):
+  ///   Id del negocio activo
+  ///
+  /// * [CrearHorarioRequest] crearHorarioRequest (required):
+  Future<List<HorarioResponse>?> programarServicio(String xVeciComercio, CrearHorarioRequest crearHorarioRequest, { Future<void>? abortTrigger, }) async {
+    final response = await programarServicioWithHttpInfo(xVeciComercio, crearHorarioRequest, abortTrigger: abortTrigger,);
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+    // When a remote server returns no body with a status of 204, we shall not decode it.
+    // At the time of writing this, `dart:convert` will throw an "Unexpected end of input"
+    // FormatException when trying to decode an empty string.
+    if (response.body.isNotEmpty && response.statusCode != HttpStatus.noContent) {
+      final responseBody = await _decodeBodyBytes(response);
+      return (await apiClient.deserializeAsync(responseBody, 'List<HorarioResponse>') as List)
+        .cast<HorarioResponse>()
+        .toList(growable: false);
+
+    }
+    return null;
+  }
 }

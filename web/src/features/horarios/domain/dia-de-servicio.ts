@@ -8,7 +8,7 @@ export interface Limites {
   maxFin: number;
 }
 
-const FIN_DEL_DIA = 23 * 60 + 45;
+export const FIN_DEL_DIA = 23 * 60 + 45;
 
 /** Horarios activos de la misma sede y día, sin el que se está moviendo. */
 function vecinos(horarios: readonly Horario[], h: Horario): Horario[] {

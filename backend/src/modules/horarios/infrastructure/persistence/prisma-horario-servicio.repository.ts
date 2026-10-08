@@ -83,16 +83,18 @@ export class PrismaHorarioServicioRepository implements HorarioServicioRepositor
     return this.conCruces((tx) => this.insertarTodos(tx, horarios));
   }
 
-  reemplazar(anteriorId: string, nuevo: HorarioServicio): Promise<void> {
+  programar(cerrar: readonly string[], nuevos: readonly HorarioServicio[]): Promise<void> {
     return this.conCruces(async (tx) => {
-      const cerrados = await tx.$executeRaw`
-        UPDATE tenancy.service_schedules
-           SET valid_during = daterange(
-                 LEAST(lower(valid_during), tenancy.current_local_date()),
-                 tenancy.current_local_date(), '[)')
-         WHERE id = ${anteriorId}::uuid AND tenancy.still_valid(valid_during)`;
-      if (cerrados === 0) throw new HorarioNoEncontrado();
-      await this.insertarTodos(tx, [nuevo]);
+      for (const anteriorId of cerrar) {
+        const cerrados = await tx.$executeRaw`
+          UPDATE tenancy.service_schedules
+             SET valid_during = daterange(
+                   LEAST(lower(valid_during), tenancy.current_local_date()),
+                   tenancy.current_local_date(), '[)')
+           WHERE id = ${anteriorId}::uuid AND tenancy.still_valid(valid_during)`;
+        if (cerrados === 0) throw new HorarioNoEncontrado();
+      }
+      await this.insertarTodos(tx, nuevos);
     });
   }
 

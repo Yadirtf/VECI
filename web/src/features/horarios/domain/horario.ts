@@ -21,6 +21,7 @@ export interface SedeCorta {
   nombre: string;
 }
 
+/** Un servicio con las mismas horas en uno o varios días. */
 export interface NuevoHorario {
   servicioId: string;
   sedeId: string;
@@ -34,9 +35,11 @@ export interface RepositorioHorarios {
   listar(): Promise<Horario[]>;
   servicios(): Promise<Servicio[]>;
   sedes(): Promise<SedeCorta[]>;
-  crear(nuevo: NuevoHorario): Promise<void>;
-  /** Devuelve el id del horario nuevo: el anterior queda en la historia. */
-  editar(id: string, horaInicio: string, horaFin: string): Promise<string>;
+  /**
+   * Deja el servicio con esas horas en cada día elegido: lo crea donde no estaba y
+   * le cambia las horas donde ya estaba (el anterior queda en la historia).
+   */
+  programar(nuevo: NuevoHorario): Promise<Horario[]>;
   cambiarEstado(id: string, activo: boolean): Promise<void>;
   crearServicio(nombre: string): Promise<Servicio>;
 }

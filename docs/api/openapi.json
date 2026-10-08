@@ -4424,6 +4424,95 @@
         ]
       }
     },
+    "/horarios/programacion": {
+      "put": {
+        "operationId": "programarServicio",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrearHorarioRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/HorarioResponse"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso tenancy.manage_schedules"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "El servicio o la sede no son del negocio"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Algún día se cruza con otro"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Horas o día inválidos"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Deja un servicio con las mismas horas en uno o varios días",
+        "tags": [
+          "Horarios de servicio"
+        ]
+      }
+    },
     "/mi-qr": {
       "get": {
         "operationId": "consultarMiQr",
