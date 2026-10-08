@@ -1,6 +1,6 @@
 # 0016 · Alta de comercios, horarios con historia y ETag, sedes por plan y diseño propio
 
-- **Estado:** Propuesta
+- **Estado:** Propuesta (la decisión 1 la reemplaza [ADR-0019](0019-roles-solicitudes-de-negocio-y-cobertura.md))
 - **Fecha:** 2026-10-05
 - **Requerimientos:** RF-COM-01 a RF-COM-04, RNF-USA-02, RNF-ESC-02
 

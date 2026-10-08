@@ -22,6 +22,7 @@ Un ADR deja escrito una decisión que cuesta cambiar: el contexto, lo que se eli
 | [0016](0016-alta-de-comercios-horarios-y-sedes.md) | Alta de comercios, horarios con historia y ETag, sedes por plan y diseño propio | Propuesta |
 | [0017](0017-clientes-qr-firmado-y-copia-local.md) | Clientes: QR firmados con claves derivadas, datos enmascarados y copia local | Propuesta |
 | [0018](0018-tiqueteras-ventas-offline-y-vencimiento.md) | Tiqueteras: pizarra de tipos, venta idempotente sin señal y vencimiento por negocio | Propuesta |
+| [0019](0019-roles-solicitudes-de-negocio-y-cobertura.md) | Roles acotados: solicitud de registro de negocio, cobertura por municipio y PIN temporal con límites | Propuesta |
 
 ## Cómo proponer uno nuevo
 
