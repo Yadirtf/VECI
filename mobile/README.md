@@ -38,6 +38,12 @@ Luz Marina (clienta de la semilla) entra con **310 000 0103** y el PIN **246813*
 - En la caja, "Atender a quien sigue" abre la ranura: un solo campo para nombre, celular o documento que busca en la copia local (Drift, versión 3 de la base) y un botón para escanear (`mobile_scanner`). Afiliar y registrar necesitan señal; buscar no.
 - La copia local guarda solo datos tapados y los últimos 4 números; se actualiza con `If-None-Match` y responde 304 si nada cambió.
 
+## Tiqueteras (EP-05)
+
+- En la caja, la ficha del cliente tiene "Vender tiquetera" y "Ver saldo e historia". Vender usa el catálogo guardado en Drift (versión 4 de la base): sin señal la venta entra a `ventas_pendientes`, se avisa que no se cobre otra vez y se envía sola cada 2 minutos o al volver a vender. Si el servidor la rechaza, queda con su motivo para quitarla.
+- El cliente ve "Mis tiqueteras" desde Inicio y Tus negocios: el saldo por negocio, con una copia cifrada para verlo sin internet que se borra al cerrar sesión.
+- Cerrar sesión avisa si quedan ventas por enviar.
+
 ## Comandos
 
 ```bash
