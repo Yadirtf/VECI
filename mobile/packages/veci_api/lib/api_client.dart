@@ -185,6 +185,8 @@ class ApiClient {
           return value is DateTime ? value : DateTime.tryParse(value);
         case 'AfiliacionResponse':
           return AfiliacionResponse.fromJson(value);
+        case 'AjusteRequest':
+          return AjusteRequest.fromJson(value);
         case 'AsignarSedesRequest':
           return AsignarSedesRequest.fromJson(value);
         case 'AvanceResponse':
@@ -195,6 +197,10 @@ class ApiClient {
           return CambiarEstadoCajeroRequest.fromJson(value);
         case 'CambiarPinRequest':
           return CambiarPinRequest.fromJson(value);
+        case 'CanalResponse':
+          return CanalResponse.fromJson(value);
+        case 'CatalogoDeVentaResponse':
+          return CatalogoDeVentaResponse.fromJson(value);
         case 'CierreRemotoResponse':
           return CierreRemotoResponse.fromJson(value);
         case 'ClavePublicaResponse':
@@ -213,6 +219,8 @@ class ApiClient {
           return ContactoResponse.fromJson(value);
         case 'CopiaLocalResponse':
           return CopiaLocalResponse.fromJson(value);
+        case 'CorreccionRequest':
+          return CorreccionRequest.fromJson(value);
         case 'CorreoResponse':
           return CorreoResponse.fromJson(value);
         case 'CorreoYContrasenaRequest':
@@ -243,8 +251,12 @@ class ApiClient {
           return EnCortoResponse.fromJson(value);
         case 'EspacioResponse':
           return EspacioResponse.fromJson(value);
+        case 'EstadoDeCuentaResponse':
+          return EstadoDeCuentaResponse.fromJson(value);
         case 'EstadoHorarioRequest':
           return EstadoHorarioRequest.fromJson(value);
+        case 'EstadoTipoRequest':
+          return EstadoTipoRequest.fromJson(value);
         case 'HorarioResponse':
           return HorarioResponse.fromJson(value);
         case 'IngresoConContrasenaRequest':
@@ -261,14 +273,26 @@ class ApiClient {
           return LecturaQrResponse.fromJson(value);
         case 'MapaDeSedesResponse':
           return MapaDeSedesResponse.fromJson(value);
+        case 'MedioDePagoResponse':
+          return MedioDePagoResponse.fromJson(value);
         case 'MiComercioResponse':
           return MiComercioResponse.fromJson(value);
         case 'MiQrResponse':
           return MiQrResponse.fromJson(value);
         case 'MiembroResponse':
           return MiembroResponse.fromJson(value);
+        case 'MisTiqueterasResponse':
+          return MisTiqueterasResponse.fromJson(value);
+        case 'MotivoResponse':
+          return MotivoResponse.fromJson(value);
+        case 'MovimientoResponse':
+          return MovimientoResponse.fromJson(value);
         case 'MunicipioResponse':
           return MunicipioResponse.fromJson(value);
+        case 'PagoRequest':
+          return PagoRequest.fromJson(value);
+        case 'PagoResponse':
+          return PagoResponse.fromJson(value);
         case 'PasoResponse':
           return PasoResponse.fromJson(value);
         case 'PerfilComercioResponse':
@@ -309,6 +333,8 @@ class ApiClient {
           return RestablecerPinClienteRequest.fromJson(value);
         case 'RevisionDocumentoResponse':
           return RevisionDocumentoResponse.fromJson(value);
+        case 'SaldoResponse':
+          return SaldoResponse.fromJson(value);
         case 'SaludResponse':
           return SaludResponse.fromJson(value);
         case 'SeccionPoliticaResponse':
@@ -327,10 +353,24 @@ class ApiClient {
           return TipoDeNegocioResponse.fromJson(value);
         case 'TipoDocumentoResponse':
           return TipoDocumentoResponse.fromJson(value);
+        case 'TipoRequest':
+          return TipoRequest.fromJson(value);
+        case 'TipoResponse':
+          return TipoResponse.fromJson(value);
+        case 'TiqueteraResponse':
+          return TiqueteraResponse.fromJson(value);
         case 'TokenQrRequest':
           return TokenQrRequest.fromJson(value);
+        case 'UnidadResponse':
+          return UnidadResponse.fromJson(value);
         case 'UsuarioResponse':
           return UsuarioResponse.fromJson(value);
+        case 'VentaRequest':
+          return VentaRequest.fromJson(value);
+        case 'VentaResponse':
+          return VentaResponse.fromJson(value);
+        case 'VentaResumenResponse':
+          return VentaResumenResponse.fromJson(value);
         default:
           dynamic match;
           if (value is List && (match = _regList.firstMatch(targetType)?.group(1)) != null) {

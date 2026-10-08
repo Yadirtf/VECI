@@ -17,6 +17,7 @@ import '../../features/sesion/domain/usecases/gestor_sesion.dart';
 import '../../features/sesion/presentation/pages/elegir_negocio_page.dart';
 import '../../features/sesion/presentation/pages/entrar_page.dart';
 import '../../features/sesion/presentation/pages/pin_nuevo_page.dart';
+import '../../features/tiqueteras/presentation/rutas_tiqueteras.dart';
 import 'redireccion.dart';
 import 'rutas.dart';
 
@@ -55,6 +56,7 @@ GoRouter crearRouter(GestorSesion gestor) => GoRouter(
       builder: (_, estado) => QrEnNegocioPage(comercioId: estado.pathParameters['comercioId']!),
     ),
     ...rutasDeClientes(),
+    ...rutasDeTiqueteras(),
   ],
 );
 

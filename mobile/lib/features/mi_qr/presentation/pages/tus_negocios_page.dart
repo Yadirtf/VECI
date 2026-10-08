@@ -48,9 +48,15 @@ class TusNegociosPage extends ConsumerWidget {
           VeciMostrador(
             children: [
               VeciBoton(
+                texto: 'Mis tiqueteras',
+                icono: Icons.confirmation_number,
+                grande: true,
+                alTocar: () => unawaited(context.push(Rutas.tusTiqueteras)),
+              ),
+              VeciBoton(
                 texto: 'Mi QR personal',
                 icono: Icons.qr_code_2,
-                grande: true,
+                secundario: true,
                 alTocar: () => unawaited(context.push(Rutas.miQr)),
               ),
             ],

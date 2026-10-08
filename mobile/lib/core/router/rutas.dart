@@ -18,6 +18,23 @@ abstract final class Rutas {
 
   static String qrDe(String comercioId) => '$tusNegocios/$comercioId';
 
+  /// El saldo de la persona en todos sus negocios (EP-05).
+  static const tusTiqueteras = '/tus-tiqueteras';
+
+  /// Caja (EP-05): saldo e historia de un cliente, y venderle una tiquetera (también
+  /// sin señal). `?nombre=` lleva su nombre para mostrarlo aunque no haya internet.
+  static const saldoDelCliente = '/saldo/:clienteId';
+  static const venderTiquetera = '/vender/:clienteId';
+
+  static String saldoDe(String clienteId, {String? nombre}) =>
+      Uri(path: '/saldo/$clienteId', queryParameters: _conNombre(nombre)).toString();
+
+  static String venderA(String clienteId, {String? nombre}) =>
+      Uri(path: '/vender/$clienteId', queryParameters: _conNombre(nombre)).toString();
+
+  static Map<String, String>? _conNombre(String? nombre) =>
+      nombre == null || nombre.isEmpty ? null : {'nombre': nombre};
+
   /// Entrar con el celular ya escrito (por ejemplo, si al registrarse ya tenía cuenta).
   static String entrarCon(String celular) =>
       Uri(path: entrar, queryParameters: {'celular': celular}).toString();
@@ -37,5 +54,8 @@ abstract final class Rutas {
   ];
 
   static bool esDelCliente(String ubicacion) =>
-      ubicacion == miQr || ubicacion == tusNegocios || ubicacion.startsWith('$tusNegocios/');
+      ubicacion == miQr ||
+      ubicacion == tusNegocios ||
+      ubicacion == tusTiqueteras ||
+      ubicacion.startsWith('$tusNegocios/');
 }

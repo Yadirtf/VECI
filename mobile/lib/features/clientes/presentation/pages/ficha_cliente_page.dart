@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/clientes_providers.dart';
+import '../../../../core/router/rutas.dart';
 import '../../../../core/theme/veci_tokens.dart';
 import '../../../../core/ui/veci_aviso.dart';
 import '../../../../core/ui/veci_boton.dart';
@@ -20,10 +21,13 @@ enum AvisoFicha { afiliado, yaEsCliente, registrado }
 /// Ficha del cliente (HU-04-03): sus datos como los manda la API y, si aún no activa
 /// su app, el botón para darle un PIN de bienvenida.
 class FichaClientePage extends ConsumerStatefulWidget {
-  const FichaClientePage({super.key, required this.clienteId, this.aviso});
+  const FichaClientePage({super.key, required this.clienteId, this.aviso, this.nombre});
 
   final String clienteId;
   final AvisoFicha? aviso;
+
+  /// De la copia del celular: sin señal no llega la ficha, pero se le puede vender.
+  final String? nombre;
 
   @override
   ConsumerState<FichaClientePage> createState() => _FichaClientePageState();
@@ -108,11 +112,12 @@ class _FichaClientePageState extends ConsumerState<FichaClientePage> {
   };
 
   List<Widget> _acciones(FichaCliente? ficha) => [
+    ..._tiqueteras(ficha?.nombre ?? widget.nombre),
     if (ficha != null && ficha.puedeRecibirPin && _pin == null)
       VeciBoton(
         texto: _ocupado ? 'Un momento…' : 'Dar PIN de bienvenida',
         icono: Icons.pin,
-        grande: true,
+        secundario: true,
         alTocar: _ocupado ? null : _darPin,
       ),
     VeciBoton(
@@ -122,4 +127,23 @@ class _FichaClientePageState extends ConsumerState<FichaClientePage> {
       alTocar: () => context.canPop() ? context.pop() : context.go(RutasClientes.caja),
     ),
   ];
+
+  /// Saldo y venta de tiqueteras (EP-05). Sin ficha ni nombre no hay a quién venderle.
+  List<Widget> _tiqueteras(String? nombre) {
+    if (nombre == null) return const [];
+    return [
+      VeciBoton(
+        texto: 'Vender tiquetera',
+        icono: Icons.point_of_sale,
+        grande: true,
+        alTocar: () => context.push(Rutas.venderA(widget.clienteId, nombre: nombre)),
+      ),
+      VeciBoton(
+        texto: 'Ver saldo e historia',
+        icono: Icons.confirmation_number,
+        secundario: true,
+        alTocar: () => context.push(Rutas.saldoDe(widget.clienteId, nombre: nombre)),
+      ),
+    ];
+  }
 }

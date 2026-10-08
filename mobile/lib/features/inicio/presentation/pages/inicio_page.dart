@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/rutas.dart';
 import '../../../../core/theme/veci_tokens.dart';
-import '../../../../core/ui/veci_aviso.dart';
 import '../../../../core/ui/veci_boton.dart';
 import '../../../../core/ui/veci_encabezado.dart';
 import '../../../../core/ui/veci_mostrador.dart';
@@ -87,9 +86,15 @@ class InicioPage extends StatelessWidget {
     if (!enLaCaja) {
       return [
         VeciBoton(
+          texto: 'Mis tiqueteras',
+          icono: Icons.confirmation_number,
+          grande: true,
+          alTocar: () => context.push(Rutas.tusTiqueteras),
+        ),
+        VeciBoton(
           texto: 'Ver mi QR',
           icono: Icons.qr_code_2,
-          grande: true,
+          secundario: true,
           alTocar: () => context.push(Rutas.miQr),
         ),
       ];
@@ -124,13 +129,6 @@ class InicioPage extends StatelessWidget {
           style: textos.titleMedium,
         ),
       ),
-      if (!enLaCaja) ...[
-        const SizedBox(height: VeciEspacio.l),
-        const VeciAviso(
-          tono: TonoAviso.aviso,
-          mensaje: 'Muy pronto verás aquí tus almuerzos disponibles.',
-        ),
-      ],
     ],
   );
 }

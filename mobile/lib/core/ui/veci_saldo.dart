@@ -68,9 +68,12 @@ class VeciSaldo extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: VeciEspacio.m),
         child: _LineaDeCorte(),
       ),
-      Text(
-        unidad,
-        style: const TextStyle(fontSize: VeciTexto.titulo, fontWeight: VeciPeso.medio),
+      // En una tarjeta angosta la unidad baja de renglón en vez de salirse.
+      Flexible(
+        child: Text(
+          unidad,
+          style: const TextStyle(fontSize: VeciTexto.titulo, fontWeight: VeciPeso.medio),
+        ),
       ),
     ],
   );
