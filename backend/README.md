@@ -42,6 +42,14 @@ Los valores por defecto apuntan a la base local; para cambiarlos copie `.env.exa
 - El cajero ve documento y celular tapados (`****5678`); el propietario los ve completos (`customers.view_full_document`).
 - `VECI_QR_SECRETO` deriva las claves Ed25519 de VECI y de cada negocio; es obligatorio fuera de local y cambiarlo invalida los QR emitidos.
 
+### Tiqueteras y ventas (EP-05, [ADR-0018](../docs/arquitectura/adr/0018-tiqueteras-ventas-offline-y-vencimiento.md))
+
+- Pizarra (`prepaid.manage_package_types`): `GET/POST /tiqueteras/tipos`, `PATCH /tiqueteras/tipos/:tipoId` y `PATCH /tiqueteras/tipos/:tipoId/estado`. Un tipo con ventas no cambia de cantidad ni de unidad.
+- Caja: `GET /ventas/catalogo` (tipos activos y medios de pago, con `ETag`) y `POST /ventas`. El celular genera el `ventaId`; reenviar la misma venta responde `repetida: true`. En línea manda la pizarra (`409 PRECIO_CAMBIO`, `422 TIPO_NO_SE_VENDE`); con `sinConexion: true` se guardan el precio cobrado y `ocurridaEn`.
+- Saldo: `GET /tiqueteras/cliente/:clienteId` en la caja y `GET /mis-tiqueteras` en la app del cliente.
+- Correcciones del propietario, con motivo de `GET /tiqueteras/motivos`: `GET /ventas` y `POST /ventas/:ventaId/anulacion` (`prepaid.void_sale`), y `POST /tiqueteras/:tiqueteraId/ajustes` (`prepaid.adjust_balance`).
+- El vencimiento automático corre al arrancar y cada hora; `VECI_VENCIMIENTO_AUTOMATICO=false` lo apaga (las pruebas de integración lo apagan).
+
 ## Comandos
 
 | Comando | Qué hace |

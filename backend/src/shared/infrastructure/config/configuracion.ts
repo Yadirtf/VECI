@@ -22,6 +22,8 @@ export interface Configuracion {
   /** Días que dura una sesión sin usarse; cada renovación la extiende (HU-02-06). */
   readonly diasSesion: number;
   readonly origenesPermitidos: readonly string[];
+  /** Vence las tiqueteras cada hora dentro de la API (VECI_VENCIMIENTO_AUTOMATICO, HU-05-04). */
+  readonly vencimientoAutomatico: boolean;
   readonly version: string;
 }
 
@@ -102,6 +104,7 @@ export function leerConfiguracion(variables: Variables = process.env): Configura
     segundosAcceso: Number(variables.VECI_SEGUNDOS_ACCESO ?? 900),
     diasSesion: Number(variables.VECI_DIAS_SESION ?? 30),
     origenesPermitidos: (variables.VECI_ORIGENES ?? 'http://localhost:3001').split(','),
+    vencimientoAutomatico: leerBooleano(variables.VECI_VENCIMIENTO_AUTOMATICO, true),
     version: variables.VECI_VERSION ?? variables.RENDER_GIT_COMMIT ?? 'local',
   };
 }

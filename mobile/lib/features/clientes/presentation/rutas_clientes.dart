@@ -21,9 +21,10 @@ abstract final class RutasClientes {
   static String registrarCon(String dato) =>
       Uri(path: registrar, queryParameters: dato.isEmpty ? null : {'dato': dato}).toString();
 
-  static String fichaDe(String clienteId, {AvisoFicha? aviso}) => Uri(
+  /// [nombre] viene de la copia del celular: con él se puede vender aunque no haya señal.
+  static String fichaDe(String clienteId, {AvisoFicha? aviso, String? nombre}) => Uri(
     path: '/caja/clientes/$clienteId',
-    queryParameters: aviso == null ? null : {'aviso': aviso.name},
+    queryParameters: {'aviso': ?aviso?.name, 'nombre': ?nombre},
   ).toString();
 }
 
@@ -43,6 +44,7 @@ List<RouteBase> rutasDeClientes() => [
         builder: (_, estado) => FichaClientePage(
           clienteId: estado.pathParameters['clienteId']!,
           aviso: AvisoFicha.values.asNameMap()[estado.uri.queryParameters['aviso']],
+          nombre: estado.uri.queryParameters['nombre'],
         ),
       ),
     ],

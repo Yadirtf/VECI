@@ -4,15 +4,15 @@ import 'package:veci_api/api.dart';
 
 import '../../features/sesion/data/datasources/almacen_sesion_seguro.dart';
 import '../../features/sesion/data/datasources/dispositivo_local.dart';
-import '../../features/sesion/data/datasources/eventos_pendientes_sin_outbox.dart';
 import '../../features/sesion/data/repositories/sesion_repository_impl.dart';
 import '../../features/sesion/domain/entities/estado_sesion.dart';
 import '../../features/sesion/domain/usecases/gestor_sesion.dart';
 import '../network/cliente_api.dart';
 import '../network/cliente_http_sesion.dart';
 import 'core_providers.dart';
+import 'tiqueteras_providers.dart';
 
-/// Conecta la sesión (EP-02): servidor, almacén cifrado y cola de pendientes.
+/// Conecta la sesión (EP-02): servidor, almacén cifrado y la cola de ventas (EP-05).
 final almacenSeguroProvider = Provider<FlutterSecureStorage>((ref) => const FlutterSecureStorage());
 
 final gestorSesionProvider = Provider<GestorSesion>((ref) {
@@ -26,7 +26,8 @@ final gestorSesionProvider = Provider<GestorSesion>((ref) {
   final gestor = GestorSesion(
     repositorio,
     AlmacenSesionSeguro(seguro),
-    const EventosPendientesSinOutbox(),
+    // La base se abre solo si hace falta contar (al cerrar una sesión).
+    VentasEnCola(() => ref.read(appDatabaseProvider)),
   );
   ref.onDispose(gestor.cerrar);
   return gestor;

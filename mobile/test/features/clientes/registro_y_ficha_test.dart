@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:veci/core/error/fallo.dart';
+import 'package:veci/core/router/rutas.dart';
 import 'package:veci/features/clientes/domain/entities/registro_asistido.dart';
 import 'package:veci/features/clientes/presentation/rutas_clientes.dart';
 
@@ -95,5 +97,25 @@ void main() {
 
     expect(find.text('482 915'), findsOneWidget);
     expect(find.text('Dar PIN de bienvenida'), findsNothing);
+  });
+
+  testWidgets('desde la ficha se vende tiquetera o se ve el saldo', (tester) async {
+    final abiertas = <String>[];
+    GoRoute ruta(String camino) => GoRoute(
+      path: camino,
+      builder: (_, estado) {
+        abiertas.add(estado.uri.toString());
+        return const Scaffold(body: Text('Tiqueteras'));
+      },
+    );
+    await abrirCaja(
+      tester,
+      RepositorioClientesFalso(),
+      ruta: RutasClientes.fichaDe('c1'),
+      otras: [ruta(Rutas.venderTiquetera), ruta(Rutas.saldoDelCliente)],
+    );
+
+    await _tocar(tester, 'Vender tiquetera');
+    expect(abiertas.single, startsWith('/vender/c1?nombre='));
   });
 }

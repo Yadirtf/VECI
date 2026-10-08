@@ -17,6 +17,30 @@
         ],
         "type": "object"
       },
+      "AjusteRequest": {
+        "properties": {
+          "motivo": {
+            "description": "Código de la lista de motivos",
+            "example": "DATA_ENTRY_ERROR",
+            "type": "string"
+          },
+          "nota": {
+            "description": "Obligatoria con \"Otro\"",
+            "example": "Se cobró dos veces",
+            "type": "string"
+          },
+          "unidades": {
+            "description": "Unidades que suma (+) o quita (-), sin cero",
+            "example": -2,
+            "type": "number"
+          }
+        },
+        "required": [
+          "motivo",
+          "unidades"
+        ],
+        "type": "object"
+      },
       "AsignarSedesRequest": {
         "properties": {
           "sedeIds": {
@@ -109,6 +133,51 @@
         "required": [
           "pinActual",
           "pinNuevo"
+        ],
+        "type": "object"
+      },
+      "CanalResponse": {
+        "properties": {
+          "codigo": {
+            "example": "NEQUI",
+            "type": "string"
+          },
+          "nombre": {
+            "example": "Nequi",
+            "type": "string"
+          }
+        },
+        "required": [
+          "codigo",
+          "nombre"
+        ],
+        "type": "object"
+      },
+      "CatalogoDeVentaResponse": {
+        "properties": {
+          "medios": {
+            "items": {
+              "$ref": "#/components/schemas/MedioDePagoResponse"
+            },
+            "type": "array"
+          },
+          "tipos": {
+            "description": "Solo los activos",
+            "items": {
+              "$ref": "#/components/schemas/TipoResponse"
+            },
+            "type": "array"
+          },
+          "version": {
+            "description": "Va también en el ETag",
+            "example": "7.3",
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "tipos",
+          "medios"
         ],
         "type": "object"
       },
@@ -384,6 +453,24 @@
           "version",
           "clientes",
           "claves"
+        ],
+        "type": "object"
+      },
+      "CorreccionRequest": {
+        "properties": {
+          "motivo": {
+            "description": "Código de la lista de motivos",
+            "example": "DATA_ENTRY_ERROR",
+            "type": "string"
+          },
+          "nota": {
+            "description": "Obligatoria con \"Otro\"",
+            "example": "Se cobró dos veces",
+            "type": "string"
+          }
+        },
+        "required": [
+          "motivo"
         ],
         "type": "object"
       },
@@ -774,10 +861,57 @@
         ],
         "type": "object"
       },
+      "EstadoDeCuentaResponse": {
+        "properties": {
+          "clienteId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "movimientos": {
+            "description": "Lo más reciente primero",
+            "items": {
+              "$ref": "#/components/schemas/MovimientoResponse"
+            },
+            "type": "array"
+          },
+          "saldos": {
+            "description": "Saldo por unidad",
+            "items": {
+              "$ref": "#/components/schemas/SaldoResponse"
+            },
+            "type": "array"
+          },
+          "tiqueteras": {
+            "items": {
+              "$ref": "#/components/schemas/TiqueteraResponse"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "clienteId",
+          "saldos",
+          "tiqueteras",
+          "movimientos"
+        ],
+        "type": "object"
+      },
       "EstadoHorarioRequest": {
         "properties": {
           "activo": {
             "description": "false lo pone en pausa; true lo reanuda",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "activo"
+        ],
+        "type": "object"
+      },
+      "EstadoTipoRequest": {
+        "properties": {
+          "activo": {
+            "description": "true: se vende. false: se guarda sin borrar lo vendido.",
             "type": "boolean"
           }
         },
@@ -999,6 +1133,35 @@
         ],
         "type": "object"
       },
+      "MedioDePagoResponse": {
+        "properties": {
+          "canales": {
+            "items": {
+              "$ref": "#/components/schemas/CanalResponse"
+            },
+            "type": "array"
+          },
+          "codigo": {
+            "example": "BANK_TRANSFER",
+            "type": "string"
+          },
+          "necesitaCanal": {
+            "description": "Hay que decir por cuál canal llegó",
+            "type": "boolean"
+          },
+          "nombre": {
+            "example": "Transferencia",
+            "type": "string"
+          }
+        },
+        "required": [
+          "codigo",
+          "nombre",
+          "necesitaCanal",
+          "canales"
+        ],
+        "type": "object"
+      },
       "MiComercioResponse": {
         "properties": {
           "afiliadoEn": {
@@ -1104,6 +1267,113 @@
         ],
         "type": "object"
       },
+      "MisTiqueterasResponse": {
+        "properties": {
+          "comercio": {
+            "example": "Restaurante Doña Rosa",
+            "type": "string"
+          },
+          "comercioId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "saldos": {
+            "items": {
+              "$ref": "#/components/schemas/SaldoResponse"
+            },
+            "type": "array"
+          },
+          "tiqueteras": {
+            "items": {
+              "$ref": "#/components/schemas/TiqueteraResponse"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "comercioId",
+          "comercio",
+          "saldos",
+          "tiqueteras"
+        ],
+        "type": "object"
+      },
+      "MotivoResponse": {
+        "properties": {
+          "codigo": {
+            "example": "DATA_ENTRY_ERROR",
+            "type": "string"
+          },
+          "nombre": {
+            "example": "Error al registrar",
+            "type": "string"
+          }
+        },
+        "required": [
+          "codigo",
+          "nombre"
+        ],
+        "type": "object"
+      },
+      "MovimientoResponse": {
+        "properties": {
+          "corrigeA": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "eventoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "motivo": {
+            "example": "Error al registrar",
+            "nullable": true,
+            "type": "string"
+          },
+          "nota": {
+            "nullable": true,
+            "type": "string"
+          },
+          "ocurridoEn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "quien": {
+            "example": "Rosa Elena",
+            "nullable": true,
+            "type": "string"
+          },
+          "tipo": {
+            "enum": [
+              "SALE",
+              "CONSUMPTION",
+              "CONSUMPTION_REVERSAL",
+              "SALE_VOID",
+              "ADJUSTMENT",
+              "EXPIRATION"
+            ],
+            "type": "string"
+          },
+          "tiquetera": {
+            "example": "Tiquetera de 20 almuerzos",
+            "nullable": true,
+            "type": "string"
+          },
+          "unidades": {
+            "description": "Unidades que sumó (+) o quitó (-)",
+            "example": -1,
+            "type": "number"
+          }
+        },
+        "required": [
+          "eventoId",
+          "tipo",
+          "ocurridoEn",
+          "unidades"
+        ],
+        "type": "object"
+      },
       "MunicipioResponse": {
         "properties": {
           "id": {
@@ -1118,6 +1388,50 @@
         "required": [
           "id",
           "nombre"
+        ],
+        "type": "object"
+      },
+      "PagoRequest": {
+        "properties": {
+          "canal": {
+            "description": "Obligatorio en transferencias",
+            "example": "NEQUI",
+            "type": "string"
+          },
+          "medio": {
+            "description": "Código del medio de pago",
+            "example": "CASH",
+            "type": "string"
+          },
+          "referencia": {
+            "description": "Referencia de la transferencia",
+            "example": "M123456",
+            "type": "string"
+          }
+        },
+        "required": [
+          "medio"
+        ],
+        "type": "object"
+      },
+      "PagoResponse": {
+        "properties": {
+          "canal": {
+            "example": "NEQUI",
+            "nullable": true,
+            "type": "string"
+          },
+          "medio": {
+            "example": "BANK_TRANSFER",
+            "type": "string"
+          },
+          "referencia": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "medio"
         ],
         "type": "object"
       },
@@ -1733,6 +2047,39 @@
         },
         "type": "object"
       },
+      "SaldoResponse": {
+        "properties": {
+          "disponibles": {
+            "example": 14,
+            "type": "number"
+          },
+          "proximoVencimiento": {
+            "description": "Vencimiento de la que se gasta primero",
+            "format": "date-time",
+            "type": "string"
+          },
+          "tiqueteras": {
+            "description": "Tiqueteras vigentes que suman ese saldo",
+            "example": 2,
+            "type": "number"
+          },
+          "ultimoDia": {
+            "example": "2026-11-06",
+            "type": "string"
+          },
+          "unidad": {
+            "$ref": "#/components/schemas/UnidadResponse"
+          }
+        },
+        "required": [
+          "unidad",
+          "disponibles",
+          "proximoVencimiento",
+          "ultimoDia",
+          "tiqueteras"
+        ],
+        "type": "object"
+      },
       "SaludResponse": {
         "properties": {
           "baseDatos": {
@@ -1975,6 +2322,196 @@
         ],
         "type": "object"
       },
+      "TipoRequest": {
+        "properties": {
+          "nombre": {
+            "example": "Tiquetera de 20 almuerzos",
+            "type": "string"
+          },
+          "precio": {
+            "description": "Pesos, sin centavos",
+            "example": 220000,
+            "type": "number"
+          },
+          "unidad": {
+            "description": "Código de la unidad (lista de unidades)",
+            "example": "LUNCH",
+            "type": "string"
+          },
+          "unidades": {
+            "example": 20,
+            "type": "number"
+          },
+          "vigenciaDias": {
+            "example": 30,
+            "type": "number"
+          }
+        },
+        "required": [
+          "nombre",
+          "unidad",
+          "unidades",
+          "precio",
+          "vigenciaDias"
+        ],
+        "type": "object"
+      },
+      "TipoResponse": {
+        "properties": {
+          "estado": {
+            "description": "Solo el activo se vende",
+            "enum": [
+              "ACTIVE",
+              "INACTIVE",
+              "ARCHIVED"
+            ],
+            "type": "string"
+          },
+          "nombre": {
+            "example": "Tiquetera de 20 almuerzos",
+            "type": "string"
+          },
+          "precio": {
+            "description": "Pesos, sin centavos",
+            "example": 220000,
+            "type": "number"
+          },
+          "precioPorUnidad": {
+            "description": "Lo que sale cada unidad, redondeado",
+            "example": 11000,
+            "type": "number"
+          },
+          "tipoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "unidad": {
+            "$ref": "#/components/schemas/UnidadResponse"
+          },
+          "unidades": {
+            "example": 20,
+            "type": "number"
+          },
+          "vendidas": {
+            "description": "Tiqueteras vendidas de este tipo",
+            "example": 12,
+            "type": "number"
+          },
+          "vigenciaDias": {
+            "description": "Días que sirve desde la compra",
+            "example": 30,
+            "type": "number"
+          },
+          "vigentes": {
+            "description": "Vendidas que siguen con unidades por servir",
+            "example": 4,
+            "type": "number"
+          }
+        },
+        "required": [
+          "tipoId",
+          "nombre",
+          "unidad",
+          "unidades",
+          "precio",
+          "precioPorUnidad",
+          "vigenciaDias",
+          "estado",
+          "vendidas",
+          "vigentes"
+        ],
+        "type": "object"
+      },
+      "TiqueteraResponse": {
+        "properties": {
+          "clienteId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "compradaEn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "compradas": {
+            "example": 20,
+            "type": "number"
+          },
+          "estado": {
+            "enum": [
+              "ACTIVE",
+              "DEPLETED",
+              "EXPIRED",
+              "VOIDED"
+            ],
+            "type": "string"
+          },
+          "nombre": {
+            "example": "Tiquetera de 20 almuerzos",
+            "type": "string"
+          },
+          "precio": {
+            "description": "Lo que se cobró; null en la app del cliente",
+            "example": 220000,
+            "nullable": true,
+            "type": "number"
+          },
+          "saldo": {
+            "example": 14,
+            "type": "number"
+          },
+          "tipoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "tiqueteraId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "turno": {
+            "description": "1 = la que se gasta primero (la que vence antes)",
+            "example": 1,
+            "nullable": true,
+            "type": "number"
+          },
+          "ultimoDia": {
+            "description": "Último día en que sirve (fecha local)",
+            "example": "2026-11-06",
+            "type": "string"
+          },
+          "unidad": {
+            "$ref": "#/components/schemas/UnidadResponse"
+          },
+          "venceEn": {
+            "description": "Desde este instante ya no sirve",
+            "format": "date-time",
+            "type": "string"
+          },
+          "ventaId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "vigente": {
+            "description": "Tiene unidades y no ha vencido",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "tiqueteraId",
+          "clienteId",
+          "ventaId",
+          "tipoId",
+          "nombre",
+          "unidad",
+          "compradas",
+          "saldo",
+          "estado",
+          "compradaEn",
+          "venceEn",
+          "ultimoDia",
+          "vigente"
+        ],
+        "type": "object"
+      },
       "TokenQrRequest": {
         "properties": {
           "token": {
@@ -1985,6 +2522,28 @@
         },
         "required": [
           "token"
+        ],
+        "type": "object"
+      },
+      "UnidadResponse": {
+        "properties": {
+          "codigo": {
+            "example": "LUNCH",
+            "type": "string"
+          },
+          "plural": {
+            "example": "almuerzos",
+            "type": "string"
+          },
+          "singular": {
+            "example": "almuerzo",
+            "type": "string"
+          }
+        },
+        "required": [
+          "codigo",
+          "singular",
+          "plural"
         ],
         "type": "object"
       },
@@ -2002,6 +2561,170 @@
         "required": [
           "id",
           "nombre"
+        ],
+        "type": "object"
+      },
+      "VentaRequest": {
+        "properties": {
+          "clienteId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "ocurridaEn": {
+            "description": "Hora real de la venta hecha sin conexión",
+            "format": "date-time",
+            "type": "string"
+          },
+          "pago": {
+            "$ref": "#/components/schemas/PagoRequest"
+          },
+          "precio": {
+            "description": "Lo que se le cobró al cliente",
+            "example": 220000,
+            "type": "number"
+          },
+          "sinConexion": {
+            "default": false,
+            "description": "Se hizo sin señal y llega después: se respeta el precio y la hora de la caja",
+            "type": "boolean"
+          },
+          "tipoId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "ventaId": {
+            "description": "UUID v7 que genera la caja: reenviar la misma venta no la duplica",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ventaId",
+          "clienteId",
+          "tipoId",
+          "precio",
+          "pago"
+        ],
+        "type": "object"
+      },
+      "VentaResponse": {
+        "properties": {
+          "clienteId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "origen": {
+            "enum": [
+              "ONLINE",
+              "OFFLINE_SYNC"
+            ],
+            "type": "string"
+          },
+          "repetida": {
+            "description": "Ya había llegado: no se registró otra vez",
+            "type": "boolean"
+          },
+          "saldos": {
+            "items": {
+              "$ref": "#/components/schemas/SaldoResponse"
+            },
+            "type": "array"
+          },
+          "tiquetera": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TiqueteraResponse"
+              }
+            ],
+            "description": "La tiquetera que se vendió"
+          },
+          "tiqueteras": {
+            "items": {
+              "$ref": "#/components/schemas/TiqueteraResponse"
+            },
+            "type": "array"
+          },
+          "ventaId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ventaId",
+          "clienteId",
+          "repetida",
+          "origen",
+          "tiquetera",
+          "saldos",
+          "tiqueteras"
+        ],
+        "type": "object"
+      },
+      "VentaResumenResponse": {
+        "properties": {
+          "cajero": {
+            "example": "Rosa Elena",
+            "nullable": true,
+            "type": "string"
+          },
+          "cliente": {
+            "example": "Luz Marina Chindoy",
+            "type": "string"
+          },
+          "clienteId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "estado": {
+            "enum": [
+              "COMPLETED",
+              "VOIDED"
+            ],
+            "type": "string"
+          },
+          "ocurridaEn": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "origen": {
+            "enum": [
+              "ONLINE",
+              "OFFLINE_SYNC"
+            ],
+            "type": "string"
+          },
+          "pago": {
+            "$ref": "#/components/schemas/PagoResponse"
+          },
+          "precio": {
+            "example": 220000,
+            "type": "number"
+          },
+          "saldo": {
+            "description": "Unidades que le quedan a esa tiquetera",
+            "example": 14,
+            "type": "number"
+          },
+          "tiquetera": {
+            "example": "Tiquetera de 20 almuerzos",
+            "type": "string"
+          },
+          "ventaId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ventaId",
+          "clienteId",
+          "cliente",
+          "tiquetera",
+          "precio",
+          "pago",
+          "ocurridaEn",
+          "origen",
+          "estado",
+          "saldo"
         ],
         "type": "object"
       }
@@ -3794,6 +4517,39 @@
         ]
       }
     },
+    "/mis-tiqueteras": {
+      "get": {
+        "operationId": "consultarMisTiqueteras",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MisTiqueterasResponse"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mi saldo en cada negocio",
+        "tags": [
+          "Tiqueteras"
+        ]
+      }
+    },
     "/plataforma/comercios": {
       "post": {
         "operationId": "registrarComercioParaPropietario",
@@ -4633,6 +5389,809 @@
         "summary": "Restablece el PIN de un cliente tras verificar su documento (HU-02-05)",
         "tags": [
           "Soporte VECI"
+        ]
+      }
+    },
+    "/tiqueteras/{tiqueteraId}/ajustes": {
+      "post": {
+        "operationId": "ajustarSaldo",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "tiqueteraId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AjusteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstadoDeCuentaResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso prepaid.adjust_balance"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Suma o quita unidades con motivo; queda en la historia (HU-05-05)",
+        "tags": [
+          "Tiqueteras"
+        ]
+      }
+    },
+    "/tiqueteras/cliente/{clienteId}": {
+      "get": {
+        "operationId": "consultarSaldoDelCliente",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "clienteId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstadoDeCuentaResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso customers.search"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Saldo por unidad, tiqueteras e historia (HU-05-03)",
+        "tags": [
+          "Tiqueteras"
+        ]
+      }
+    },
+    "/tiqueteras/motivos": {
+      "get": {
+        "operationId": "listarMotivosDeCorreccion",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MotivoResponse"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso prepaid.adjust_balance"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Para anular o ajustar",
+        "tags": [
+          "Tiqueteras"
+        ]
+      }
+    },
+    "/tiqueteras/tipos": {
+      "get": {
+        "operationId": "listarTiposDeTiquetera",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TipoResponse"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso prepaid.manage_package_types\n\nEl usuario no trabaja en ese negocio o su rol no alcanza"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Activos y guardados",
+        "tags": [
+          "Tiqueteras"
+        ]
+      },
+      "post": {
+        "operationId": "crearTipoDeTiquetera",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TipoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TipoResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso prepaid.manage_package_types\n\nEl usuario no trabaja en ese negocio o su rol no alcanza"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Ya hay uno con ese nombre"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Nuevo paquete (HU-05-01)",
+        "tags": [
+          "Tiqueteras"
+        ]
+      }
+    },
+    "/tiqueteras/tipos/{tipoId}": {
+      "patch": {
+        "operationId": "editarTipoDeTiquetera",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "tipoId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TipoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TipoResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso prepaid.manage_package_types\n\nEl usuario no trabaja en ese negocio o su rol no alcanza"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Cantidad de uno ya vendido"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cambia precio o vigencia; lo vendido no cambia",
+        "tags": [
+          "Tiqueteras"
+        ]
+      }
+    },
+    "/tiqueteras/tipos/{tipoId}/estado": {
+      "patch": {
+        "operationId": "cambiarEstadoDeTipo",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "tipoId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EstadoTipoRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TipoResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso prepaid.manage_package_types\n\nEl usuario no trabaja en ese negocio o su rol no alcanza"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Activar o desactivar la venta",
+        "tags": [
+          "Tiqueteras"
+        ]
+      }
+    },
+    "/tiqueteras/unidades": {
+      "get": {
+        "operationId": "listarUnidadesDeConsumo",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/UnidadResponse"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso prepaid.manage_package_types\n\nEl usuario no trabaja en ese negocio o su rol no alcanza"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Almuerzo, desayuno, café…",
+        "tags": [
+          "Tiqueteras"
+        ]
+      }
+    },
+    "/ventas": {
+      "get": {
+        "operationId": "listarVentasRecientes",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/VentaResumenResponse"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso prepaid.void_sale"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Las últimas 50 ventas",
+        "tags": [
+          "Ventas"
+        ]
+      },
+      "post": {
+        "operationId": "venderTiquetera",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VentaRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VentaResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso prepaid.sell"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Tipo o cliente no existe"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "El precio cambió, el tipo no se vende o el id es de otra venta"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Carga el saldo de inmediato; reenviarla no la duplica (HU-05-02)",
+        "tags": [
+          "Ventas"
+        ]
+      }
+    },
+    "/ventas/{ventaId}/anulacion": {
+      "post": {
+        "operationId": "anularVenta",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "ventaId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CorreccionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstadoDeCuentaResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso prepaid.void_sale"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Ya estaba anulada"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaErrorDto"
+                }
+              }
+            },
+            "description": "Falta el motivo"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Reversa la venta con motivo; nada se borra (HU-05-05)",
+        "tags": [
+          "Ventas"
+        ]
+      }
+    },
+    "/ventas/catalogo": {
+      "get": {
+        "operationId": "bajarCatalogoDeVenta",
+        "parameters": [
+          {
+            "description": "Id del negocio activo",
+            "in": "header",
+            "name": "x-veci-comercio",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogoDeVentaResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "304": {
+            "description": "La copia del celular está al día"
+          },
+          "400": {
+            "description": "Falta el negocio activo"
+          },
+          "401": {
+            "description": "Sin sesión o sesión cerrada"
+          },
+          "403": {
+            "description": "Requiere el permiso prepaid.sell\n\nEl usuario no trabaja en ese negocio o su rol no alcanza"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Tipos activos y medios de pago; 304 si no cambió",
+        "tags": [
+          "Ventas"
         ]
       }
     }

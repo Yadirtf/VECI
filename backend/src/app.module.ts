@@ -8,6 +8,7 @@ import { PersonalModule } from './modules/personal';
 import { SaludModule } from './modules/salud';
 import { SedesModule } from './modules/sedes';
 import { SoporteModule } from './modules/soporte';
+import { TiqueterasModule } from './modules/tiqueteras';
 import { SharedModule } from './shared/shared.module';
 
 @Module({
@@ -22,6 +23,7 @@ import { SharedModule } from './shared/shared.module';
     PersonalModule,
     SedesModule,
     SoporteModule,
+    TiqueterasModule,
   ],
 })
 export class AppModule {}

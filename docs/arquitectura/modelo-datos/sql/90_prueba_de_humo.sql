@@ -168,6 +168,26 @@ SELECT pg_temp.expect_error('movimiento con signo contrario al tipo de evento (c
     INSERT INTO ledger.movements (tenant_id, event_id, package_id, units_delta)
     SELECT '10000000-0000-7000-8000-00000000000a', id, 'b2000000-0000-7000-8000-000000000001', 5 FROM e$$);
 
+-- La caché y el estado se mueven juntos (EP-05): sin unidades se agota y al recibir vuelve
+INSERT INTO ledger.events (id, tenant_id, event_type_id, event_origin_id, affiliation_id, branch_id, actor_membership_id, occurred_at, event_reason_id, reason_note)
+VALUES ('c3000000-0000-7000-8000-000000000001','10000000-0000-7000-8000-00000000000a',5,1,'80000000-0000-7000-8000-000000000001',
+        '20000000-0000-7000-8000-00000000000a','50000000-0000-7000-8000-000000000001', now(), 1, 'Prueba: dejar en cero'),
+       ('c3000000-0000-7000-8000-000000000002','10000000-0000-7000-8000-00000000000a',5,1,'80000000-0000-7000-8000-000000000001',
+        '20000000-0000-7000-8000-00000000000a','50000000-0000-7000-8000-000000000001', now(), 1, 'Prueba: devolver');
+INSERT INTO ledger.movements (tenant_id, event_id, package_id, units_delta) VALUES
+  ('10000000-0000-7000-8000-00000000000a','c3000000-0000-7000-8000-000000000001','b2000000-0000-7000-8000-000000000001',-30);
+SELECT pg_temp.expect('sin unidades la tiquetera queda agotada',
+  (SELECT s.code FROM prepaid.packages p JOIN prepaid.package_statuses s ON s.id = p.package_status_id
+    WHERE p.id = 'b2000000-0000-7000-8000-000000000001') = 'DEPLETED');
+INSERT INTO ledger.movements (tenant_id, event_id, package_id, units_delta) VALUES
+  ('10000000-0000-7000-8000-00000000000a','c3000000-0000-7000-8000-000000000002','b2000000-0000-7000-8000-000000000001',30);
+SELECT pg_temp.expect('al recibir unidades vuelve a estar activa',
+  (SELECT s.code FROM prepaid.packages p JOIN prepaid.package_statuses s ON s.id = p.package_status_id
+    WHERE p.id = 'b2000000-0000-7000-8000-000000000001') = 'ACTIVE');
+SELECT pg_temp.expect('el proceso de vencimiento solo ve comercios con tiqueteras vencidas',
+  (SELECT count(*) FROM prepaid.tenants_with_due_packages(now())) = 0
+  AND (SELECT count(*) FROM prepaid.tenants_with_due_packages(now() + interval '46 days')) = 1);
+
 -- Máquina de estados de la tiquetera
 SELECT pg_temp.expect_error('tiquetera anulada no puede volver a activa',
   $$UPDATE prepaid.packages SET package_status_id = 4 WHERE id = 'b2000000-0000-7000-8000-000000000001';

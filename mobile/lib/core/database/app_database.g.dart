@@ -1689,6 +1689,1085 @@ class CopiasDeClientesCompanion extends UpdateCompanion<CopiaDeClientesLocal> {
   }
 }
 
+class $CatalogosDeVentaTable extends CatalogosDeVenta
+    with TableInfo<$CatalogosDeVentaTable, CatalogoDeVentaLocal> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CatalogosDeVentaTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _comercioIdMeta = const VerificationMeta(
+    'comercioId',
+  );
+  @override
+  late final GeneratedColumn<String> comercioId = GeneratedColumn<String>(
+    'comercio_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _contenidoMeta = const VerificationMeta(
+    'contenido',
+  );
+  @override
+  late final GeneratedColumn<String> contenido = GeneratedColumn<String>(
+    'contenido',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _etagMeta = const VerificationMeta('etag');
+  @override
+  late final GeneratedColumn<String> etag = GeneratedColumn<String>(
+    'etag',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _alDiaEnMeta = const VerificationMeta(
+    'alDiaEn',
+  );
+  @override
+  late final GeneratedColumn<DateTime> alDiaEn = GeneratedColumn<DateTime>(
+    'al_dia_en',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [comercioId, contenido, etag, alDiaEn];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'catalogos_de_venta';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CatalogoDeVentaLocal> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('comercio_id')) {
+      context.handle(
+        _comercioIdMeta,
+        comercioId.isAcceptableOrUnknown(data['comercio_id']!, _comercioIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_comercioIdMeta);
+    }
+    if (data.containsKey('contenido')) {
+      context.handle(
+        _contenidoMeta,
+        contenido.isAcceptableOrUnknown(data['contenido']!, _contenidoMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_contenidoMeta);
+    }
+    if (data.containsKey('etag')) {
+      context.handle(
+        _etagMeta,
+        etag.isAcceptableOrUnknown(data['etag']!, _etagMeta),
+      );
+    }
+    if (data.containsKey('al_dia_en')) {
+      context.handle(
+        _alDiaEnMeta,
+        alDiaEn.isAcceptableOrUnknown(data['al_dia_en']!, _alDiaEnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_alDiaEnMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {comercioId};
+  @override
+  CatalogoDeVentaLocal map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CatalogoDeVentaLocal(
+      comercioId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}comercio_id'],
+      )!,
+      contenido: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}contenido'],
+      )!,
+      etag: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}etag'],
+      ),
+      alDiaEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}al_dia_en'],
+      )!,
+    );
+  }
+
+  @override
+  $CatalogosDeVentaTable createAlias(String alias) {
+    return $CatalogosDeVentaTable(attachedDatabase, alias);
+  }
+}
+
+class CatalogoDeVentaLocal extends DataClass
+    implements Insertable<CatalogoDeVentaLocal> {
+  final String comercioId;
+  final String contenido;
+  final String? etag;
+  final DateTime alDiaEn;
+  const CatalogoDeVentaLocal({
+    required this.comercioId,
+    required this.contenido,
+    this.etag,
+    required this.alDiaEn,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['comercio_id'] = Variable<String>(comercioId);
+    map['contenido'] = Variable<String>(contenido);
+    if (!nullToAbsent || etag != null) {
+      map['etag'] = Variable<String>(etag);
+    }
+    map['al_dia_en'] = Variable<DateTime>(alDiaEn);
+    return map;
+  }
+
+  CatalogosDeVentaCompanion toCompanion(bool nullToAbsent) {
+    return CatalogosDeVentaCompanion(
+      comercioId: Value(comercioId),
+      contenido: Value(contenido),
+      etag: etag == null && nullToAbsent ? const Value.absent() : Value(etag),
+      alDiaEn: Value(alDiaEn),
+    );
+  }
+
+  factory CatalogoDeVentaLocal.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CatalogoDeVentaLocal(
+      comercioId: serializer.fromJson<String>(json['comercioId']),
+      contenido: serializer.fromJson<String>(json['contenido']),
+      etag: serializer.fromJson<String?>(json['etag']),
+      alDiaEn: serializer.fromJson<DateTime>(json['alDiaEn']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'comercioId': serializer.toJson<String>(comercioId),
+      'contenido': serializer.toJson<String>(contenido),
+      'etag': serializer.toJson<String?>(etag),
+      'alDiaEn': serializer.toJson<DateTime>(alDiaEn),
+    };
+  }
+
+  CatalogoDeVentaLocal copyWith({
+    String? comercioId,
+    String? contenido,
+    Value<String?> etag = const Value.absent(),
+    DateTime? alDiaEn,
+  }) => CatalogoDeVentaLocal(
+    comercioId: comercioId ?? this.comercioId,
+    contenido: contenido ?? this.contenido,
+    etag: etag.present ? etag.value : this.etag,
+    alDiaEn: alDiaEn ?? this.alDiaEn,
+  );
+  CatalogoDeVentaLocal copyWithCompanion(CatalogosDeVentaCompanion data) {
+    return CatalogoDeVentaLocal(
+      comercioId: data.comercioId.present
+          ? data.comercioId.value
+          : this.comercioId,
+      contenido: data.contenido.present ? data.contenido.value : this.contenido,
+      etag: data.etag.present ? data.etag.value : this.etag,
+      alDiaEn: data.alDiaEn.present ? data.alDiaEn.value : this.alDiaEn,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CatalogoDeVentaLocal(')
+          ..write('comercioId: $comercioId, ')
+          ..write('contenido: $contenido, ')
+          ..write('etag: $etag, ')
+          ..write('alDiaEn: $alDiaEn')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(comercioId, contenido, etag, alDiaEn);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CatalogoDeVentaLocal &&
+          other.comercioId == this.comercioId &&
+          other.contenido == this.contenido &&
+          other.etag == this.etag &&
+          other.alDiaEn == this.alDiaEn);
+}
+
+class CatalogosDeVentaCompanion extends UpdateCompanion<CatalogoDeVentaLocal> {
+  final Value<String> comercioId;
+  final Value<String> contenido;
+  final Value<String?> etag;
+  final Value<DateTime> alDiaEn;
+  final Value<int> rowid;
+  const CatalogosDeVentaCompanion({
+    this.comercioId = const Value.absent(),
+    this.contenido = const Value.absent(),
+    this.etag = const Value.absent(),
+    this.alDiaEn = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CatalogosDeVentaCompanion.insert({
+    required String comercioId,
+    required String contenido,
+    this.etag = const Value.absent(),
+    required DateTime alDiaEn,
+    this.rowid = const Value.absent(),
+  }) : comercioId = Value(comercioId),
+       contenido = Value(contenido),
+       alDiaEn = Value(alDiaEn);
+  static Insertable<CatalogoDeVentaLocal> custom({
+    Expression<String>? comercioId,
+    Expression<String>? contenido,
+    Expression<String>? etag,
+    Expression<DateTime>? alDiaEn,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (comercioId != null) 'comercio_id': comercioId,
+      if (contenido != null) 'contenido': contenido,
+      if (etag != null) 'etag': etag,
+      if (alDiaEn != null) 'al_dia_en': alDiaEn,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CatalogosDeVentaCompanion copyWith({
+    Value<String>? comercioId,
+    Value<String>? contenido,
+    Value<String?>? etag,
+    Value<DateTime>? alDiaEn,
+    Value<int>? rowid,
+  }) {
+    return CatalogosDeVentaCompanion(
+      comercioId: comercioId ?? this.comercioId,
+      contenido: contenido ?? this.contenido,
+      etag: etag ?? this.etag,
+      alDiaEn: alDiaEn ?? this.alDiaEn,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (comercioId.present) {
+      map['comercio_id'] = Variable<String>(comercioId.value);
+    }
+    if (contenido.present) {
+      map['contenido'] = Variable<String>(contenido.value);
+    }
+    if (etag.present) {
+      map['etag'] = Variable<String>(etag.value);
+    }
+    if (alDiaEn.present) {
+      map['al_dia_en'] = Variable<DateTime>(alDiaEn.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CatalogosDeVentaCompanion(')
+          ..write('comercioId: $comercioId, ')
+          ..write('contenido: $contenido, ')
+          ..write('etag: $etag, ')
+          ..write('alDiaEn: $alDiaEn, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $VentasPendientesTable extends VentasPendientes
+    with TableInfo<$VentasPendientesTable, VentaPendienteLocal> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $VentasPendientesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _ventaIdMeta = const VerificationMeta(
+    'ventaId',
+  );
+  @override
+  late final GeneratedColumn<String> ventaId = GeneratedColumn<String>(
+    'venta_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _comercioIdMeta = const VerificationMeta(
+    'comercioId',
+  );
+  @override
+  late final GeneratedColumn<String> comercioId = GeneratedColumn<String>(
+    'comercio_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clienteIdMeta = const VerificationMeta(
+    'clienteId',
+  );
+  @override
+  late final GeneratedColumn<String> clienteId = GeneratedColumn<String>(
+    'cliente_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nombreClienteMeta = const VerificationMeta(
+    'nombreCliente',
+  );
+  @override
+  late final GeneratedColumn<String> nombreCliente = GeneratedColumn<String>(
+    'nombre_cliente',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _tipoIdMeta = const VerificationMeta('tipoId');
+  @override
+  late final GeneratedColumn<String> tipoId = GeneratedColumn<String>(
+    'tipo_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nombreTipoMeta = const VerificationMeta(
+    'nombreTipo',
+  );
+  @override
+  late final GeneratedColumn<String> nombreTipo = GeneratedColumn<String>(
+    'nombre_tipo',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _precioMeta = const VerificationMeta('precio');
+  @override
+  late final GeneratedColumn<int> precio = GeneratedColumn<int>(
+    'precio',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _medioMeta = const VerificationMeta('medio');
+  @override
+  late final GeneratedColumn<String> medio = GeneratedColumn<String>(
+    'medio',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _canalMeta = const VerificationMeta('canal');
+  @override
+  late final GeneratedColumn<String> canal = GeneratedColumn<String>(
+    'canal',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _referenciaMeta = const VerificationMeta(
+    'referencia',
+  );
+  @override
+  late final GeneratedColumn<String> referencia = GeneratedColumn<String>(
+    'referencia',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _ocurridaEnMeta = const VerificationMeta(
+    'ocurridaEn',
+  );
+  @override
+  late final GeneratedColumn<DateTime> ocurridaEn = GeneratedColumn<DateTime>(
+    'ocurrida_en',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _intentosMeta = const VerificationMeta(
+    'intentos',
+  );
+  @override
+  late final GeneratedColumn<int> intentos = GeneratedColumn<int>(
+    'intentos',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _rechazoMeta = const VerificationMeta(
+    'rechazo',
+  );
+  @override
+  late final GeneratedColumn<String> rechazo = GeneratedColumn<String>(
+    'rechazo',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    ventaId,
+    comercioId,
+    clienteId,
+    nombreCliente,
+    tipoId,
+    nombreTipo,
+    precio,
+    medio,
+    canal,
+    referencia,
+    ocurridaEn,
+    intentos,
+    rechazo,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'ventas_pendientes';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<VentaPendienteLocal> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('venta_id')) {
+      context.handle(
+        _ventaIdMeta,
+        ventaId.isAcceptableOrUnknown(data['venta_id']!, _ventaIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ventaIdMeta);
+    }
+    if (data.containsKey('comercio_id')) {
+      context.handle(
+        _comercioIdMeta,
+        comercioId.isAcceptableOrUnknown(data['comercio_id']!, _comercioIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_comercioIdMeta);
+    }
+    if (data.containsKey('cliente_id')) {
+      context.handle(
+        _clienteIdMeta,
+        clienteId.isAcceptableOrUnknown(data['cliente_id']!, _clienteIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clienteIdMeta);
+    }
+    if (data.containsKey('nombre_cliente')) {
+      context.handle(
+        _nombreClienteMeta,
+        nombreCliente.isAcceptableOrUnknown(
+          data['nombre_cliente']!,
+          _nombreClienteMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_nombreClienteMeta);
+    }
+    if (data.containsKey('tipo_id')) {
+      context.handle(
+        _tipoIdMeta,
+        tipoId.isAcceptableOrUnknown(data['tipo_id']!, _tipoIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_tipoIdMeta);
+    }
+    if (data.containsKey('nombre_tipo')) {
+      context.handle(
+        _nombreTipoMeta,
+        nombreTipo.isAcceptableOrUnknown(data['nombre_tipo']!, _nombreTipoMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nombreTipoMeta);
+    }
+    if (data.containsKey('precio')) {
+      context.handle(
+        _precioMeta,
+        precio.isAcceptableOrUnknown(data['precio']!, _precioMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_precioMeta);
+    }
+    if (data.containsKey('medio')) {
+      context.handle(
+        _medioMeta,
+        medio.isAcceptableOrUnknown(data['medio']!, _medioMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_medioMeta);
+    }
+    if (data.containsKey('canal')) {
+      context.handle(
+        _canalMeta,
+        canal.isAcceptableOrUnknown(data['canal']!, _canalMeta),
+      );
+    }
+    if (data.containsKey('referencia')) {
+      context.handle(
+        _referenciaMeta,
+        referencia.isAcceptableOrUnknown(data['referencia']!, _referenciaMeta),
+      );
+    }
+    if (data.containsKey('ocurrida_en')) {
+      context.handle(
+        _ocurridaEnMeta,
+        ocurridaEn.isAcceptableOrUnknown(data['ocurrida_en']!, _ocurridaEnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ocurridaEnMeta);
+    }
+    if (data.containsKey('intentos')) {
+      context.handle(
+        _intentosMeta,
+        intentos.isAcceptableOrUnknown(data['intentos']!, _intentosMeta),
+      );
+    }
+    if (data.containsKey('rechazo')) {
+      context.handle(
+        _rechazoMeta,
+        rechazo.isAcceptableOrUnknown(data['rechazo']!, _rechazoMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {ventaId};
+  @override
+  VentaPendienteLocal map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return VentaPendienteLocal(
+      ventaId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}venta_id'],
+      )!,
+      comercioId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}comercio_id'],
+      )!,
+      clienteId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cliente_id'],
+      )!,
+      nombreCliente: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}nombre_cliente'],
+      )!,
+      tipoId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tipo_id'],
+      )!,
+      nombreTipo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}nombre_tipo'],
+      )!,
+      precio: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}precio'],
+      )!,
+      medio: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}medio'],
+      )!,
+      canal: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}canal'],
+      ),
+      referencia: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}referencia'],
+      ),
+      ocurridaEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}ocurrida_en'],
+      )!,
+      intentos: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}intentos'],
+      )!,
+      rechazo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}rechazo'],
+      ),
+    );
+  }
+
+  @override
+  $VentasPendientesTable createAlias(String alias) {
+    return $VentasPendientesTable(attachedDatabase, alias);
+  }
+}
+
+class VentaPendienteLocal extends DataClass
+    implements Insertable<VentaPendienteLocal> {
+  final String ventaId;
+  final String comercioId;
+  final String clienteId;
+  final String nombreCliente;
+  final String tipoId;
+  final String nombreTipo;
+  final int precio;
+  final String medio;
+  final String? canal;
+  final String? referencia;
+  final DateTime ocurridaEn;
+  final int intentos;
+  final String? rechazo;
+  const VentaPendienteLocal({
+    required this.ventaId,
+    required this.comercioId,
+    required this.clienteId,
+    required this.nombreCliente,
+    required this.tipoId,
+    required this.nombreTipo,
+    required this.precio,
+    required this.medio,
+    this.canal,
+    this.referencia,
+    required this.ocurridaEn,
+    required this.intentos,
+    this.rechazo,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['venta_id'] = Variable<String>(ventaId);
+    map['comercio_id'] = Variable<String>(comercioId);
+    map['cliente_id'] = Variable<String>(clienteId);
+    map['nombre_cliente'] = Variable<String>(nombreCliente);
+    map['tipo_id'] = Variable<String>(tipoId);
+    map['nombre_tipo'] = Variable<String>(nombreTipo);
+    map['precio'] = Variable<int>(precio);
+    map['medio'] = Variable<String>(medio);
+    if (!nullToAbsent || canal != null) {
+      map['canal'] = Variable<String>(canal);
+    }
+    if (!nullToAbsent || referencia != null) {
+      map['referencia'] = Variable<String>(referencia);
+    }
+    map['ocurrida_en'] = Variable<DateTime>(ocurridaEn);
+    map['intentos'] = Variable<int>(intentos);
+    if (!nullToAbsent || rechazo != null) {
+      map['rechazo'] = Variable<String>(rechazo);
+    }
+    return map;
+  }
+
+  VentasPendientesCompanion toCompanion(bool nullToAbsent) {
+    return VentasPendientesCompanion(
+      ventaId: Value(ventaId),
+      comercioId: Value(comercioId),
+      clienteId: Value(clienteId),
+      nombreCliente: Value(nombreCliente),
+      tipoId: Value(tipoId),
+      nombreTipo: Value(nombreTipo),
+      precio: Value(precio),
+      medio: Value(medio),
+      canal: canal == null && nullToAbsent
+          ? const Value.absent()
+          : Value(canal),
+      referencia: referencia == null && nullToAbsent
+          ? const Value.absent()
+          : Value(referencia),
+      ocurridaEn: Value(ocurridaEn),
+      intentos: Value(intentos),
+      rechazo: rechazo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(rechazo),
+    );
+  }
+
+  factory VentaPendienteLocal.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return VentaPendienteLocal(
+      ventaId: serializer.fromJson<String>(json['ventaId']),
+      comercioId: serializer.fromJson<String>(json['comercioId']),
+      clienteId: serializer.fromJson<String>(json['clienteId']),
+      nombreCliente: serializer.fromJson<String>(json['nombreCliente']),
+      tipoId: serializer.fromJson<String>(json['tipoId']),
+      nombreTipo: serializer.fromJson<String>(json['nombreTipo']),
+      precio: serializer.fromJson<int>(json['precio']),
+      medio: serializer.fromJson<String>(json['medio']),
+      canal: serializer.fromJson<String?>(json['canal']),
+      referencia: serializer.fromJson<String?>(json['referencia']),
+      ocurridaEn: serializer.fromJson<DateTime>(json['ocurridaEn']),
+      intentos: serializer.fromJson<int>(json['intentos']),
+      rechazo: serializer.fromJson<String?>(json['rechazo']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'ventaId': serializer.toJson<String>(ventaId),
+      'comercioId': serializer.toJson<String>(comercioId),
+      'clienteId': serializer.toJson<String>(clienteId),
+      'nombreCliente': serializer.toJson<String>(nombreCliente),
+      'tipoId': serializer.toJson<String>(tipoId),
+      'nombreTipo': serializer.toJson<String>(nombreTipo),
+      'precio': serializer.toJson<int>(precio),
+      'medio': serializer.toJson<String>(medio),
+      'canal': serializer.toJson<String?>(canal),
+      'referencia': serializer.toJson<String?>(referencia),
+      'ocurridaEn': serializer.toJson<DateTime>(ocurridaEn),
+      'intentos': serializer.toJson<int>(intentos),
+      'rechazo': serializer.toJson<String?>(rechazo),
+    };
+  }
+
+  VentaPendienteLocal copyWith({
+    String? ventaId,
+    String? comercioId,
+    String? clienteId,
+    String? nombreCliente,
+    String? tipoId,
+    String? nombreTipo,
+    int? precio,
+    String? medio,
+    Value<String?> canal = const Value.absent(),
+    Value<String?> referencia = const Value.absent(),
+    DateTime? ocurridaEn,
+    int? intentos,
+    Value<String?> rechazo = const Value.absent(),
+  }) => VentaPendienteLocal(
+    ventaId: ventaId ?? this.ventaId,
+    comercioId: comercioId ?? this.comercioId,
+    clienteId: clienteId ?? this.clienteId,
+    nombreCliente: nombreCliente ?? this.nombreCliente,
+    tipoId: tipoId ?? this.tipoId,
+    nombreTipo: nombreTipo ?? this.nombreTipo,
+    precio: precio ?? this.precio,
+    medio: medio ?? this.medio,
+    canal: canal.present ? canal.value : this.canal,
+    referencia: referencia.present ? referencia.value : this.referencia,
+    ocurridaEn: ocurridaEn ?? this.ocurridaEn,
+    intentos: intentos ?? this.intentos,
+    rechazo: rechazo.present ? rechazo.value : this.rechazo,
+  );
+  VentaPendienteLocal copyWithCompanion(VentasPendientesCompanion data) {
+    return VentaPendienteLocal(
+      ventaId: data.ventaId.present ? data.ventaId.value : this.ventaId,
+      comercioId: data.comercioId.present
+          ? data.comercioId.value
+          : this.comercioId,
+      clienteId: data.clienteId.present ? data.clienteId.value : this.clienteId,
+      nombreCliente: data.nombreCliente.present
+          ? data.nombreCliente.value
+          : this.nombreCliente,
+      tipoId: data.tipoId.present ? data.tipoId.value : this.tipoId,
+      nombreTipo: data.nombreTipo.present
+          ? data.nombreTipo.value
+          : this.nombreTipo,
+      precio: data.precio.present ? data.precio.value : this.precio,
+      medio: data.medio.present ? data.medio.value : this.medio,
+      canal: data.canal.present ? data.canal.value : this.canal,
+      referencia: data.referencia.present
+          ? data.referencia.value
+          : this.referencia,
+      ocurridaEn: data.ocurridaEn.present
+          ? data.ocurridaEn.value
+          : this.ocurridaEn,
+      intentos: data.intentos.present ? data.intentos.value : this.intentos,
+      rechazo: data.rechazo.present ? data.rechazo.value : this.rechazo,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('VentaPendienteLocal(')
+          ..write('ventaId: $ventaId, ')
+          ..write('comercioId: $comercioId, ')
+          ..write('clienteId: $clienteId, ')
+          ..write('nombreCliente: $nombreCliente, ')
+          ..write('tipoId: $tipoId, ')
+          ..write('nombreTipo: $nombreTipo, ')
+          ..write('precio: $precio, ')
+          ..write('medio: $medio, ')
+          ..write('canal: $canal, ')
+          ..write('referencia: $referencia, ')
+          ..write('ocurridaEn: $ocurridaEn, ')
+          ..write('intentos: $intentos, ')
+          ..write('rechazo: $rechazo')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    ventaId,
+    comercioId,
+    clienteId,
+    nombreCliente,
+    tipoId,
+    nombreTipo,
+    precio,
+    medio,
+    canal,
+    referencia,
+    ocurridaEn,
+    intentos,
+    rechazo,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is VentaPendienteLocal &&
+          other.ventaId == this.ventaId &&
+          other.comercioId == this.comercioId &&
+          other.clienteId == this.clienteId &&
+          other.nombreCliente == this.nombreCliente &&
+          other.tipoId == this.tipoId &&
+          other.nombreTipo == this.nombreTipo &&
+          other.precio == this.precio &&
+          other.medio == this.medio &&
+          other.canal == this.canal &&
+          other.referencia == this.referencia &&
+          other.ocurridaEn == this.ocurridaEn &&
+          other.intentos == this.intentos &&
+          other.rechazo == this.rechazo);
+}
+
+class VentasPendientesCompanion extends UpdateCompanion<VentaPendienteLocal> {
+  final Value<String> ventaId;
+  final Value<String> comercioId;
+  final Value<String> clienteId;
+  final Value<String> nombreCliente;
+  final Value<String> tipoId;
+  final Value<String> nombreTipo;
+  final Value<int> precio;
+  final Value<String> medio;
+  final Value<String?> canal;
+  final Value<String?> referencia;
+  final Value<DateTime> ocurridaEn;
+  final Value<int> intentos;
+  final Value<String?> rechazo;
+  final Value<int> rowid;
+  const VentasPendientesCompanion({
+    this.ventaId = const Value.absent(),
+    this.comercioId = const Value.absent(),
+    this.clienteId = const Value.absent(),
+    this.nombreCliente = const Value.absent(),
+    this.tipoId = const Value.absent(),
+    this.nombreTipo = const Value.absent(),
+    this.precio = const Value.absent(),
+    this.medio = const Value.absent(),
+    this.canal = const Value.absent(),
+    this.referencia = const Value.absent(),
+    this.ocurridaEn = const Value.absent(),
+    this.intentos = const Value.absent(),
+    this.rechazo = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  VentasPendientesCompanion.insert({
+    required String ventaId,
+    required String comercioId,
+    required String clienteId,
+    required String nombreCliente,
+    required String tipoId,
+    required String nombreTipo,
+    required int precio,
+    required String medio,
+    this.canal = const Value.absent(),
+    this.referencia = const Value.absent(),
+    required DateTime ocurridaEn,
+    this.intentos = const Value.absent(),
+    this.rechazo = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : ventaId = Value(ventaId),
+       comercioId = Value(comercioId),
+       clienteId = Value(clienteId),
+       nombreCliente = Value(nombreCliente),
+       tipoId = Value(tipoId),
+       nombreTipo = Value(nombreTipo),
+       precio = Value(precio),
+       medio = Value(medio),
+       ocurridaEn = Value(ocurridaEn);
+  static Insertable<VentaPendienteLocal> custom({
+    Expression<String>? ventaId,
+    Expression<String>? comercioId,
+    Expression<String>? clienteId,
+    Expression<String>? nombreCliente,
+    Expression<String>? tipoId,
+    Expression<String>? nombreTipo,
+    Expression<int>? precio,
+    Expression<String>? medio,
+    Expression<String>? canal,
+    Expression<String>? referencia,
+    Expression<DateTime>? ocurridaEn,
+    Expression<int>? intentos,
+    Expression<String>? rechazo,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (ventaId != null) 'venta_id': ventaId,
+      if (comercioId != null) 'comercio_id': comercioId,
+      if (clienteId != null) 'cliente_id': clienteId,
+      if (nombreCliente != null) 'nombre_cliente': nombreCliente,
+      if (tipoId != null) 'tipo_id': tipoId,
+      if (nombreTipo != null) 'nombre_tipo': nombreTipo,
+      if (precio != null) 'precio': precio,
+      if (medio != null) 'medio': medio,
+      if (canal != null) 'canal': canal,
+      if (referencia != null) 'referencia': referencia,
+      if (ocurridaEn != null) 'ocurrida_en': ocurridaEn,
+      if (intentos != null) 'intentos': intentos,
+      if (rechazo != null) 'rechazo': rechazo,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  VentasPendientesCompanion copyWith({
+    Value<String>? ventaId,
+    Value<String>? comercioId,
+    Value<String>? clienteId,
+    Value<String>? nombreCliente,
+    Value<String>? tipoId,
+    Value<String>? nombreTipo,
+    Value<int>? precio,
+    Value<String>? medio,
+    Value<String?>? canal,
+    Value<String?>? referencia,
+    Value<DateTime>? ocurridaEn,
+    Value<int>? intentos,
+    Value<String?>? rechazo,
+    Value<int>? rowid,
+  }) {
+    return VentasPendientesCompanion(
+      ventaId: ventaId ?? this.ventaId,
+      comercioId: comercioId ?? this.comercioId,
+      clienteId: clienteId ?? this.clienteId,
+      nombreCliente: nombreCliente ?? this.nombreCliente,
+      tipoId: tipoId ?? this.tipoId,
+      nombreTipo: nombreTipo ?? this.nombreTipo,
+      precio: precio ?? this.precio,
+      medio: medio ?? this.medio,
+      canal: canal ?? this.canal,
+      referencia: referencia ?? this.referencia,
+      ocurridaEn: ocurridaEn ?? this.ocurridaEn,
+      intentos: intentos ?? this.intentos,
+      rechazo: rechazo ?? this.rechazo,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (ventaId.present) {
+      map['venta_id'] = Variable<String>(ventaId.value);
+    }
+    if (comercioId.present) {
+      map['comercio_id'] = Variable<String>(comercioId.value);
+    }
+    if (clienteId.present) {
+      map['cliente_id'] = Variable<String>(clienteId.value);
+    }
+    if (nombreCliente.present) {
+      map['nombre_cliente'] = Variable<String>(nombreCliente.value);
+    }
+    if (tipoId.present) {
+      map['tipo_id'] = Variable<String>(tipoId.value);
+    }
+    if (nombreTipo.present) {
+      map['nombre_tipo'] = Variable<String>(nombreTipo.value);
+    }
+    if (precio.present) {
+      map['precio'] = Variable<int>(precio.value);
+    }
+    if (medio.present) {
+      map['medio'] = Variable<String>(medio.value);
+    }
+    if (canal.present) {
+      map['canal'] = Variable<String>(canal.value);
+    }
+    if (referencia.present) {
+      map['referencia'] = Variable<String>(referencia.value);
+    }
+    if (ocurridaEn.present) {
+      map['ocurrida_en'] = Variable<DateTime>(ocurridaEn.value);
+    }
+    if (intentos.present) {
+      map['intentos'] = Variable<int>(intentos.value);
+    }
+    if (rechazo.present) {
+      map['rechazo'] = Variable<String>(rechazo.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('VentasPendientesCompanion(')
+          ..write('ventaId: $ventaId, ')
+          ..write('comercioId: $comercioId, ')
+          ..write('clienteId: $clienteId, ')
+          ..write('nombreCliente: $nombreCliente, ')
+          ..write('tipoId: $tipoId, ')
+          ..write('nombreTipo: $nombreTipo, ')
+          ..write('precio: $precio, ')
+          ..write('medio: $medio, ')
+          ..write('canal: $canal, ')
+          ..write('referencia: $referencia, ')
+          ..write('ocurridaEn: $ocurridaEn, ')
+          ..write('intentos: $intentos, ')
+          ..write('rechazo: $rechazo, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1701,6 +2780,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $CopiasDeClientesTable copiasDeClientes = $CopiasDeClientesTable(
     this,
   );
+  late final $CatalogosDeVentaTable catalogosDeVenta = $CatalogosDeVentaTable(
+    this,
+  );
+  late final $VentasPendientesTable ventasPendientes = $VentasPendientesTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1710,6 +2795,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     marcasSincronizacion,
     clientesEnCaja,
     copiasDeClientes,
+    catalogosDeVenta,
+    ventasPendientes,
   ];
   @override
   DriftDatabaseOptions get options =>
@@ -2682,6 +3769,593 @@ typedef $$CopiasDeClientesTableProcessedTableManager =
       CopiaDeClientesLocal,
       PrefetchHooks Function()
     >;
+typedef $$CatalogosDeVentaTableCreateCompanionBuilder =
+    CatalogosDeVentaCompanion Function({
+      required String comercioId,
+      required String contenido,
+      Value<String?> etag,
+      required DateTime alDiaEn,
+      Value<int> rowid,
+    });
+typedef $$CatalogosDeVentaTableUpdateCompanionBuilder =
+    CatalogosDeVentaCompanion Function({
+      Value<String> comercioId,
+      Value<String> contenido,
+      Value<String?> etag,
+      Value<DateTime> alDiaEn,
+      Value<int> rowid,
+    });
+
+class $$CatalogosDeVentaTableFilterComposer
+    extends Composer<_$AppDatabase, $CatalogosDeVentaTable> {
+  $$CatalogosDeVentaTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get comercioId => $composableBuilder(
+    column: $table.comercioId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get contenido => $composableBuilder(
+    column: $table.contenido,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get etag => $composableBuilder(
+    column: $table.etag,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get alDiaEn => $composableBuilder(
+    column: $table.alDiaEn,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CatalogosDeVentaTableOrderingComposer
+    extends Composer<_$AppDatabase, $CatalogosDeVentaTable> {
+  $$CatalogosDeVentaTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get comercioId => $composableBuilder(
+    column: $table.comercioId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get contenido => $composableBuilder(
+    column: $table.contenido,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get etag => $composableBuilder(
+    column: $table.etag,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get alDiaEn => $composableBuilder(
+    column: $table.alDiaEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CatalogosDeVentaTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CatalogosDeVentaTable> {
+  $$CatalogosDeVentaTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get comercioId => $composableBuilder(
+    column: $table.comercioId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get contenido =>
+      $composableBuilder(column: $table.contenido, builder: (column) => column);
+
+  GeneratedColumn<String> get etag =>
+      $composableBuilder(column: $table.etag, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get alDiaEn =>
+      $composableBuilder(column: $table.alDiaEn, builder: (column) => column);
+}
+
+class $$CatalogosDeVentaTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CatalogosDeVentaTable,
+          CatalogoDeVentaLocal,
+          $$CatalogosDeVentaTableFilterComposer,
+          $$CatalogosDeVentaTableOrderingComposer,
+          $$CatalogosDeVentaTableAnnotationComposer,
+          $$CatalogosDeVentaTableCreateCompanionBuilder,
+          $$CatalogosDeVentaTableUpdateCompanionBuilder,
+          (
+            CatalogoDeVentaLocal,
+            BaseReferences<
+              _$AppDatabase,
+              $CatalogosDeVentaTable,
+              CatalogoDeVentaLocal
+            >,
+          ),
+          CatalogoDeVentaLocal,
+          PrefetchHooks Function()
+        > {
+  $$CatalogosDeVentaTableTableManager(
+    _$AppDatabase db,
+    $CatalogosDeVentaTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CatalogosDeVentaTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CatalogosDeVentaTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CatalogosDeVentaTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> comercioId = const Value.absent(),
+                Value<String> contenido = const Value.absent(),
+                Value<String?> etag = const Value.absent(),
+                Value<DateTime> alDiaEn = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CatalogosDeVentaCompanion(
+                comercioId: comercioId,
+                contenido: contenido,
+                etag: etag,
+                alDiaEn: alDiaEn,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String comercioId,
+                required String contenido,
+                Value<String?> etag = const Value.absent(),
+                required DateTime alDiaEn,
+                Value<int> rowid = const Value.absent(),
+              }) => CatalogosDeVentaCompanion.insert(
+                comercioId: comercioId,
+                contenido: contenido,
+                etag: etag,
+                alDiaEn: alDiaEn,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$CatalogosDeVentaTable, CatalogoDeVentaLocal>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $CatalogosDeVentaTable,
+                    CatalogoDeVentaLocal
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CatalogosDeVentaTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CatalogosDeVentaTable,
+      CatalogoDeVentaLocal,
+      $$CatalogosDeVentaTableFilterComposer,
+      $$CatalogosDeVentaTableOrderingComposer,
+      $$CatalogosDeVentaTableAnnotationComposer,
+      $$CatalogosDeVentaTableCreateCompanionBuilder,
+      $$CatalogosDeVentaTableUpdateCompanionBuilder,
+      (
+        CatalogoDeVentaLocal,
+        BaseReferences<
+          _$AppDatabase,
+          $CatalogosDeVentaTable,
+          CatalogoDeVentaLocal
+        >,
+      ),
+      CatalogoDeVentaLocal,
+      PrefetchHooks Function()
+    >;
+typedef $$VentasPendientesTableCreateCompanionBuilder =
+    VentasPendientesCompanion Function({
+      required String ventaId,
+      required String comercioId,
+      required String clienteId,
+      required String nombreCliente,
+      required String tipoId,
+      required String nombreTipo,
+      required int precio,
+      required String medio,
+      Value<String?> canal,
+      Value<String?> referencia,
+      required DateTime ocurridaEn,
+      Value<int> intentos,
+      Value<String?> rechazo,
+      Value<int> rowid,
+    });
+typedef $$VentasPendientesTableUpdateCompanionBuilder =
+    VentasPendientesCompanion Function({
+      Value<String> ventaId,
+      Value<String> comercioId,
+      Value<String> clienteId,
+      Value<String> nombreCliente,
+      Value<String> tipoId,
+      Value<String> nombreTipo,
+      Value<int> precio,
+      Value<String> medio,
+      Value<String?> canal,
+      Value<String?> referencia,
+      Value<DateTime> ocurridaEn,
+      Value<int> intentos,
+      Value<String?> rechazo,
+      Value<int> rowid,
+    });
+
+class $$VentasPendientesTableFilterComposer
+    extends Composer<_$AppDatabase, $VentasPendientesTable> {
+  $$VentasPendientesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get ventaId => $composableBuilder(
+    column: $table.ventaId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get comercioId => $composableBuilder(
+    column: $table.comercioId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get clienteId => $composableBuilder(
+    column: $table.clienteId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nombreCliente => $composableBuilder(
+    column: $table.nombreCliente,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tipoId => $composableBuilder(
+    column: $table.tipoId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nombreTipo => $composableBuilder(
+    column: $table.nombreTipo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get precio => $composableBuilder(
+    column: $table.precio,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get medio => $composableBuilder(
+    column: $table.medio,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get canal => $composableBuilder(
+    column: $table.canal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get referencia => $composableBuilder(
+    column: $table.referencia,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get ocurridaEn => $composableBuilder(
+    column: $table.ocurridaEn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get intentos => $composableBuilder(
+    column: $table.intentos,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get rechazo => $composableBuilder(
+    column: $table.rechazo,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$VentasPendientesTableOrderingComposer
+    extends Composer<_$AppDatabase, $VentasPendientesTable> {
+  $$VentasPendientesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get ventaId => $composableBuilder(
+    column: $table.ventaId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get comercioId => $composableBuilder(
+    column: $table.comercioId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get clienteId => $composableBuilder(
+    column: $table.clienteId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nombreCliente => $composableBuilder(
+    column: $table.nombreCliente,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tipoId => $composableBuilder(
+    column: $table.tipoId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nombreTipo => $composableBuilder(
+    column: $table.nombreTipo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get precio => $composableBuilder(
+    column: $table.precio,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get medio => $composableBuilder(
+    column: $table.medio,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get canal => $composableBuilder(
+    column: $table.canal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get referencia => $composableBuilder(
+    column: $table.referencia,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get ocurridaEn => $composableBuilder(
+    column: $table.ocurridaEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get intentos => $composableBuilder(
+    column: $table.intentos,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get rechazo => $composableBuilder(
+    column: $table.rechazo,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$VentasPendientesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $VentasPendientesTable> {
+  $$VentasPendientesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get ventaId =>
+      $composableBuilder(column: $table.ventaId, builder: (column) => column);
+
+  GeneratedColumn<String> get comercioId => $composableBuilder(
+    column: $table.comercioId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get clienteId =>
+      $composableBuilder(column: $table.clienteId, builder: (column) => column);
+
+  GeneratedColumn<String> get nombreCliente => $composableBuilder(
+    column: $table.nombreCliente,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get tipoId =>
+      $composableBuilder(column: $table.tipoId, builder: (column) => column);
+
+  GeneratedColumn<String> get nombreTipo => $composableBuilder(
+    column: $table.nombreTipo,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get precio =>
+      $composableBuilder(column: $table.precio, builder: (column) => column);
+
+  GeneratedColumn<String> get medio =>
+      $composableBuilder(column: $table.medio, builder: (column) => column);
+
+  GeneratedColumn<String> get canal =>
+      $composableBuilder(column: $table.canal, builder: (column) => column);
+
+  GeneratedColumn<String> get referencia => $composableBuilder(
+    column: $table.referencia,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get ocurridaEn => $composableBuilder(
+    column: $table.ocurridaEn,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get intentos =>
+      $composableBuilder(column: $table.intentos, builder: (column) => column);
+
+  GeneratedColumn<String> get rechazo =>
+      $composableBuilder(column: $table.rechazo, builder: (column) => column);
+}
+
+class $$VentasPendientesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $VentasPendientesTable,
+          VentaPendienteLocal,
+          $$VentasPendientesTableFilterComposer,
+          $$VentasPendientesTableOrderingComposer,
+          $$VentasPendientesTableAnnotationComposer,
+          $$VentasPendientesTableCreateCompanionBuilder,
+          $$VentasPendientesTableUpdateCompanionBuilder,
+          (
+            VentaPendienteLocal,
+            BaseReferences<
+              _$AppDatabase,
+              $VentasPendientesTable,
+              VentaPendienteLocal
+            >,
+          ),
+          VentaPendienteLocal,
+          PrefetchHooks Function()
+        > {
+  $$VentasPendientesTableTableManager(
+    _$AppDatabase db,
+    $VentasPendientesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$VentasPendientesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$VentasPendientesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$VentasPendientesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> ventaId = const Value.absent(),
+                Value<String> comercioId = const Value.absent(),
+                Value<String> clienteId = const Value.absent(),
+                Value<String> nombreCliente = const Value.absent(),
+                Value<String> tipoId = const Value.absent(),
+                Value<String> nombreTipo = const Value.absent(),
+                Value<int> precio = const Value.absent(),
+                Value<String> medio = const Value.absent(),
+                Value<String?> canal = const Value.absent(),
+                Value<String?> referencia = const Value.absent(),
+                Value<DateTime> ocurridaEn = const Value.absent(),
+                Value<int> intentos = const Value.absent(),
+                Value<String?> rechazo = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => VentasPendientesCompanion(
+                ventaId: ventaId,
+                comercioId: comercioId,
+                clienteId: clienteId,
+                nombreCliente: nombreCliente,
+                tipoId: tipoId,
+                nombreTipo: nombreTipo,
+                precio: precio,
+                medio: medio,
+                canal: canal,
+                referencia: referencia,
+                ocurridaEn: ocurridaEn,
+                intentos: intentos,
+                rechazo: rechazo,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String ventaId,
+                required String comercioId,
+                required String clienteId,
+                required String nombreCliente,
+                required String tipoId,
+                required String nombreTipo,
+                required int precio,
+                required String medio,
+                Value<String?> canal = const Value.absent(),
+                Value<String?> referencia = const Value.absent(),
+                required DateTime ocurridaEn,
+                Value<int> intentos = const Value.absent(),
+                Value<String?> rechazo = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => VentasPendientesCompanion.insert(
+                ventaId: ventaId,
+                comercioId: comercioId,
+                clienteId: clienteId,
+                nombreCliente: nombreCliente,
+                tipoId: tipoId,
+                nombreTipo: nombreTipo,
+                precio: precio,
+                medio: medio,
+                canal: canal,
+                referencia: referencia,
+                ocurridaEn: ocurridaEn,
+                intentos: intentos,
+                rechazo: rechazo,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$VentasPendientesTable, VentaPendienteLocal>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $VentasPendientesTable,
+                    VentaPendienteLocal
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$VentasPendientesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $VentasPendientesTable,
+      VentaPendienteLocal,
+      $$VentasPendientesTableFilterComposer,
+      $$VentasPendientesTableOrderingComposer,
+      $$VentasPendientesTableAnnotationComposer,
+      $$VentasPendientesTableCreateCompanionBuilder,
+      $$VentasPendientesTableUpdateCompanionBuilder,
+      (
+        VentaPendienteLocal,
+        BaseReferences<
+          _$AppDatabase,
+          $VentasPendientesTable,
+          VentaPendienteLocal
+        >,
+      ),
+      VentaPendienteLocal,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2694,4 +4368,8 @@ class $AppDatabaseManager {
       $$ClientesEnCajaTableTableManager(_db, _db.clientesEnCaja);
   $$CopiasDeClientesTableTableManager get copiasDeClientes =>
       $$CopiasDeClientesTableTableManager(_db, _db.copiasDeClientes);
+  $$CatalogosDeVentaTableTableManager get catalogosDeVenta =>
+      $$CatalogosDeVentaTableTableManager(_db, _db.catalogosDeVenta);
+  $$VentasPendientesTableTableManager get ventasPendientes =>
+      $$VentasPendientesTableTableManager(_db, _db.ventasPendientes);
 }

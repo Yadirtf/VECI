@@ -36,7 +36,8 @@ class _RanuraPageState extends ConsumerState<RanuraPage> {
     super.dispose();
   }
 
-  void _abrir(ClienteEnCaja cliente) => context.push(RutasClientes.fichaDe(cliente.clienteId));
+  void _abrir(ClienteEnCaja cliente) =>
+      context.push(RutasClientes.fichaDe(cliente.clienteId, nombre: cliente.nombre));
 
   @override
   Widget build(BuildContext context) {

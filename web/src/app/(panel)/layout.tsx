@@ -6,6 +6,8 @@ const MENU = [
   { href: '/horarios', texto: 'Horarios' },
   { href: '/sedes', texto: 'Sedes' },
   { href: '/clientes', texto: 'Clientes' },
+  { href: '/tiqueteras', texto: 'Tiqueteras' },
+  { href: '/ventas', texto: 'Ventas' },
   { href: '/equipo', texto: 'Equipo' },
   { href: '/dispositivos', texto: 'Dispositivos' },
   { href: '/mi-cuenta', texto: 'Mi cuenta' },

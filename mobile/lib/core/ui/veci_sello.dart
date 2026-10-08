@@ -75,22 +75,26 @@ class _VeciSelloState extends State<VeciSello> {
       decoration: const ShapeDecoration(
         shape: CircleBorder(side: BorderSide(color: VeciColores.selvaOscuro, width: 1.5)),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _texto(widget.arriba, VeciTexto.cuerpo),
-          Text(
-            widget.cifra,
-            style: const TextStyle(
-              fontSize: VeciTexto.sello,
-              height: 1.05,
-              fontWeight: VeciPeso.fuerte,
-              color: VeciColores.selvaOscuro,
-              fontFeatures: [FontFeature.tabularFigures()],
+      // Con letra grande del celular o una unidad larga, el texto se achica y no se sale.
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _texto(widget.arriba, VeciTexto.cuerpo),
+            Text(
+              widget.cifra,
+              style: const TextStyle(
+                fontSize: VeciTexto.sello,
+                height: 1.05,
+                fontWeight: VeciPeso.fuerte,
+                color: VeciColores.selvaOscuro,
+                fontFeatures: [FontFeature.tabularFigures()],
+              ),
             ),
-          ),
-          _texto(widget.abajo, VeciTexto.cuerpo),
-        ],
+            _texto(widget.abajo, VeciTexto.cuerpo),
+          ],
+        ),
       ),
     ),
   );

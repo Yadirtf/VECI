@@ -75,6 +75,12 @@ erDiagram
 | Ajustar saldo | `ADJUSTMENT` con motivo | ± lo indicado | Solo el propietario (RF-TIQ-06) |
 | Vencer | `EXPIRATION` (origen `SYSTEM_JOB`) | −saldo restante | Tiquetera `EXPIRED`; las unidades vencidas quedan medidas para reportes (HU-05-04) |
 
+## Estado y vencimiento (EP-05)
+
+- El trigger que mantiene `units_balance` también mueve el estado: una tiquetera `ACTIVE` que queda en cero o menos pasa a `DEPLETED`, y una `DEPLETED` que recibe unidades vuelve a `ACTIVE`. `EXPIRED` y `VOIDED` solo las ponen el vencimiento y la anulación.
+- `expires_at` es la medianoche del negocio (`tenancy.tenants.time_zone`) después del último día de uso; el día de la compra cuenta como el primero.
+- El vencimiento lo corre la API al arrancar y cada hora. `prepaid.tenants_with_due_packages(p_as_of)` es `SECURITY DEFINER` y devuelve solo los ids de los comercios con tiqueteras activas vencidas; cada comercio se vence en su propia transacción con RLS ([ADR-0018](../adr/0018-tiqueteras-ventas-offline-y-vencimiento.md)).
+
 ## Regla antifraude: un consumo por horario (RF-CON-03)
 
 No es una restricción única a propósito. Un consumo hecho sin internet **ya ocurrió**: si choca con otro, la base debe guardarlo y abrir un conflicto para que el propietario decida (RF-OFF-04), no rechazarlo. La regla la aplica el caso de uso `RegistrarConsumo` (en línea y en el celular) con el índice `consumptions_service_day_ix`, y el sincronizador detecta los choques que solo se ven al juntar dos celulares.

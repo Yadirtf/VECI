@@ -28,6 +28,12 @@ El panel nunca guarda tokens en `localStorage`. Las rutas `src/app/api/sesion/[a
 - El propietario ve documento y celular completos en la ficha; en la lista y en la caja van tapados (`****5678`).
 - `/politica-de-datos` es pública e imprimible: el texto legal con su "en palabras de vecino".
 
+## Tiqueteras y ventas (EP-05)
+
+- `/tiqueteras` es la pizarra de lo que se vende: escribir, cambiar y dejar de vender tipos (lo que ya no se vende queda borroso).
+- En la ficha de `/clientes`, la cuenta del cliente: saldo por unidad, pila de tiqueteras (arriba la que se gasta primero), historia, vender y ajustar con motivo.
+- `/ventas` lista las últimas ventas para que el propietario anule una con motivo.
+
 ## Comandos
 
 | Comando | Qué hace |

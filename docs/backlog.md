@@ -1,6 +1,6 @@
 # VECI · Backlog del producto
 
-Versión 1.8 · 5 de octubre de 2026 · Ing. Yadir
+Versión 1.9 · 8 de octubre de 2026 · Ing. Yadir
 
 Este backlog convierte el [Documento de Requerimientos y Recomendaciones Tecnológicas](requerimientos-y-recomendaciones-tecnologicas.md) en épicas e historias de usuario listas para implementar por fases. Tiene **16 épicas** y **81 historias**; cada historia apunta a los requerimientos (RF/RNF) que cumple.
 
@@ -542,8 +542,8 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] Cada tipo tiene nombre, cantidad de unidades, unidad (almuerzo), precio en COP y vigencia en días.
-- [ ] Puedo desactivar un tipo sin afectar las tiqueteras ya vendidas.
+- [x] Cada tipo tiene nombre, cantidad de unidades, unidad (almuerzo), precio en COP y vigencia en días.
+- [x] Puedo desactivar un tipo sin afectar las tiqueteras ya vendidas.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -555,15 +555,17 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] Elijo el cliente (escaneo o búsqueda), el tipo y el medio de pago: efectivo o transferencia (Nequi, Daviplata o Bancolombia).
-- [ ] Para transferencias puedo anotar una referencia opcional.
-- [ ] Se crea un movimiento de compra ligado al QR del cliente en mi comercio.
-- [ ] Funciona sin internet y se sincroniza después.
-- [ ] El cliente ve el nuevo saldo en su app.
+- [x] Elijo el cliente (escaneo o búsqueda), el tipo y el medio de pago: efectivo o transferencia (Nequi, Daviplata o Bancolombia).
+- [x] Para transferencias puedo anotar una referencia opcional.
+- [x] Se crea un movimiento de compra ligado al QR del cliente en mi comercio.
+- [x] Funciona sin internet y se sincroniza después.
+- [x] El cliente ve el nuevo saldo en su app.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
 | Debe | 5 | F1 | S5 | HU-05-01, HU-04-03 | RF-TIQ-02, RF-TIQ-03, RF-OFF-01 |
+
+*Nota:* Implementada en EP-05 (ADR-0018). La caja vende sin señal con el catálogo guardado y una cola propia en el celular que se envía sola; la reemplaza el outbox general de EP-07. El cliente se elige escaneando su QR o con la búsqueda de la caja; los dos abren su ficha con el botón "Vender tiquetera".
 
 #### HU-05-03 · Varias tiqueteras activas
 
@@ -571,12 +573,14 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] El consumo descuenta primero la tiquetera que vence antes.
-- [ ] El saldo mostrado es la suma de las tiqueteras vigentes.
+- [x] El consumo descuenta primero la tiquetera que vence antes.
+- [x] El saldo mostrado es la suma de las tiqueteras vigentes.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
 | Debe | 3 | F1 | S5 | HU-05-02 | RF-TIQ-04 |
+
+*Nota:* EP-05 suma el saldo de las vigentes y ordena la pila por vencimiento (la primera es la que se gasta primero). El descuento FIFO lo hace el consumo de EP-06.
 
 #### HU-05-04 · Vencimiento automático
 
@@ -584,12 +588,14 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] Un proceso diario marca como vencidas las tiqueteras cuya vigencia terminó.
-- [ ] El historial se conserva y las unidades vencidas aparecen en reportes.
+- [x] Un proceso diario marca como vencidas las tiqueteras cuya vigencia terminó.
+- [x] El historial se conserva y las unidades vencidas aparecen en reportes.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
 | Debe | 3 | F1 | S9 | HU-05-02 | RF-TIQ-05 |
+
+*Nota:* Corre al arrancar la API y cada hora, por negocio y con RLS; la tiquetera vence a la medianoche del negocio después de su último día. Las unidades vencidas quedan en el libro (`EXPIRATION`) para los reportes de EP-10.
 
 #### HU-05-05 · Anular venta o ajustar saldo
 
@@ -597,9 +603,9 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 
 **Criterios de aceptación**
 
-- [ ] Solo el propietario puede hacerlo y el motivo es obligatorio.
-- [ ] Se crea un movimiento de ajuste o anulación; nada se borra.
-- [ ] Queda en la auditoría con usuario, fecha y hora.
+- [x] Solo el propietario puede hacerlo y el motivo es obligatorio.
+- [x] Se crea un movimiento de ajuste o anulación; nada se borra.
+- [x] Queda en la auditoría con usuario, fecha y hora.
 
 | Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
 | --- | --- | --- | --- | --- | --- |
@@ -1436,3 +1442,4 @@ Cada requerimiento del documento y las historias que lo cumplen. Un requerimient
 | 1.6 | 2026-10-04 | Guía de mejor solución (SSoT) en la definición de listo. EP-02 implementada (PR #106): ingreso con PIN y correo, bloqueo, tokens con renovación, roles y permisos por comercio, equipo, PIN temporal, dispositivos y cierre remoto en API, panel y app (ADR-0015). HU-02-06 se adelanta de la Fase 2. |
 | 1.7 | 2026-10-05 | EP-03 implementada: alta de negocios por el dueño (conversación) y por Administración VECI (PIN temporal del propietario), horarios editables con historia, pausa y ETag para la caja, y sedes del plan Pro con cajeros por sede (ADR-0016). HU-03-03 se adelanta de la Fase 2; su filtro por sede en consumos y reportes queda para EP-06 y EP-10. |
 | 1.8 | 2026-10-05 | EP-04 implementada: registro propio del cliente con política de datos versionada (HU-12-01 en parte), QR personal firmado que se ve sin internet y se regenera, afiliación con un escaneo y QR propio por negocio, registro asistido con PIN de bienvenida de 7 días y búsqueda en la caja sobre una copia local enmascarada (ADR-0017). |
+| 1.9 | 2026-10-08 | EP-05 implementada: pizarra de tipos de tiquetera, venta idempotente con medio de pago en línea y sin señal (cola en el celular), saldo por unidad con la pila por vencimiento en la caja, el panel y la app del cliente (con copia sin internet), vencimiento automático por negocio y anulación y ajuste con motivo y auditoría (ADR-0018). |
