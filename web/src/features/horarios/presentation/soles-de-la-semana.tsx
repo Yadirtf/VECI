@@ -44,7 +44,7 @@ export function SolesDeLaSemana(p: {
     <div
       role="radiogroup"
       aria-label="Día de la semana"
-      className="flex justify-between gap-xs overflow-x-auto pb-m pt-s"
+      className="grid grid-cols-7 gap-xs pb-m pt-m"
     >
       {DIAS.map(([codigo, nombre], i) => {
         const delDia = p.horarios.filter((h) => h.dia === codigo);
@@ -58,7 +58,7 @@ export function SolesDeLaSemana(p: {
             aria-checked={elegido}
             onClick={() => p.alElegir(codigo)}
             style={{ transform: `translateY(${Math.sin(i * 0.9) * 8}px)` }}
-            className={`flex min-w-toque-minimo flex-col items-center gap-xs rounded-l px-s py-xs transition-colors focus-visible:outline-4 focus-visible:outline-maiz ${elegido ? 'bg-arcilla-claro' : 'hover:bg-selva-claro'}`}
+            className={`flex min-h-toque-minimo min-w-0 flex-col items-center gap-xs rounded-l px-0 py-xs sm:px-s transition-colors focus-visible:outline-4 focus-visible:outline-maiz ${elegido ? 'bg-arcilla-claro' : 'hover:bg-selva-claro'}`}
           >
             <Sol rayos={activos} pausados={delDia.length > activos} />
             <span
