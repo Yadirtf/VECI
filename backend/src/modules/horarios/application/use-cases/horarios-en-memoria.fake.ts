@@ -49,10 +49,10 @@ export class HorariosEnMemoria implements HorarioServicioRepository {
     this.cambios++;
   }
 
-  async reemplazar(anteriorId: string, nuevo: HorarioServicio): Promise<void> {
-    this.cerrados.push(anteriorId);
-    const i = this.guardados.findIndex((h) => h.id === anteriorId);
-    this.guardados.splice(i, 1, nuevo);
+  async programar(cerrar: readonly string[], nuevos: readonly HorarioServicio[]): Promise<void> {
+    this.cerrados.push(...cerrar);
+    const quedan = this.guardados.filter((h) => !cerrar.includes(h.id));
+    this.guardados.splice(0, this.guardados.length, ...quedan, ...nuevos);
     this.cambios++;
   }
 

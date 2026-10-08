@@ -30,8 +30,8 @@ export interface HorarioServicioRepository {
   existeSede(sedeId: string): Promise<boolean>;
   /** Guarda varios en una transacción: o quedan todos o ninguno. */
   guardar(...horarios: HorarioServicio[]): Promise<void>;
-  /** Cierra la vigencia del anterior y guarda el nuevo, en una transacción. */
-  reemplazar(anteriorId: string, nuevo: HorarioServicio): Promise<void>;
+  /** Cierra la vigencia de varios y guarda los nuevos, en una transacción. */
+  programar(cerrar: readonly string[], nuevos: readonly HorarioServicio[]): Promise<void>;
   cambiarEstado(id: string, activo: boolean): Promise<void>;
   servicios(): Promise<Servicio[]>;
   crearServicio(servicio: Servicio): Promise<void>;

@@ -51,18 +51,13 @@ export class RepositorioHorariosApi implements RepositorioHorarios {
     return data.sedes.filter((s) => s.activa).map((s) => ({ id: s.sedeId, nombre: s.nombre }));
   }
 
-  async crear(nuevo: NuevoHorario): Promise<void> {
-    const { error } = await this.cliente.POST('/horarios', { params: this.params, body: nuevo });
-    if (error) throw falla(error);
-  }
-
-  async editar(id: string, horaInicio: string, horaFin: string): Promise<string> {
-    const { data, error } = await this.cliente.PATCH('/horarios/{id}', {
-      params: { ...this.params, path: { id } },
-      body: { horaInicio, horaFin },
+  async programar(nuevo: NuevoHorario): Promise<Horario[]> {
+    const { data, error } = await this.cliente.PUT('/horarios/programacion', {
+      params: this.params,
+      body: nuevo,
     });
     if (!data) throw falla(error);
-    return data.id;
+    return data.map(aHorario);
   }
 
   async cambiarEstado(id: string, activo: boolean): Promise<void> {
