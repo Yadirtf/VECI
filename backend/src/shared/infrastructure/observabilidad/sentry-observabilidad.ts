@@ -6,4 +6,8 @@ export class SentryObservabilidad implements Observabilidad {
   etiquetarComercio(comercioId: string): void {
     Sentry.getIsolationScope().setTag('comercio', comercioId);
   }
+
+  capturarError(error: unknown): void {
+    Sentry.captureException(error);
+  }
 }

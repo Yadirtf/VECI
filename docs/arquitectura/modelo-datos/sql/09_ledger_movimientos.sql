@@ -25,6 +25,9 @@ CREATE INDEX movements_package_ix ON ledger.movements (tenant_id, package_id, cr
 -- Aplica el asiento a la caché de saldo en la misma transacción.
 -- El UPDATE bloquea la fila de la tiquetera: dos consumos simultáneos se serializan.
 -- El signo del asiento debe coincidir con el definido para el tipo de evento.
+-- La caché y el estado se mueven juntos (EP-05): una tiquetera activa que queda en
+-- cero (o menos, por un choque offline) pasa a agotada, y una agotada que recibe
+-- unidades (reverso o ajuste) vuelve a activa. Vencida y anulada no se tocan.
 -- -----------------------------------------------------------------------------
 CREATE FUNCTION ledger.apply_movement() RETURNS trigger
 LANGUAGE plpgsql AS $$
@@ -47,6 +50,16 @@ BEGIN
    WHERE id = NEW.package_id
      AND tenant_id = NEW.tenant_id
   RETURNING units_balance INTO NEW.balance_after;
+
+  UPDATE prepaid.packages p
+     SET package_status_id = destino.id,
+         status_changed_at = now()
+    FROM prepaid.package_statuses actual, prepaid.package_statuses destino
+   WHERE p.id = NEW.package_id
+     AND p.tenant_id = NEW.tenant_id
+     AND actual.id = p.package_status_id
+     AND ((actual.code = 'ACTIVE' AND NEW.balance_after <= 0 AND destino.code = 'DEPLETED')
+       OR (actual.code = 'DEPLETED' AND NEW.balance_after > 0 AND destino.code = 'ACTIVE'));
 
   RETURN NEW;
 END $$;

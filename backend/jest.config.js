@@ -38,5 +38,6 @@ module.exports = {
     './src/modules/personal/': { lines: 80, statements: 80, functions: 80, branches: 70 },
     './src/modules/soporte/': { lines: 80, statements: 80, functions: 80, branches: 70 },
     './src/modules/clientes/': { lines: 80, statements: 80, functions: 80, branches: 70 },
+    './src/modules/tiqueteras/': { lines: 80, statements: 80, functions: 80, branches: 70 },
   },
 };

@@ -233,6 +233,22 @@ $$;
 REVOKE ALL ON FUNCTION customers.preview_personal_qr(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION customers.preview_personal_qr(uuid) TO veci_app;
 
+-- ------------------------------------------- vencimiento automático (HU-05-04)
+-- El proceso de vencimiento recorre los comercios uno por uno con su contexto (RLS).
+-- Para saber cuáles tienen tiqueteras activas ya vencidas solo recibe sus ids:
+-- ni clientes, ni saldos, ni datos del comercio.
+CREATE FUNCTION prepaid.tenants_with_due_packages(p_as_of timestamptz)
+RETURNS SETOF uuid
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = pg_catalog, pg_temp AS $$
+  SELECT DISTINCT p.tenant_id
+    FROM prepaid.packages p
+    JOIN prepaid.package_statuses s ON s.id = p.package_status_id
+   WHERE s.code = 'ACTIVE'
+     AND p.expires_at <= p_as_of;
+$$;
+REVOKE ALL ON FUNCTION prepaid.tenants_with_due_packages(timestamptz) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION prepaid.tenants_with_due_packages(timestamptz) TO veci_app;
+
 -- ------------------------------------------- particiones sin acceso directo
 -- Las tablas particionadas aplican RLS en la tabla madre; leer una partición por
 -- su nombre saltaría las políticas. veci_app solo entra por la tabla madre.
