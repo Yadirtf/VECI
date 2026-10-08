@@ -37,7 +37,7 @@ class InicioPage extends StatelessWidget {
   final String? rutaCaja;
   final DateTime Function() ahora;
 
-  List<Widget> _acciones() => [
+  List<Widget> _acciones(BuildContext context) => [
     if (variosNegocios)
       TextButton.icon(
         style: TextButton.styleFrom(foregroundColor: VeciColores.crema),
@@ -45,6 +45,12 @@ class InicioPage extends StatelessWidget {
         label: const Text('Cambiar'),
         onPressed: () => unawaited(alCambiarNegocio()),
       ),
+    IconButton(
+      color: VeciColores.crema,
+      tooltip: 'Ajustes',
+      icon: const Icon(Icons.settings),
+      onPressed: () => unawaited(context.push(Rutas.ajustes)),
+    ),
     TextButton(
       style: TextButton.styleFrom(foregroundColor: VeciColores.crema),
       onPressed: () => unawaited(alSalir()),
@@ -61,7 +67,7 @@ class InicioPage extends StatelessWidget {
           VeciEncabezado(
             antetitulo: negocio,
             titulo: '¡${saludoDelDia(ahora())}, ${primerNombre(nombre)}!',
-            acciones: _acciones(),
+            acciones: _acciones(context),
           ),
           Expanded(child: _cuerpo(textos)),
           VeciMostrador(

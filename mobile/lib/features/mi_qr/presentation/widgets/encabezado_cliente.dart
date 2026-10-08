@@ -5,11 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/di/sesion_providers.dart';
+import '../../../../core/router/rutas.dart';
 import '../../../../core/theme/veci_tokens.dart';
 import '../../../../core/ui/veci_encabezado.dart';
 
-/// Encabezado de las pantallas del cliente: si es su inicio ofrece salir; si llegó desde
-/// otra pantalla, volver.
+/// Encabezado de las pantallas del cliente: si es su inicio ofrece ajustes y salir; si
+/// llegó desde otra pantalla, volver.
 class EncabezadoCliente extends ConsumerWidget {
   const EncabezadoCliente({
     super.key,
@@ -37,12 +38,19 @@ class EncabezadoCliente extends ConsumerWidget {
             label: const Text('Volver'),
             onPressed: context.pop,
           )
-        else
+        else ...[
+          IconButton(
+            color: VeciColores.crema,
+            tooltip: 'Ajustes',
+            icon: const Icon(Icons.settings),
+            onPressed: () => unawaited(context.push(Rutas.ajustes)),
+          ),
           TextButton(
             style: estilo,
             onPressed: () => unawaited(ref.read(gestorSesionProvider).salir()),
             child: const Text('Salir'),
           ),
+        ],
       ],
     );
   }

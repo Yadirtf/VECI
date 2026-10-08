@@ -46,11 +46,14 @@ void main() {
       expect(redirigir(const SesionIniciando(), Rutas.inicio), Rutas.cargando);
     });
 
-    test('sin negocio puede registrar el suyo; al tenerlo vuelve al inicio', () {
+    test('con o sin negocio, desde Ajustes pide el registro del suyo (ADR-0019)', () {
       final sinNegocio = SesionActiva(sesion: sesionDePrueba('t'), comercioId: null);
       final conNegocio = SesionActiva(sesion: sesionDePrueba('t'), comercioId: 'c1');
-      expect(redirigir(sinNegocio, Rutas.registrarNegocio), isNull);
-      expect(redirigir(conNegocio, Rutas.registrarNegocio), Rutas.inicio);
+      for (final estado in [sinNegocio, conNegocio]) {
+        expect(redirigir(estado, Rutas.ajustes), isNull);
+        expect(redirigir(estado, Rutas.registrarNegocio), isNull);
+      }
+      expect(redirigir(const SinSesion(), Rutas.ajustes), Rutas.entrar);
     });
 
     test('sin sesión también puede crear su cuenta y leer la política (HU-04-01)', () {
@@ -73,6 +76,7 @@ void main() {
       expect(redirigir(recienRegistrado, Rutas.negocio), Rutas.miQr);
       expect(redirigir(recienRegistrado, Rutas.registro), isNull);
       expect(redirigir(recienRegistrado, Rutas.registrarNegocio), isNull);
+      expect(redirigir(cliente, Rutas.ajustes), isNull);
       expect(redirigir(cliente, Rutas.entrar), Rutas.tusNegocios);
       expect(redirigir(cliente, Rutas.inicio), Rutas.tusNegocios);
       expect(redirigir(cliente, '/caja'), Rutas.tusNegocios);

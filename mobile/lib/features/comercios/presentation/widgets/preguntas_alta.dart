@@ -191,3 +191,38 @@ class PreguntaTexto extends StatelessWidget {
     ],
   );
 }
+
+/// Dónde queda el negocio: solo los municipios donde VECI ya presta el servicio.
+class PreguntaLugar extends StatelessWidget {
+  const PreguntaLugar({
+    super.key,
+    required this.borrador,
+    required this.municipios,
+    required this.alCambiar,
+  });
+
+  final BorradorAlta borrador;
+  final List<Municipio> municipios;
+  final AlCambiar alCambiar;
+
+  @override
+  Widget build(BuildContext context) => Pregunta(
+    titulo: '¿En qué municipio queda?',
+    children: [
+      Wrap(
+        spacing: VeciEspacio.m,
+        runSpacing: VeciEspacio.m,
+        children: [
+          for (final m in municipios)
+            Bola(
+              texto: m.nombre,
+              activa: m.id == borrador.municipioId,
+              alTocar: () => alCambiar(borrador.copiar(municipioId: m.id)),
+            ),
+        ],
+      ),
+      const SizedBox(height: VeciEspacio.l),
+      const Text('Por ahora VECI está en Mocoa. Pronto llegamos a más municipios del Putumayo.'),
+    ],
+  );
+}

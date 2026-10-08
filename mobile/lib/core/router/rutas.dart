@@ -7,6 +7,12 @@ abstract final class Rutas {
   static const pinNuevo = '/pin-nuevo';
   static const negocio = '/negocio';
   static const registrarNegocio = '/negocio/nuevo';
+
+  /// Ajustes de la cuenta: desde aquí se pide registrar un negocio (ADR-0019).
+  static const ajustes = '/ajustes';
+
+  /// Las abre cualquiera con sesión, tenga o no negocio: pedir el registro de uno.
+  static const deLaCuenta = [ajustes, registrarNegocio];
   static const inicio = '/';
   static const horarios = '/horarios';
   static const disenio = '/disenio';
@@ -43,15 +49,7 @@ abstract final class Rutas {
   static const sinSesion = [entrar, registro, politica];
 
   /// Pantallas de antes de tener sesión y negocio: con ambos, se sale de ellas.
-  static const deIngreso = [
-    cargando,
-    entrar,
-    registro,
-    politica,
-    pinNuevo,
-    negocio,
-    registrarNegocio,
-  ];
+  static const deIngreso = [cargando, entrar, registro, politica, pinNuevo, negocio];
 
   static bool esDelCliente(String ubicacion) =>
       ubicacion == miQr ||

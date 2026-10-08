@@ -315,8 +315,8 @@ class ApiClient {
           return PropietarioInvitadoRequest.fromJson(value);
         case 'QrEnComercioResponse':
           return QrEnComercioResponse.fromJson(value);
-        case 'RegistrarComercioRequest':
-          return RegistrarComercioRequest.fromJson(value);
+        case 'RechazoSolicitudRequest':
+          return RechazoSolicitudRequest.fromJson(value);
         case 'RegistrarParaPropietarioRequest':
           return RegistrarParaPropietarioRequest.fromJson(value);
         case 'RegistroAsistidoRequest':
@@ -349,6 +349,12 @@ class ApiClient {
           return SesionEnDispositivoResponse.fromJson(value);
         case 'SesionResponse':
           return SesionResponse.fromJson(value);
+        case 'SolicitanteResponse':
+          return SolicitanteResponse.fromJson(value);
+        case 'SolicitarRegistroRequest':
+          return SolicitarRegistroRequest.fromJson(value);
+        case 'SolicitudResponse':
+          return SolicitudResponse.fromJson(value);
         case 'TipoDeNegocioResponse':
           return TipoDeNegocioResponse.fromJson(value);
         case 'TipoDocumentoResponse':

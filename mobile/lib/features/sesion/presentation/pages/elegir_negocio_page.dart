@@ -65,12 +65,12 @@ class _ElegirNegocioPageState extends ConsumerState<ElegirNegocioPage> {
           for (final espacio in sesion?.espacios ?? const <Espacio>[]) _tarjeta(espacio),
           const SizedBox(height: VeciEspacio.m),
           OutlinedButton.icon(
-            onPressed: () => context.push(Rutas.registrarNegocio),
+            onPressed: () => context.push(Rutas.ajustes),
             icon: const Icon(Icons.storefront),
             label: Text(
               (sesion?.espacios.isEmpty ?? true)
-                  ? 'Registrar mi negocio'
-                  : 'Registrar otro negocio',
+                  ? 'Solicitar el registro de mi negocio'
+                  : 'Solicitar otro negocio',
             ),
           ),
         ],

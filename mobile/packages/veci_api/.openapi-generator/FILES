@@ -9,6 +9,7 @@ lib/api/registro_del_cliente_api.dart
 lib/api/salud_api.dart
 lib/api/sedes_api.dart
 lib/api/sesiones_api.dart
+lib/api/solicitudes_de_negocio_api.dart
 lib/api/soporte_veci_api.dart
 lib/api/tiqueteras_api.dart
 lib/api/ventas_api.dart
@@ -86,7 +87,7 @@ lib/model/plan_response.dart
 lib/model/politica_response.dart
 lib/model/propietario_invitado_request.dart
 lib/model/qr_en_comercio_response.dart
-lib/model/registrar_comercio_request.dart
+lib/model/rechazo_solicitud_request.dart
 lib/model/registrar_para_propietario_request.dart
 lib/model/registro_asistido_request.dart
 lib/model/registro_asistido_response.dart
@@ -103,6 +104,9 @@ lib/model/servicio_response.dart
 lib/model/servicio_sugerido_response.dart
 lib/model/sesion_en_dispositivo_response.dart
 lib/model/sesion_response.dart
+lib/model/solicitante_response.dart
+lib/model/solicitar_registro_request.dart
+lib/model/solicitud_response.dart
 lib/model/tipo_de_negocio_response.dart
 lib/model/tipo_documento_response.dart
 lib/model/tipo_request.dart

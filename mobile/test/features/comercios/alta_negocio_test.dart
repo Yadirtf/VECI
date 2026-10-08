@@ -2,29 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:veci/core/di/comercios_providers.dart';
-import 'package:veci/core/di/sesion_providers.dart';
 import 'package:veci/features/comercios/domain/entities/alta.dart';
-import 'package:veci/features/comercios/domain/repositories/comercios_repository.dart';
 import 'package:veci/features/comercios/domain/reglas/reglas_alta.dart';
 import 'package:veci/features/comercios/presentation/pages/alta_negocio_page.dart';
-import 'package:veci/features/sesion/domain/usecases/gestor_sesion.dart';
 
-import '../sesion/sesion_dobles.dart';
-
-class _ComerciosFalsos implements ComerciosRepository {
-  BorradorAlta? registrado;
-
-  @override
-  Future<List<TipoDeNegocio>> tipos() async => const [
-    TipoDeNegocio(codigo: 'BAKERY', nombre: 'Panadería', servicios: ['Pan de la mañana']),
-  ];
-
-  @override
-  Future<String> registrar(BorradorAlta borrador) async {
-    registrado = borrador;
-    return 'nuevo';
-  }
-}
+import 'comercios_dobles.dart';
 
 void main() {
   group('reglas del alta', () {
@@ -47,6 +29,8 @@ void main() {
         problemaEnPaso(PasoAlta.contacto, const BorradorAlta(celular: '310 000 0000')),
         isNull,
       );
+      expect(problemaEnPaso(PasoAlta.lugar, const BorradorAlta()), contains('municipio'));
+      expect(problemaEnPaso(PasoAlta.lugar, const BorradorAlta(municipioId: 86001)), isNull);
     });
 
     test('la inicial del sello salta las palabras genéricas', () {
@@ -55,23 +39,24 @@ void main() {
     });
   });
 
-  testWidgets('registra el negocio pregunta por pregunta y lo deja activo', (tester) async {
-    final comercios = _ComerciosFalsos();
-    final repositorio = RepositorioFalso()..renovada = sesionDePrueba('t2');
-    final gestor = GestorSesion(repositorio, AlmacenFalso(), PendientesFalsos(0));
-    await gestor.entrarConPin('3100000101', '246813');
+  testWidgets('pide el registro pregunta por pregunta y queda en revisión', (tester) async {
+    final comercios = ComerciosFalsos();
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          comerciosRepositoryProvider.overrideWithValue(comercios),
-          gestorSesionProvider.overrideWithValue(gestor),
-        ],
+        overrides: [comerciosRepositoryProvider.overrideWithValue(comercios)],
         child: const MaterialApp(home: AltaNegocioPage()),
       ),
     );
     await tester.pumpAndSettle();
 
+    Future<void> tocar(String texto) async {
+      await tester.ensureVisible(find.text(texto));
+      await tester.tap(find.text(texto));
+      await tester.pumpAndSettle();
+    }
+
     Future<void> seguir() async {
+      await tester.ensureVisible(find.text('Seguir'));
       await tester.tap(find.text('Seguir'));
       await tester.pumpAndSettle();
     }
@@ -88,11 +73,15 @@ void main() {
     await seguir();
     await tester.enterText(find.byType(TextFormField), '3105551234');
     await seguir();
+    await seguir();
+    expect(find.textContaining('el municipio donde queda'), findsOneWidget);
+    await tocar('Mocoa');
+    await seguir();
     expect(find.text('NIT 800197268-4'), findsOneWidget);
-    await tester.tap(find.text('Abrir mi negocio en VECI'));
-    await tester.pumpAndSettle();
+    await tocar('Enviar solicitud a VECI');
 
-    expect(comercios.registrado?.nombre, 'Panadería Santa Ana');
-    expect(repositorio.elegidos, contains('nuevo'));
+    expect(comercios.solicitado?.nombre, 'Panadería Santa Ana');
+    expect(comercios.solicitado?.municipioId, 86001);
+    expect(find.text('Recibimos tu solicitud para Panadería Santa Ana'), findsOneWidget);
   });
 }
