@@ -1,6 +1,6 @@
 # VECI · Documento de Requerimientos y Recomendaciones Tecnológicas
 
-Versión 1.3 · 4 de octubre de 2026 · Ing. Yadir
+Versión 1.4 · 9 de octubre de 2026 · Ing. Yadir
 
 VECI es una plataforma SaaS web y móvil que digitaliza la tiquetera prepagada de los restaurantes con un código QR por cliente, y que se presenta como un "veci" (un vecino aliado), no como un software más. Este documento fija qué debe hacer la primera versión (MVP), con qué calidad, y qué tecnologías conviene usar para un emprendimiento de una persona en Mocoa, Putumayo.
 
@@ -49,7 +49,7 @@ Los restaurantes de "corrientazo" en Mocoa venden tiqueteras de 20, 30 o 60 almu
 | Propietario | Configurar su negocio, ver dinero comprometido, renovaciones y clientes inactivos, gestionar cajeros y su suscripción. | Panel web (PC o celular) |
 | Cajero | Registrar clientes, vender tiqueteras y escanear QR en segundos, incluso sin internet. | App móvil (celular del negocio) |
 | Cliente (comensal) | Ver su QR y su saldo en cada comercio, recibir avisos de renovación. | App móvil o enlace por WhatsApp |
-| Administrador VECI | Dar de alta comercios, gestionar planes y cobros, dar soporte. | Panel web (rol interno) |
+| Administrador VECI | Aprobar y controlar los negocios, ver la actividad de toda la plataforma, investigar fraudes y ataques, gestionar planes y cobros, dar soporte. | Consola VECI en el panel web (rol interno, con segundo factor) |
 
 ### 2.3 Supuestos
 
@@ -183,6 +183,20 @@ Prioridad: **Debe** = imprescindible para el piloto; **Debería** = antes del la
 | RF-EXP-03 | Colegios: acudiente que recarga y consulta los consumos de sus hijos. | Podría |
 | RF-EXP-04 | "Fiado" o crédito de tienda de barrio con límite por cliente. | Podría |
 
+### 3.12 Consola VECI y seguridad de la plataforma (PLA)
+
+| ID | Requerimiento | Prioridad |
+| --- | --- | --- |
+| RF-PLA-01 | La consola VECI exige segundo factor a todo rol interno y lo vuelve a pedir antes de las acciones delicadas. | Debe |
+| RF-PLA-02 | Administración VECI ve todos los negocios con su estado, municipio, dueño, equipo, clientes afiliados y actividad, y la historia de cada uno. | Debe |
+| RF-PLA-03 | Administración VECI busca personas en toda la plataforma y ve sus vínculos con los datos enmascarados; ver un dato completo exige un motivo y queda registrado. | Debe |
+| RF-PLA-04 | Administración VECI ve las sesiones y dispositivos de cualquier cuenta y los cierra o bloquea. | Debe |
+| RF-PLA-05 | Administración VECI suspende y reactiva negocios y cuentas con motivo, sin borrar datos. | Debe |
+| RF-PLA-06 | Las solicitudes de registro de negocio muestran señales de riesgo y permiten pedir más información antes de decidir. | Debe |
+| RF-PLA-07 | El sistema detecta accesos, registros y operaciones sospechosas con reglas configurables y alerta al dueño de VECI. | Debe |
+| RF-PLA-08 | Cada incidente de seguridad tiene responsable, estado, notas y acciones ligadas, y se cierra con una conclusión. | Debe |
+| RF-PLA-09 | La historia de un incidente, un negocio o una persona se exporta como evidencia verificable. | Podría |
+
 ## 4. Requerimientos no funcionales
 
 Cada requerimiento tiene una meta medible para verificarla en el piloto.
@@ -201,6 +215,11 @@ Cada requerimiento tiene una meta medible para verificarla en el piloto.
 | RNF-SEG-03 | Seguridad | Los tokens QR están firmados (HMAC o firma asimétrica) y se pueden revocar. |
 | RNF-SEG-04 | Seguridad | Tokens de sesión de corta duración (15 min) con renovación; bloqueo temporal tras 5 intentos fallidos de PIN. |
 | RNF-SEG-05 | Seguridad | Bitácora de auditoría inmutable de ventas, consumos, ajustes y cambios de permisos. |
+| RNF-SEG-06 | Seguridad | Cada entrada de la bitácora guarda IP, id de petición y agente de usuario, y las entradas se encadenan por hash para que cualquier alteración se detecte en la verificación diaria. |
+| RNF-SEG-07 | Seguridad | El API limita las peticiones por IP e identificador en ingreso, registro, solicitudes y restablecimiento de PIN, envía cabeceras de seguridad y permite bloquear IP desde la consola. |
+| RNF-SEG-08 | Seguridad | Mínimo privilegio en la plataforma: ningún acceso usa `BYPASSRLS`, los permisos internos están separados y se revisan cada 90 días, y toda lectura de datos personales desde la consola queda registrada. |
+| RNF-SEG-09 | Seguridad | Una alerta de severidad alta o crítica llega al dueño de VECI en menos de 5 minutos. |
+| RNF-SEG-10 | Seguridad | Las bitácoras de auditoría y seguridad se conservan en línea 24 meses y luego se archivan cifradas; el plazo final lo valida un abogado. |
 | RNF-LEG-01 | Legal | Cumple la Ley 1581 de 2012: autorización registrada, política de datos visible, atención de consultas y reclamos en los plazos de ley (10 y 15 días hábiles). |
 | RNF-LEG-02 | Legal | Se recoge solo el dato necesario: nombre, celular y número de documento. |
 | RNF-USA-01 | Usabilidad | Un cajero sin experiencia aprende a vender y escanear en 10 minutos o menos (medido en el piloto). |
@@ -475,5 +494,6 @@ No se pasa a la siguiente fase sin cumplir su puerta: así el esfuerzo de una so
 | 1.1 | 2026-10-04 | Correcciones del autor: inicio de sesión con celular y PIN de 6 dígitos; "horario de servicio" en lugar de "franja"; auto-registro del cliente con QR personal y QR único por comercio; pagos en efectivo o transferencia (Nequi, Daviplata, Bancolombia); notificación explicada para consumos sincronizados tarde (RF-OFF-06); backend NestJS separado; OTP, WhatsApp y Wompi pasan a futuro. |
 | 1.2 | 2026-10-04 | Se agrega la sección 5.3 de arquitectura limpia para backend, web y mobile y el requerimiento RNF-MAN-03. |
 | 1.3 | 2026-10-04 | Se amplía la Fase 1 a los meses 3 a 9 (construcción en los meses 3 a 7 y piloto en los meses 8 y 9); las fases 2 y 3 se corren 3 meses. |
+| 1.4 | 2026-10-09 | Se agrega la sección 3.12, Consola VECI y seguridad de la plataforma (RF-PLA-01 a RF-PLA-09), los requerimientos RNF-SEG-06 a RNF-SEG-10 y el alcance ampliado del Administrador VECI. |
 
 El backlog derivado de este documento está en [backlog.md](backlog.md).

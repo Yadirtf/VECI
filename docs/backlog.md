@@ -1,8 +1,8 @@
 # VECI · Backlog del producto
 
-Versión 1.9 · 8 de octubre de 2026 · Ing. Yadir
+Versión 1.11 · 9 de octubre de 2026 · Ing. Yadir
 
-Este backlog convierte el [Documento de Requerimientos y Recomendaciones Tecnológicas](requerimientos-y-recomendaciones-tecnologicas.md) en épicas e historias de usuario listas para implementar por fases. Tiene **16 épicas** y **81 historias**; cada historia apunta a los requerimientos (RF/RNF) que cumple.
+Este backlog convierte el [Documento de Requerimientos y Recomendaciones Tecnológicas](requerimientos-y-recomendaciones-tecnologicas.md) en épicas e historias de usuario listas para implementar por fases. Tiene **17 épicas** y **97 historias**; cada historia apunta a los requerimientos (RF/RNF) que cumple.
 
 ## 1. Cómo leer este backlog
 
@@ -38,8 +38,8 @@ Este backlog convierte el [Documento de Requerimientos y Recomendaciones Tecnol�
 | Fase | Periodo | Historias | Puntos | Puerta para avanzar |
 | --- | --- | --- | --- | --- |
 | Fase 0 · Validar | Meses 1 a 2 | 4 | — | Problema validado en entrevistas |
-| Fase 1 · MVP y piloto | Meses 3 a 9 | 57 | 226 | Satisfacción de 4/5 o más y cero errores de saldo en el piloto |
-| Fase 2 · Lanzamiento comercial | Meses 10 a 15 | 11 | 45 | 15 comercios pagos (punto de equilibrio) |
+| Fase 1 · MVP y piloto | Meses 3 a 9 | 72 | 299 | Satisfacción de 4/5 o más y cero errores de saldo en el piloto |
+| Fase 2 · Lanzamiento comercial | Meses 10 a 15 | 12 | 48 | 15 comercios pagos (punto de equilibrio) |
 | Fase 3 · Expansión | Mes 16 en adelante | 9 | 68 | — |
 
 ## 3. Épicas
@@ -62,6 +62,7 @@ Este backlog convierte el [Documento de Requerimientos y Recomendaciones Tecnol�
 | [EP-13](#ep-13--piloto-y-lanzamiento) | Piloto y lanzamiento | Fase 1 | Llevar VECI a los 5 restaurantes piloto, medir y publicar. | 5 | 17 |
 | [EP-14](#ep-14--integraciones-futuras) | Integraciones futuras | Fase 3 | Sumar WhatsApp, OTP y pagos en línea cuando el negocio lo justifique. | 3 | 18 |
 | [EP-15](#ep-15--expansión-a-otros-sectores) | Expansión a otros sectores | Fase 3 | Llevar el mismo núcleo a cafeterías, panaderías, colegios y tiendas. | 4 | 34 |
+| [EP-16](#ep-16--consola-veci-control-seguridad-y-trazabilidad) | Consola VECI: control, seguridad y trazabilidad | Fase 1 | Darle al dueño de VECI control y rastro de toda la plataforma, y defenderla de fraudes y ataques. | 16 | 76 |
 
 ## 4. Plan de sprints de la Fase 1
 
@@ -80,6 +81,17 @@ La Fase 1 suma **226 puntos** en 11 sprints de 2 semanas (unas 22 semanas, cerca
 | S9 | App del cliente, vencimientos y tablero del propietario | HU-05-04, HU-08-01, HU-08-02, HU-09-03, HU-10-01, HU-10-02 | 21 |
 | S10 | Reportes, auditoría, ajustes, revocación de QR y observabilidad | HU-01-07, HU-05-05, HU-06-07, HU-10-03, HU-10-04, HU-12-03, HU-12-04 | 21 |
 | S11 | Despliegue, Google Play, capacitación y métricas del piloto | HU-01-08, HU-13-01, HU-13-02, HU-13-03, HU-13-04 | 17 |
+
+### Sprints de la consola VECI (EP-16)
+
+EP-16 tiene prioridad alta: se construye ahora, antes de EP-06, porque el piloto va a manejar datos personales y saldos de clientes reales y hoy la plataforma no tiene segundo factor, límite de peticiones ni forma de suspender una cuenta. Suma 73 puntos en la Fase 1, en 4 sprints de 2 semanas (unas 8 semanas más de construcción). HU-16-10 se planifica junto con EP-06 y HU-16-15 queda para la Fase 2.
+
+| Sprint | Objetivo | Historias | Puntos |
+| --- | --- | --- | --- |
+| C1 | Entrar seguro y dejar rastro completo | HU-16-01, HU-16-02, HU-16-03 | 18 |
+| C2 | Ver y controlar negocios, personas y sesiones | HU-16-04, HU-16-05, HU-16-06, HU-16-07 | 20 |
+| C3 | Revisar solicitudes con señales, detectar y alertar | HU-16-08, HU-16-09, HU-16-12 | 16 |
+| C4 | Responder a incidentes, tablero, equipo VECI y retención | HU-16-11, HU-16-13, HU-16-14, HU-16-16 | 14 |
 
 ## 5. Historias de usuario por épica
 
@@ -1074,7 +1086,7 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 | --- | --- | --- | --- | --- | --- |
 | Debe | 5 | F2 | — | HU-11-01 | RF-AUT-03 |
 
-*Nota:* Durante el piloto estas tareas se hacen a mano.
+*Nota:* Durante el piloto estas tareas se hacen a mano. La lista de negocios con su estado y su ficha llegan antes con EP-16 (HU-16-04); esta historia suma el plan y el uso cuando exista EP-11.
 
 #### HU-11-05 · Cobro automático
 
@@ -1332,6 +1344,287 @@ Resultados: [docs/arquitectura/poc/hu-00-04-escaneo-offline.md](arquitectura/poc
 | --- | --- | --- | --- | --- | --- |
 | Podría | 8 | F3 | — | HU-04-03 | RF-EXP-04 |
 
+### EP-16 · Consola VECI: control, seguridad y trazabilidad
+
+**Objetivo:** Darle al dueño de VECI una consola propia y segura para ver y controlar toda la plataforma: negocios, personas, sesiones y movimientos, detectar fraudes y ataques a tiempo y dejar rastro verificable de cada acción, incluida la suya.
+
+**Resultado esperado:** Desde `/plataforma`, con segundo factor, el dueño de VECI responde en minutos quién hizo qué, cuándo, desde dónde y en qué negocio; recibe una alerta cuando algo se sale de lo normal; puede cortar el acceso de una cuenta, un dispositivo o un negocio sin borrar datos; y cada vista de datos personales queda registrada.
+
+**Fase principal:** Fase 1 · MVP y piloto · **Historias:** 16 · **Puntos:** 76 · **Prioridad de la épica:** alta, se construye antes de EP-06 (ver sección 4).
+
+**Punto de partida (lo que ya existe y no se repite):**
+
+- La consola VECI en `/plataforma` solo muestra las solicitudes de negocio y se abre a quien tiene `platform.manage_tenants` (ADR-0019, PR #114). Esta épica la convierte en la consola completa.
+- Los guardas `@RequierePlataforma`, la función `identity.current_user_has_platform_permission(...)` y la RLS sin `BYPASSRLS` ya son el camino para leer entre negocios; se reutilizan.
+- `audit.audit_log` es inmutable y `identity.login_attempts` guarda cada intento con su IP. Son la base de la trazabilidad y de la detección.
+
+**Huecos que encontró el análisis (en `develop`, 9 de octubre de 2026):**
+
+- El ingreso al panel de un rol interno no pide segundo factor: una contraseña robada abre la consola.
+- La bitácora tiene columnas de IP e id de petición, pero `anotarEnBitacora` no las llena; tampoco hay id de petición en el API.
+- Las sesiones (`identity.sessions`) no guardan IP ni navegador, así que no se puede saber desde dónde entró alguien.
+- El API no limita peticiones ni pone cabeceras de seguridad: nada frena un ataque de fuerza bruta repartido entre muchas cuentas o un registro masivo.
+- La bitácora y los intentos de ingreso solo tienen la partición `DEFAULT`; falta el proceso mensual que pide ADR-0010.
+- No existe la suspensión de un negocio o de una cuenta desde la consola, aunque los estados `SUSPENDED` ya están en los catálogos.
+- Las acciones de plataforma (ver datos personales, suspender, cerrar sesiones ajenas) no tienen código en `audit.actions`.
+
+Las decisiones de diseño están en [ADR-0020](arquitectura/adr/0020-consola-veci-seguridad-y-trazabilidad.md).
+
+#### HU-16-01 · Acceso reforzado a la consola
+
+> **Como** dueño de VECI, **quiero** que entrar a la consola exija un segundo factor y que las acciones delicadas me lo vuelvan a pedir, **para** que una contraseña robada no le dé a nadie el control de la plataforma.
+
+**Criterios de aceptación**
+
+- [ ] Todo usuario con un rol interno (Administración o Soporte VECI) activa un segundo factor TOTP (app autenticadora) con códigos de recuperación de un solo uso; sin él, el API no le reconoce ningún permiso de plataforma.
+- [ ] La sesión de consola vence a los 15 minutos sin uso y a las 8 horas en total; volver exige contraseña y código.
+- [ ] Suspender, revelar un dato completo, cerrar sesiones ajenas, cambiar roles internos y aprobar solicitudes piden el código otra vez si pasaron más de 5 minutos desde el último (re-autenticación).
+- [ ] Cinco códigos fallidos bloquean el segundo factor 15 minutos y generan una alerta (HU-16-12).
+- [ ] Entrar desde un dispositivo nuevo avisa al dueño de VECI por correo.
+- [ ] Activar, usar, fallar y restablecer el segundo factor queda en la bitácora.
+
+| Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
+| --- | --- | --- | --- | --- | --- |
+| Debe | 8 | F1 | C1 | HU-02-02 | RF-PLA-01, RNF-SEG-08 |
+
+*Nota:* Las llaves de acceso (passkeys) se pueden sumar después como segundo factor alterno; el TOTP no depende de SMS ni de un proveedor pago.
+
+#### HU-16-02 · Bitácora completa y a prueba de manipulación
+
+> **Como** dueño de VECI, **quiero** que cada entrada de la bitácora diga desde qué IP, navegador y petición se hizo, y que una alteración se note, **para** poder demostrar lo que pasó.
+
+**Criterios de aceptación**
+
+- [ ] Cada petición al API lleva un id (`X-Request-Id`, se genera si no llega) que viaja a los registros de error y a la bitácora.
+- [ ] `audit.audit_log` guarda IP, id de petición y agente de usuario en todas las entradas, sin cambiar a los que ya la usan.
+- [ ] Cada entrada guarda el hash de la anterior y el suyo (cadena por mes); una verificación diaria recalcula la cadena y alerta si se rompió.
+- [ ] Se agregan los códigos de acción de plataforma: ingreso a la consola, segundo factor, dato personal revelado, sesión ajena cerrada, negocio y cuenta suspendidos o reactivados, rol interno cambiado, IP bloqueada, incidente cambiado, evidencia exportada.
+- [ ] Ninguna lectura de la consola sobre datos personales se hace sin dejar entrada.
+
+| Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
+| --- | --- | --- | --- | --- | --- |
+| Debe | 5 | F1 | C1 | HU-01-04 | RNF-SEG-05, RNF-SEG-06 |
+
+#### HU-16-03 · Protección del API contra abusos
+
+> **Como** dueño de VECI, **quiero** que el API frene los intentos masivos y que pueda bloquear una IP desde la consola, **para** defender la plataforma de ataques automatizados.
+
+**Criterios de aceptación**
+
+- [ ] Límite de peticiones por IP y por identificador en ingreso, renovación de sesión, registro de clientes, solicitudes de negocio y restablecimiento de PIN; al pasarlo responde 429 con el tiempo de espera.
+- [ ] Los límites viven en datos y se cambian sin desplegar; los contadores funcionan aunque el API corra en más de una instancia.
+- [ ] Cabeceras de seguridad en el API y el panel (HSTS, `nosniff`, política de contenido, marcos prohibidos) y CORS solo con los orígenes configurados.
+- [ ] Lista de IP bloqueadas con motivo y vencimiento, que se edita desde la consola y queda en la bitácora.
+- [ ] Cada bloqueo por límite queda como evento de seguridad para la detección (HU-16-09).
+
+| Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
+| --- | --- | --- | --- | --- | --- |
+| Debe | 5 | F1 | C1 | HU-02-01 | RNF-SEG-07 |
+
+#### HU-16-04 · Directorio y ficha de cada negocio
+
+> **Como** dueño de VECI, **quiero** ver todos los negocios registrados y abrir la ficha de cada uno, **para** saber quién opera, con quién y qué está pasando.
+
+**Criterios de aceptación**
+
+- [ ] Lista de negocios con estado, tipo, municipio, dueño, cantidad de cajeros y de clientes afiliados, fecha de alta y última actividad, con búsqueda y filtros.
+- [ ] La ficha muestra datos del negocio, sedes, horarios, equipo con su rol y estado, clientes afiliados (enmascarados) y cifras de ventas y consumos.
+- [ ] La ficha tiene una línea de tiempo con su bitácora: solicitud, aprobación, cambios de equipo, ajustes, anulaciones, suspensiones e incidentes.
+- [ ] Se llega a la ficha desde la solicitud aprobada y desde un incidente.
+- [ ] La lectura usa RLS con permiso de plataforma, sin `BYPASSRLS`.
+
+| Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
+| --- | --- | --- | --- | --- | --- |
+| Debe | 5 | F1 | C2 | HU-16-02 | RF-PLA-02, RF-AUT-03 |
+
+#### HU-16-05 · Buscar personas y ver sus vínculos
+
+> **Como** dueño de VECI, **quiero** buscar a cualquier persona y ver en qué negocios es dueña, cajera o cliente, **para** atender un reclamo o seguir un caso sin pedirle datos a cada negocio.
+
+**Criterios de aceptación**
+
+- [ ] Busco por celular, documento o nombre; el celular y el documento se comparan por su huella, no en claro.
+- [ ] La ficha muestra membresías, afiliaciones, solicitudes de negocio, sesiones, dispositivos, intentos de ingreso recientes y su historia en la bitácora.
+- [ ] Celular y documento se ven enmascarados; ver el dato completo pide un motivo (mínimo 10 letras), re-autenticación y queda como `PERSONAL_DATA_REVEALED`.
+- [ ] Una persona anonimizada sale como anonimizada y no se puede revelar.
+
+| Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
+| --- | --- | --- | --- | --- | --- |
+| Debe | 5 | F1 | C2 | HU-16-01, HU-16-02 | RF-PLA-03, RNF-LEG-02, RNF-SEG-08 |
+
+#### HU-16-06 · Sesiones y dispositivos de toda la plataforma
+
+> **Como** dueño de VECI, **quiero** ver las sesiones abiertas y cerrar las que no deben estar, **para** cortar un acceso robado de inmediato.
+
+**Criterios de aceptación**
+
+- [ ] Cada sesión guarda la IP y el navegador o modelo con que se abrió y la última IP con que se renovó.
+- [ ] Veo las sesiones activas filtradas por persona, negocio, rol, dispositivo o IP, con su inicio y su último uso.
+- [ ] Cierro una sesión, todas las de una persona o todas las de un dispositivo, con motivo; el token deja de servir en la siguiente petición.
+- [ ] Bloqueo un dispositivo para que no pueda volver a abrir sesión hasta que lo desbloquee.
+- [ ] La persona afectada ve en su lista de dispositivos que VECI cerró la sesión.
+
+| Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
+| --- | --- | --- | --- | --- | --- |
+| Debe | 5 | F1 | C2 | HU-02-06, HU-16-02 | RF-PLA-04, RF-AUT-06 |
+
+#### HU-16-07 · Suspender y reactivar negocios y cuentas
+
+> **Como** dueño de VECI, **quiero** suspender un negocio o una cuenta con un motivo y reactivarlos después, **para** frenar un fraude sin perder información.
+
+**Criterios de aceptación**
+
+- [ ] Suspender un negocio lo pasa a `SUSPENDED`: no vende ni registra consumos, cierra las sesiones de su equipo y su dueño ve el motivo al entrar.
+- [ ] Suspender una cuenta la pasa a `SUSPENDED` en todos los negocios y cierra sus sesiones.
+- [ ] Lo que la caja haya guardado sin señal antes de la suspensión se recibe y queda marcado para revisión, nunca se pierde.
+- [ ] Reactivar exige motivo; suspender y reactivar piden re-autenticación y quedan en la bitácora y en la línea de tiempo de la ficha.
+- [ ] Nunca se borran datos.
+
+| Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
+| --- | --- | --- | --- | --- | --- |
+| Debe | 5 | F1 | C2 | HU-16-04, HU-16-06 | RF-PLA-05 |
+
+#### HU-16-08 · Revisión de solicitudes con señales de riesgo
+
+> **Como** dueño de VECI, **quiero** que cada solicitud de negocio me muestre lo que debo revisar y me deje pedir más información, **para** no aprobar negocios falsos que afilien clientes reales.
+
+**Criterios de aceptación**
+
+- [ ] Cada solicitud muestra señales: documento o NIT ya usado, celular o dispositivo con solicitudes rechazadas, cuenta recién creada, varias solicitudes desde la misma IP, incidentes de la persona.
+- [ ] Hay una lista de verificación (documento revisado, llamada hecha, local visitado) que se guarda con la decisión.
+- [ ] Nuevo estado "Falta información" con un mensaje que la persona lee y responde en Ajustes; vuelve a revisión al responder.
+- [ ] La solicitud tiene línea de tiempo con cada cambio, quién lo hizo y cuándo.
+- [ ] Aprobar pide re-autenticación.
+
+| Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
+| --- | --- | --- | --- | --- | --- |
+| Debe | 5 | F1 | C3 | HU-16-01, HU-16-02 | RF-PLA-06, RF-COM-01 |
+
+*Nota:* Amplía lo que entregó ADR-0019; el alta, la cobertura y la RLS de las solicitudes no cambian.
+
+#### HU-16-09 · Señales de riesgo en accesos y registros
+
+> **Como** dueño de VECI, **quiero** que el sistema detecte solo los patrones de ataque más comunes, **para** enterarme antes de que causen daño.
+
+**Criterios de aceptación**
+
+- [ ] Las reglas viven en datos con umbral, ventana de tiempo, severidad y si están activas; se cambian sin desplegar.
+- [ ] Reglas iniciales: fuerza bruta sobre una cuenta, muchos identificadores desde una IP (relleno de credenciales), muchos registros o solicitudes desde un dispositivo o IP, ingreso a la consola desde IP o dispositivo nuevo, ráfaga de restablecimientos de PIN, bloqueo por límite repetido.
+- [ ] Cada regla que salta crea un evento de seguridad y, si la severidad lo pide, abre o suma a un incidente (HU-16-11).
+- [ ] Un mismo patrón no abre incidentes repetidos: se agrupa por cuenta, IP o negocio.
+- [ ] La evaluación corre cada 5 minutos y nunca frena el ingreso ni la caja.
+
+| Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
+| --- | --- | --- | --- | --- | --- |
+| Debe | 8 | F1 | C3 | HU-16-02, HU-16-03 | RF-PLA-07 |
+
+#### HU-16-10 · Señales de fraude en la operación
+
+> **Como** dueño de VECI, **quiero** detectar operaciones raras dentro de un negocio, **para** proteger el saldo de los clientes y la confianza en VECI.
+
+**Criterios de aceptación**
+
+- [ ] Reglas sobre el libro y la bitácora: anulaciones o ajustes muy por encima de lo normal del negocio, consumos del mismo cliente en dos negocios en minutos, consumos fuera de horario autorizados en cantidad, ventas grandes seguidas de anulación, afiliaciones masivas en poco tiempo.
+- [ ] Usan el mismo motor de HU-16-09 y abren incidentes ligados al negocio y a las personas.
+- [ ] El dueño del negocio no ve estas reglas ni sus resultados.
+
+| Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
+| --- | --- | --- | --- | --- | --- |
+| Debería | 5 | F1 | — | HU-16-09, HU-06-01 | RF-PLA-07 |
+
+*Nota:* Se planifica junto con EP-06, porque necesita los consumos.
+
+#### HU-16-11 · Incidentes con seguimiento
+
+> **Como** dueño de VECI, **quiero** una bandeja de incidentes donde anotar, decidir y cerrar cada caso, **para** que cada sospecha tenga un responsable y un final.
+
+**Criterios de aceptación**
+
+- [ ] Un incidente tiene severidad, estado (abierto, en investigación, resuelto, falso positivo), responsable, negocios y personas ligados y sus eventos de seguridad.
+- [ ] Puedo abrir uno a mano desde una ficha de negocio o de persona.
+- [ ] Notas y cambios de estado son solo inserción: forman la línea de tiempo del caso y no se editan.
+- [ ] Las acciones tomadas desde el incidente (cerrar sesiones, suspender, bloquear IP) quedan ligadas a él.
+- [ ] Cerrar un incidente exige una conclusión.
+
+| Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
+| --- | --- | --- | --- | --- | --- |
+| Debe | 5 | F1 | C4 | HU-16-09 | RF-PLA-08 |
+
+#### HU-16-12 · Alertas al dueño de VECI
+
+> **Como** dueño de VECI, **quiero** recibir una alerta cuando pase algo grave, **para** actuar aunque no esté mirando la consola.
+
+**Criterios de aceptación**
+
+- [ ] Los incidentes de severidad alta y crítica llegan por correo en menos de 5 minutos, con enlace a la consola y sin datos personales en el texto.
+- [ ] Un resumen diario de seguridad (intentos fallidos, bloqueos, incidentes abiertos, solicitudes pendientes) llega a la hora configurada.
+- [ ] Una alerta que no se pudo enviar se reintenta y queda registrada.
+
+| Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
+| --- | --- | --- | --- | --- | --- |
+| Debe | 3 | F1 | C3 | HU-16-09 | RF-PLA-07, RNF-SEG-09 |
+
+*Nota:* El proveedor de correo se elige con la guía SSoT; la notificación push al celular del dueño llega con EP-09.
+
+#### HU-16-13 · Tablero de la consola
+
+> **Como** dueño de VECI, **quiero** que la consola abra con un resumen de la plataforma, **para** ver de un vistazo si todo está en orden.
+
+**Criterios de aceptación**
+
+- [ ] Negocios por estado, solicitudes pendientes, sesiones activas, intentos fallidos y bloqueos de las últimas 24 horas, incidentes abiertos por severidad.
+- [ ] Cada cifra lleva a la lista filtrada que la explica.
+- [ ] El menú de la consola muestra solo lo que permiten los permisos de quien entra (Soporte ve menos que Administración).
+
+| Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
+| --- | --- | --- | --- | --- | --- |
+| Debería | 3 | F1 | C4 | HU-16-04, HU-16-11 | RF-PLA-02, RF-PLA-07 |
+
+#### HU-16-14 · Equipo VECI con mínimo privilegio
+
+> **Como** dueño de VECI, **quiero** dar y quitar roles internos con permisos acotados y tener una cuenta de emergencia, **para** sumar personas de soporte sin entregar todo el control.
+
+**Criterios de aceptación**
+
+- [ ] Doy y retiro Soporte o Administración VECI con vigencia; la persona debe activar segundo factor antes de usarlo.
+- [ ] Los permisos de plataforma se separan: ver negocios, ver personas, revelar datos, suspender, gestionar seguridad, gestionar el equipo.
+- [ ] Nadie se quita su propio rol de Administración si es el último que queda.
+- [ ] Una cuenta de emergencia sellada (credencial guardada fuera de línea) solo se usa si se pierde el acceso y su uso alerta de inmediato.
+- [ ] Cada 90 días la consola pide revisar quién tiene roles internos.
+
+| Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
+| --- | --- | --- | --- | --- | --- |
+| Debería | 3 | F1 | C4 | HU-16-01 | RNF-SEG-08, RF-AUT-03 |
+
+#### HU-16-15 · Exportar evidencia
+
+> **Como** dueño de VECI, **quiero** exportar la historia de un incidente, un negocio o una persona en un archivo verificable, **para** entregarla a un abogado, a la Superintendencia o a la Fiscalía.
+
+**Criterios de aceptación**
+
+- [ ] Exporta CSV y PDF con la línea de tiempo, la bitácora relacionada y la huella (hash) del archivo.
+- [ ] La exportación pide motivo y re-autenticación y queda en la bitácora.
+
+| Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
+| --- | --- | --- | --- | --- | --- |
+| Podría | 3 | F2 | — | HU-16-11 | RF-PLA-09 |
+
+#### HU-16-16 · Retención y archivo de las bitácoras
+
+> **Como** dueño de VECI, **quiero** que las bitácoras se conserven el tiempo debido sin hacer lenta la base, **para** cumplir y seguir pudiendo investigar.
+
+**Criterios de aceptación**
+
+- [ ] Un proceso crea por adelantado las particiones mensuales de `audit.audit_log`, `identity.login_attempts` y los eventos de seguridad, y alerta si falla.
+- [ ] Las particiones de más de 24 meses se separan y se archivan cifradas, con su hash de cadena, antes de quitarlas de la base.
+- [ ] Hay un procedimiento probado para consultar un archivo viejo.
+
+| Prioridad | Puntos | Fase | Sprint | Depende de | Requerimientos |
+| --- | --- | --- | --- | --- | --- |
+| Debería | 3 | F1 | C4 | HU-16-02 | RNF-SEG-10 |
+
+*Nota:* El plazo de 24 meses en línea es una propuesta; el plazo final lo valida el abogado junto con la política de datos.
+
 ## 6. Matriz de trazabilidad
 
 Cada requerimiento del documento y las historias que lo cumplen. Un requerimiento sin historia sería un hueco del backlog; hoy no hay ninguno.
@@ -1340,11 +1633,11 @@ Cada requerimiento del documento y las historias que lo cumplen. Un requerimient
 | --- | --- |
 | RF-AUT-01 | HU-02-01, HU-02-05, HU-14-01 |
 | RF-AUT-02 | HU-02-02 |
-| RF-AUT-03 | HU-02-03, HU-11-04 |
+| RF-AUT-03 | HU-02-03, HU-11-04, HU-16-04, HU-16-14 |
 | RF-AUT-04 | HU-02-03 |
 | RF-AUT-05 | HU-02-04 |
-| RF-AUT-06 | HU-02-06 |
-| RF-COM-01 | HU-03-01 |
+| RF-AUT-06 | HU-02-06, HU-16-06 |
+| RF-COM-01 | HU-03-01, HU-16-08 |
 | RF-COM-02 | HU-03-02 |
 | RF-COM-03 | HU-03-03 |
 | RF-COM-04 | HU-01-04, HU-03-01 |
@@ -1396,6 +1689,15 @@ Cada requerimiento del documento y las historias que lo cumplen. Un requerimient
 | RF-EXP-02 | HU-15-02 |
 | RF-EXP-03 | HU-15-03 |
 | RF-EXP-04 | HU-15-04 |
+| RF-PLA-01 | HU-16-01 |
+| RF-PLA-02 | HU-16-04, HU-16-13 |
+| RF-PLA-03 | HU-16-05 |
+| RF-PLA-04 | HU-16-06 |
+| RF-PLA-05 | HU-16-07 |
+| RF-PLA-06 | HU-16-08 |
+| RF-PLA-07 | HU-16-09, HU-16-10, HU-16-12, HU-16-13 |
+| RF-PLA-08 | HU-16-11 |
+| RF-PLA-09 | HU-16-15 |
 | RNF-REN-01 | HU-00-04, HU-06-01, HU-13-03, HU-13-04 |
 | RNF-REN-02 | HU-13-04 |
 | RNF-REN-03 | HU-13-04 |
@@ -1407,9 +1709,14 @@ Cada requerimiento del documento y las historias que lo cumplen. Un requerimient
 | RNF-SEG-02 | HU-01-05 |
 | RNF-SEG-03 | HU-04-02, HU-06-02, HU-06-07 |
 | RNF-SEG-04 | HU-02-01 |
-| RNF-SEG-05 | HU-05-05, HU-12-03 |
+| RNF-SEG-05 | HU-05-05, HU-12-03, HU-16-02 |
+| RNF-SEG-06 | HU-16-02 |
+| RNF-SEG-07 | HU-16-03 |
+| RNF-SEG-08 | HU-16-01, HU-16-05, HU-16-14 |
+| RNF-SEG-09 | HU-16-12 |
+| RNF-SEG-10 | HU-16-16 |
 | RNF-LEG-01 | HU-12-01, HU-12-02 |
-| RNF-LEG-02 | HU-12-04 |
+| RNF-LEG-02 | HU-12-04, HU-16-05 |
 | RNF-USA-01 | HU-00-02, HU-13-02 |
 | RNF-USA-02 | HU-00-02, HU-01-09 |
 | RNF-USA-03 | HU-13-03 |
@@ -1427,7 +1734,7 @@ Cada requerimiento del documento y las historias que lo cumplen. Un requerimient
 
 - Este archivo es la fuente versionada del backlog; cada cambio se hace por PR para que quede la historia en Git.
 - Si cambia un requerimiento, se actualiza primero el documento de requerimientos y luego las historias que lo trazan.
-- Cada épica y cada historia ya es un [issue de GitHub](https://github.com/Yadirtf/VECI/issues) con su ID en el título; las épicas son los issues #3 a #18 y las historias son sub-issues de su épica (#19 a #99), con etiquetas `EP-xx`, `fase-N`, `prioridad: …` y `sprint: Sx`.
+- Cada épica y cada historia ya es un [issue de GitHub](https://github.com/Yadirtf/VECI/issues) con su ID en el título; las épicas son los issues #3 a #18 y las historias son sub-issues de su épica (#19 a #99). EP-16 y sus historias se cargan como issues al fusionar este cambio, con etiquetas `EP-xx`, `fase-N`, `prioridad: …` y `sprint: Sx`.
 - Si cambia una historia en este archivo, se actualiza también su issue. Al terminarla se marcan sus criterios y se cierra el issue (o se cierra con `Closes #NN` en el PR).
 - Las historias nuevas toman el siguiente número libre de su épica; los IDs no se reutilizan.
 
@@ -1446,3 +1753,4 @@ Cada requerimiento del documento y las historias que lo cumplen. Un requerimient
 | 1.8 | 2026-10-05 | EP-04 implementada: registro propio del cliente con política de datos versionada (HU-12-01 en parte), QR personal firmado que se ve sin internet y se regenera, afiliación con un escaneo y QR propio por negocio, registro asistido con PIN de bienvenida de 7 días y búsqueda en la caja sobre una copia local enmascarada (ADR-0017). |
 | 1.9 | 2026-10-08 | EP-05 implementada: pizarra de tipos de tiquetera, venta idempotente con medio de pago en línea y sin señal (cola en el celular), saldo por unidad con la pila por vencimiento en la caja, el panel y la app del cliente (con copia sin internet), vencimiento automático por negocio y anulación y ajuste con motivo y auditoría (ADR-0018). |
 | 1.10 | 2026-10-08 | Revisión de roles y seguridad antes de EP-06: el registro de negocio pasa a ser una solicitud que aprueba Administración VECI (Ajustes en la app, consola VECI en el panel), cobertura por municipio en datos (hoy Mocoa) y PIN temporal que no toca cuentas de otros negocios ni del equipo VECI (ADR-0019). |
+| 1.11 | 2026-10-09 | Nueva épica EP-16, Consola VECI: control, seguridad y trazabilidad (16 historias, 76 puntos), de prioridad alta y antes de EP-06: segundo factor y re-autenticación, bitácora completa y encadenada, límite de peticiones, fichas de negocios y personas, sesiones, suspensiones, señales de riesgo, incidentes y alertas (ADR-0020). Requerimientos RF-PLA-01 a 09 y RNF-SEG-06 a 10. |
