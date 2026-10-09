@@ -23,6 +23,7 @@ Un ADR deja escrito una decisión que cuesta cambiar: el contexto, lo que se eli
 | [0017](0017-clientes-qr-firmado-y-copia-local.md) | Clientes: QR firmados con claves derivadas, datos enmascarados y copia local | Propuesta |
 | [0018](0018-tiqueteras-ventas-offline-y-vencimiento.md) | Tiqueteras: pizarra de tipos, venta idempotente sin señal y vencimiento por negocio | Propuesta |
 | [0019](0019-roles-solicitudes-de-negocio-y-cobertura.md) | Roles acotados: solicitud de registro de negocio, cobertura por municipio y PIN temporal con límites | Propuesta |
+| [0020](0020-consola-veci-seguridad-y-trazabilidad.md) | Consola VECI: segundo factor, lectura entre negocios sin `BYPASSRLS`, bitácora encadenada y detección en datos | Propuesta |
 
 ## Cómo proponer uno nuevo
 
